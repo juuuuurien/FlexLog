@@ -1,4 +1,5 @@
 import React, { useState, useContext } from "react";
+import { Pressable } from "react-native";
 import { Box, Text, HStack, VStack, Input } from "native-base";
 
 import { WorkoutDataContext } from "../../../context/WorkoutDataContext";
@@ -23,7 +24,11 @@ const ExerciseComponent = ({ data, index }) => {
   };
 
   return (
-    <PressableComponent>
+    <Pressable
+      onLongPress={() => {
+        console.log("this is a long press");
+      }}
+    >
       <Box
         mt={5}
         borderRadius={5}
@@ -79,7 +84,7 @@ const ExerciseComponent = ({ data, index }) => {
           </VStack>
         </VStack>
       </Box>
-    </PressableComponent>
+    </Pressable>
   );
 };
 

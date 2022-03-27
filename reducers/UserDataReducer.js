@@ -17,14 +17,15 @@
 //       ],
 //     },
 //   },
-// };
+
+import { omit } from "../util/omit";
 
 export const userDataReducer = (state, action) => {
   switch (action.type) {
-    case 'INITIALIZE_STATE': {
+    case "INITIALIZE_STATE": {
       return { ...action.payload };
     }
-    case 'CREATE_WORKOUT': {
+    case "CREATE_WORKOUT": {
       return {
         ...state,
         workouts: {
@@ -33,7 +34,14 @@ export const userDataReducer = (state, action) => {
         },
       };
     }
-    case 'UPDATE_EXERCISE': {
+    case "DELETE_WORKOUT": {
+      const newWorkoutsObj = omit({ ...state.workouts }, action.payload);
+      return {
+        ...state,
+        workouts: newWorkoutsObj,
+      };
+    }
+    case "UPDATE_EXERCISE": {
       return {
         ...state,
         workouts: {
@@ -42,7 +50,7 @@ export const userDataReducer = (state, action) => {
         },
       };
     }
-    case 'CLEAR_DATA': {
+    case "CLEAR_DATA": {
       return { ...action.payload };
     }
     default:

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext } from "react";
 import {
   Box,
   Text,
@@ -13,26 +13,33 @@ import {
   AddIcon,
   Container,
   Input,
-} from 'native-base';
-import {WorkoutDataContext} from '../../../context/WorkoutDataContext'
+} from "native-base";
+import { WorkoutDataContext } from "../../../context/WorkoutDataContext";
 
-const AddExerciseButton = () => {
+const AddExerciseButton = (props) => {
   // this will update WorkoutDataState and append it with an empty exercise
   // maybe just set up the reducer to handle state changes globally rather than
   // using local states
 
-  const {workoutData, setWorkoutData, id} = useContext(WorkoutDataContext);
+  const { workoutData, setWorkoutData, id } = useContext(WorkoutDataContext);
 
   const empty_exercise = {
-    exercise_name: '',
+    exercise_name: "",
     sets: [{ weight: 0, reps: 0 }],
   };
 
   const handlePress = () => {
-    setWorkoutData({...workoutData, exercises: [...workoutData.exercises, empty_exercise]})
-  }
+    setWorkoutData({
+      ...workoutData,
+      exercises: [...workoutData.exercises, empty_exercise],
+    });
+  };
 
-  return <Button onPress={handlePress}>{'Add an exercise'}</Button>;
+  return (
+    <Button {...props} onPress={handlePress}>
+      {"Add an exercise"}
+    </Button>
+  );
 };
 
 export default AddExerciseButton;
