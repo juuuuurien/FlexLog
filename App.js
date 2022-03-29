@@ -1,15 +1,20 @@
 import React, { useState, useEffect, useReducer, useRef } from "react";
-import { AppState } from "react-native";
-import { NativeBaseProvider, Text, Box, Fab, Icon } from "native-base";
-import theme from "./theme";
+import { View, Text, StyleSheet, AppState } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import { DefaultTheme, Provider as PaperProvider } from "react-native-paper";
+
+import Loading from "./components/global/Loading";
 import WorkoutListNavigator from "./screens/WorkoutList/WorkoutListNavigator";
 import WorkoutList from "./screens/WorkoutList/WorkoutList";
-import { UserDataContextProvider } from "./context/UserDataContext";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Loading from "./components/global/Loading";
+
 import { userDataReducer } from "./reducers/UserDataReducer";
 import { useAsyncStorage } from "./hooks/useAsyncStorage";
+import theme from "./theme";
+
+import { NativeBaseProvider, Box, Fab, Icon } from "native-base";
+import { UserDataContextProvider } from "./context/UserDataContext";
 
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
@@ -17,10 +22,11 @@ import { Ionicons, FontAwesome } from "@expo/vector-icons";
 //   workouts: {
 //     id: {
 //       date: string,
+//       finished: boolean,
 //       exercises: [
 //         {
 //           name: string,
-//           exerciseData: [
+//           sets: [
 //             {
 //               weight: number,
 //               reps: number,
@@ -48,13 +54,11 @@ export default function App() {
 
   const storeData = async () => {
     try {
-      console.log("setting loading as true");
       setLoading(true);
       await updateStorage(state);
     } catch (e) {
       console.log(e);
     } finally {
-      console.log("setting loading as false");
       setLoading(false);
     }
   };
@@ -66,7 +70,6 @@ export default function App() {
         appState.current.match(/inactive|background/) &&
         nextAppState === "active"
       ) {
-        storeData();
       }
 
       appState.current = nextAppState;
@@ -74,7 +77,7 @@ export default function App() {
     });
 
     return () => {
-      subscription.remove();
+      if (subscription) subscription.remove();
     };
   }, []);
 
@@ -116,40 +119,43 @@ export default function App() {
     // attempt to cache data
     if (state === null) {
       cacheData();
+    } else {
+      console.log("storing data");
+      storeData();
     }
   }, [state]);
 
-  const ClearDataFab = () => {
-    return (
-      <Fab
-        renderInPortal={false}
-        onPress={() => {
-          AsyncStorage.clear();
-          dispatch({ type: "CLEAR_DATA", payload: initial_state });
-        }}
-        bg="#bd1133"
-        size="lg"
-        placement={"bottom-left"}
-        icon={<Icon as={FontAwesome} name="times" size="sm" />}
-      />
-    );
+  const papertheme = {
+    ...DefaultTheme,
   };
+
+  // const ClearDataFab = () => {
+  //   return (
+  //     <Fab
+  //       renderInPortal={false}
+  //       onPress={() => {
+  //         AsyncStorage.clear();
+  //         dispatch({ type: 'CLEAR_DATA', payload: initial_state });
+  //       }}
+  //       bg="#bd1133"
+  //       size="lg"
+  //       placement={'bottom-left'}
+  //       icon={<Icon as={FontAwesome} name="times" size="sm" />}
+  //     />
+  //   );
+  // };
 
   return (
     <UserDataContextProvider
       value={{ state, dispatch, loading, setLoading, storeData }}
     >
       <NativeBaseProvider theme={theme}>
-        <Box
-          minHeight="full"
-          _light={{ bg: "coolGray.50" }}
-          _dark={{ bg: "coolGray.900" }}
-        >
+        <PaperProvider theme={papertheme}>
           <NavigationContainer>
             {loading && <Loading />}
             {state !== null && <WorkoutListNavigator />}
           </NavigationContainer>
-        </Box>
+        </PaperProvider>
       </NativeBaseProvider>
     </UserDataContextProvider>
   );

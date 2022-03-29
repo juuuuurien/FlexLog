@@ -1,21 +1,15 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect, useRef } from 'react';
+import { StyleSheet, View } from 'react-native';
 import {
-  Box,
-  Text,
-  FlatList,
-  Heading,
-  HStack,
-  Pressable,
-  Icon,
-  AddIcon,
-  Center,
-  VStack,
   Modal,
-  FormControl,
-  Input,
+  Card,
+  TextInput,
+  Title,
   Button,
-  WarningOutlineIcon,
-} from 'native-base';
+  Caption,
+  withTheme,
+  useTheme,
+} from 'react-native-paper';
 
 import dayjs from 'dayjs';
 import { workoutSchema } from '../../../static/schemas/WorkoutSchema';
@@ -23,14 +17,21 @@ import { UserDataContext } from '../../../context/UserDataContext';
 import useAsyncStorage from '../../../hooks/useAsyncStorage';
 
 const CreateWorkoutModal = ({ showModal, setShowModal, handleOnPress }) => {
-  const { state, dispatch, setLoading } = useContext(UserDataContext);
+  const { colors } = useTheme();
+  const { state, dispatch, saveData } = useContext(UserDataContext);
   const [inputData, setInputData] = useState('');
   const [isError, setIsError] = useState(false);
+
+  const containerStyle = { backgroundColor: 'white', padding: 20 };
+
+  const handleChange = (text) => {
+    setInputData(text);
+  };
 
   const handleClose = () => {
     setShowModal(false);
     setInputData('');
-    setIsError(false);
+    setIsError(false);   
   };
 
   const handlePress = () => {
@@ -46,51 +47,57 @@ const CreateWorkoutModal = ({ showModal, setShowModal, handleOnPress }) => {
           },
         },
       });
-      //  console.log();
       handleClose();
     } else {
       setIsError(true);
     }
   };
 
+  const styles = StyleSheet.create({
+    modalContainer: {
+      margin: 25,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    contentContainer: {
+      padding: 10,
+      width: '100%',
+    },
+    input: {
+      height: 48,
+    },
+  });
+
   return (
-    <Modal isOpen={showModal} animationPreset="slide" onClose={handleClose}>
-      <Modal.Content maxWidth="400px">
-        <Modal.CloseButton />
-        <Modal.Header>
-          <Heading size="md">Create a workout</Heading>
-        </Modal.Header>
-        <Modal.Body>
-          <FormControl isInvalid={isError}>
-            <Input
-              isRequired
-              size="lg"
-              placeholder="Workout name i.e. 'Pull Day'"
-              onChangeText={(value) => setInputData(value)}
-              value={inputData}
-            />
-            {isError && (
-              <FormControl.ErrorMessage
-                leftIcon={<WarningOutlineIcon size="xs" />}>
-                {'Please type a valid name.'}
-              </FormControl.ErrorMessage>
-            )}
-          </FormControl>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button.Group space={2}>
-            <Button
-              variant="ghost"
-              colorScheme="blueGray"
-              onPress={handleClose}>
-              Cancel
-            </Button>
-            <Button onPress={handlePress}>Create</Button>
-          </Button.Group>
-        </Modal.Footer>
-      </Modal.Content>
+    <Modal
+      visible={showModal}
+      animationPreset="slide"
+      onDismiss={handleClose}
+      contentContainerStyle={styles.modalContainer}>
+      <Card style={styles.contentContainer}>
+        <Card.Title title={'Create a Workout'} subtitle={'What are you working out today?'} />
+        <Card.Content>
+          <TextInput
+            error={isError}
+            autoFocus
+            placeholder={'Workout name'}
+            style={styles.input}
+            value={inputData}
+            onChangeText={handleChange}></TextInput>
+          {isError && (
+            <Caption style={{ color: colors.error }}>
+              {'*Please enter a workout name'}
+            </Caption>
+          )}
+        </Card.Content>
+        <Card.Actions style={{ marginTop: 15, justifyContent: 'flex-end' }}>
+          <Button mode="contained" onPress={handlePress}>
+            Create
+          </Button>
+        </Card.Actions>
+      </Card>
     </Modal>
   );
 };
 
-export default CreateWorkoutModal;
+export default withTheme(CreateWorkoutModal);

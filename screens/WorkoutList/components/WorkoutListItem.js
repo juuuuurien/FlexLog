@@ -1,66 +1,70 @@
-import React, { useContext, useState } from "react";
-import { Text, HStack, Pressable, Box } from "native-base";
-
-import PressableComponent from "../../../components/global/PressableComponent";
-import { Alert } from "react-native";
-import { UserDataContext } from "../../../context/UserDataContext";
-import { omit } from "../../../util/omit";
+import React, { useContext, useState } from 'react';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { List, Colors, Caption, useTheme } from 'react-native-paper';
+import PressableComponent from '../../../components/global/PressableComponent';
+import { Alert } from 'react-native';
+import { UserDataContext } from '../../../context/UserDataContext';
+import { omit } from '../../../util/omit';
 
 const WorkoutListItem = ({ item, id, navigation }) => {
+  const { blueGrey100, blueGrey200 } = Colors;
+  const { colors } = useTheme();
   const { dispatch } = useContext(UserDataContext);
   const [longPressed, setLongPressed] = useState(false);
   const [pressed, setPressed] = useState(false);
-
   const handleLongPress = () => {
     Alert.alert(
-      "Delete this workout?",
+      'Delete this workout?',
       `Do you want to delete "${item.name}" ?`,
       [
         {
-          text: "Cancel",
+          text: 'Cancel',
           onPress: () => {
             return;
           },
-          style: "cancel",
+          style: 'cancel',
         },
         {
-          text: "Yes",
+          text: 'Yes',
           onPress: () => {
-            dispatch({ type: "DELETE_WORKOUT", payload: id });
+            dispatch({ type: 'DELETE_WORKOUT', payload: id });
           },
         },
       ]
     );
   };
 
+  const styles = StyleSheet.create({
+    listItem: {
+      flex: 1,
+      margin: 5,
+      backgroundColor: pressed ? blueGrey200 : colors.background,
+      borderBottomWidth: 2,
+      borderColor: blueGrey200,
+      elevation: 1,
+    },
+    caption: {
+      padding: 10,
+      textAlign: 'center',
+      textAlignVertical: 'center',
+    },
+    titleStyle: { fontWeight: 'bold', fontSize: 22 },
+  });
+
   return (
     <Pressable
-      borderWidth="1"
-      _dark={{
-        backgroundColor: pressed ? "blueGray.500" : "blueGray.700",
-        borderColor: "blueGray.700",
-      }}
-      borderRadius={5}
-      borderRightRadius={longPressed ? 0 : 5}
-      px="5"
-      py="2"
-      my="1.5"
-      onPress={() => {
-        navigation.navigate("WorkoutPage", { id: id });
-        setPressed(true);
-      }}
-      onLongPress={handleLongPress}
       onPressIn={() => setPressed(true)}
-      onPressOut={() => setPressed(false)}
-    >
-      <HStack space={3} alignItems="center" justifyContent="space-around">
-        <Text bold isTruncated fontSize="md">
-          {item.name}
-        </Text>
-        <Text italic fontSize="xs" color="info.300">
-          {item.date}
-        </Text>
-      </HStack>
+      onPressOut={() => {
+        setPressed(false);
+        navigation.navigate('WorkoutPage', { id: id });
+      }}>
+      <List.Item
+        style={styles.listItem}
+        titleStyle={styles.titleStyle}
+        title={item.name}
+        description={`Created: ${item.date}`}
+        right={(props) => <Caption style={styles.caption}>Not Started</Caption>}
+      />
     </Pressable>
   );
 };

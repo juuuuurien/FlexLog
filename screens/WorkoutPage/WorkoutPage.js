@@ -64,7 +64,7 @@ const WorkoutPage = ({ navigation, route }) => {
         p={5}
         space={5}
       >
-        <AddExerciseButton style={{ flex: 1 }} />
+        <AddExerciseButton />
         {workoutData && (
           <FlatList
             flex={8}
