@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext} from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState, useEffect, useContext } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const useAsyncStorage = (key, defaultValue) => {
   const [storageValue, updateStorageValue] = useState(defaultValue);
@@ -10,7 +10,7 @@ export const useAsyncStorage = (key, defaultValue) => {
     try {
       value = JSON.parse(await AsyncStorage.getItem(key)) || defaultValue;
     } catch (e) {
-      console.log(e);
+      console.warn(e);
     } finally {
       updateStorageValue(value);
       setUpdated(true);
@@ -26,7 +26,7 @@ export const useAsyncStorage = (key, defaultValue) => {
         await AsyncStorage.setItem(key, value);
       }
     } catch (e) {
-      console.log(e);
+      console.warn(e);
     } finally {
       setUpdated(false);
       getStorageValue();

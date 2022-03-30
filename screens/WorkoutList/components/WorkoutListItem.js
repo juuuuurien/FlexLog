@@ -1,33 +1,30 @@
-import React, { useContext, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
-import { List, Colors, Caption, useTheme } from 'react-native-paper';
-import PressableComponent from '../../../components/global/PressableComponent';
-import { UserDataContext } from '../../../context/UserDataContext';
-import { omit } from '../../../util/omit';
+import React, { useContext, useState } from "react";
+import { StyleSheet, Pressable, Alert } from "react-native";
+import { List, Colors, Caption, useTheme } from "react-native-paper";
+import { UserDataContext } from "../../../context/UserDataContext";
 
 const WorkoutListItem = ({ item, id, navigation }) => {
-  const { blueGrey100, blueGrey200 } = Colors;
+  const { blueGrey200 } = Colors;
   const { colors } = useTheme();
   const { dispatch } = useContext(UserDataContext);
-  const [longPressed, setLongPressed] = useState(false);
   const [pressed, setPressed] = useState(false);
   const handleLongPress = () => {
     setPressed(false);
     Alert.alert(
-      'Delete this workout?',
+      "Delete this workout?",
       `Do you want to delete "${item.name}" ?`,
       [
         {
-          text: 'Cancel',
+          text: "Cancel",
           onPress: () => {
             return;
           },
-          style: 'cancel',
+          style: "cancel",
         },
         {
-          text: 'Yes',
+          text: "Yes",
           onPress: () => {
-            dispatch({ type: 'DELETE_WORKOUT', payload: id });
+            dispatch({ type: "DELETE_WORKOUT", payload: id });
           },
         },
       ]
@@ -45,10 +42,10 @@ const WorkoutListItem = ({ item, id, navigation }) => {
     },
     caption: {
       padding: 10,
-      textAlign: 'center',
-      textAlignVertical: 'center',
+      textAlign: "center",
+      textAlignVertical: "center",
     },
-    titleStyle: { fontWeight: 'bold', fontSize: 22 },
+    titleStyle: { fontWeight: "bold", fontSize: 22 },
   });
 
   return (
@@ -57,8 +54,9 @@ const WorkoutListItem = ({ item, id, navigation }) => {
       onPressIn={() => setPressed(true)}
       onPressOut={() => setPressed(false)}
       onPress={() => {
-        navigation.navigate('WorkoutPage', { id: id });
-      }}>
+        navigation.navigate("WorkoutPage", { id: id });
+      }}
+    >
       <List.Item
         style={styles.listItem}
         titleStyle={styles.titleStyle}
