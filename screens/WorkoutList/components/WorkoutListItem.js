@@ -1,8 +1,7 @@
 import React, { useContext, useState } from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
 import { List, Colors, Caption, useTheme } from 'react-native-paper';
 import PressableComponent from '../../../components/global/PressableComponent';
-import { Alert } from 'react-native';
 import { UserDataContext } from '../../../context/UserDataContext';
 import { omit } from '../../../util/omit';
 
@@ -13,6 +12,7 @@ const WorkoutListItem = ({ item, id, navigation }) => {
   const [longPressed, setLongPressed] = useState(false);
   const [pressed, setPressed] = useState(false);
   const handleLongPress = () => {
+    setPressed(false);
     Alert.alert(
       'Delete this workout?',
       `Do you want to delete "${item.name}" ?`,
@@ -53,9 +53,10 @@ const WorkoutListItem = ({ item, id, navigation }) => {
 
   return (
     <Pressable
+      onLongPress={handleLongPress}
       onPressIn={() => setPressed(true)}
-      onPressOut={() => {
-        setPressed(false);
+      onPressOut={() => setPressed(false)}
+      onPress={() => {
         navigation.navigate('WorkoutPage', { id: id });
       }}>
       <List.Item

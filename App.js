@@ -50,7 +50,7 @@ export default function App() {
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const [loading, setLoading] = useState(true);
-  const [storageValue, updateStorage] = useAsyncStorage("userData");
+  const [storageValue, updateStorage] = useAsyncStorage("userData", {...initial_state});
 
   const storeData = async () => {
     try {
@@ -98,10 +98,7 @@ export default function App() {
         } else {
           console.log("no data found, setting initial data to asyncstorage");
           try {
-            await AsyncStorage.setItem(
-              "userData",
-              JSON.stringify(initial_state)
-            );
+            AsyncStorage.setItem("userData", JSON.stringify({...initial_state}))
             dispatch({ type: "INITIALIZE_STATE", payload: initial_state });
           } catch (err) {
             console.warn(err);

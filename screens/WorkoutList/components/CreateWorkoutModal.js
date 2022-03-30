@@ -6,7 +6,7 @@ import {
   TextInput,
   Title,
   Button,
-  Caption,
+  HelperText,
   withTheme,
   useTheme,
 } from 'react-native-paper';
@@ -85,9 +85,9 @@ const CreateWorkoutModal = ({ showModal, setShowModal, handleOnPress }) => {
             value={inputData}
             onChangeText={handleChange}></TextInput>
           {isError && (
-            <Caption style={{ color: colors.error }}>
+            <HelperText style={{ color: colors.error }}>
               {'*Please enter a workout name'}
-            </Caption>
+            </HelperText>
           )}
         </Card.Content>
         <Card.Actions style={{ marginTop: 15, justifyContent: 'flex-end' }}>

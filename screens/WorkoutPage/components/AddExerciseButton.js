@@ -1,4 +1,6 @@
 import React, { useState, useContext } from "react";
+import {Button} from 'react-native-paper'
+import {View} from 'react-native'
 import {
   Box,
   Text,
@@ -6,7 +8,6 @@ import {
   Heading,
   HStack,
   Pressable,
-  Button,
   VStack,
   Center,
   Fab,
@@ -15,6 +16,7 @@ import {
   Input,
 } from "native-base";
 import { WorkoutDataContext } from "../../../context/WorkoutDataContext";
+import {empty_exercise} from '../../../static/empty_exercise';
 
 const AddExerciseButton = (props) => {
   // this will update WorkoutDataState and append it with an empty exercise
@@ -23,15 +25,13 @@ const AddExerciseButton = (props) => {
 
   const { workoutData, setWorkoutData, id } = useContext(WorkoutDataContext);
 
-  const empty_exercise = {
-    exercise_name: "",
-    sets: [{ weight: 0, reps: 0 }],
-  };
 
   const handlePress = () => {
+    console.log('this is an empty exercise')
+    console.log(empty_exercise)
     setWorkoutData({
       ...workoutData,
-      exercises: [...workoutData.exercises, empty_exercise],
+      exercises: [...workoutData.exercises, {exercise_name: '', sets: [{weight: '', reps: ''}]}],
     });
   };
 
