@@ -6,7 +6,7 @@ import {
   TextInput,
   Title,
   Button,
-  Caption,
+  HelperText,
   withTheme,
   useTheme,
 } from 'react-native-paper';
@@ -31,7 +31,7 @@ const CreateWorkoutModal = ({ showModal, setShowModal, handleOnPress }) => {
   const handleClose = () => {
     setShowModal(false);
     setInputData('');
-    setIsError(false);   
+    setIsError(false);
   };
 
   const handlePress = () => {
@@ -40,10 +40,13 @@ const CreateWorkoutModal = ({ showModal, setShowModal, handleOnPress }) => {
         type: 'CREATE_WORKOUT',
         payload: {
           id: dayjs().unix(),
+
           data: {
             date: dayjs().format('MM/D/YY'),
             name: inputData.trim(),
             exercises: [],
+            started: false,
+            finished: false,
           },
         },
       });
@@ -75,7 +78,10 @@ const CreateWorkoutModal = ({ showModal, setShowModal, handleOnPress }) => {
       onDismiss={handleClose}
       contentContainerStyle={styles.modalContainer}>
       <Card style={styles.contentContainer}>
-        <Card.Title title={'Create a Workout'} subtitle={'What are you working out today?'} />
+        <Card.Title
+          title={'Create a Workout'}
+          subtitle={'What are you working out today?'}
+        />
         <Card.Content>
           <TextInput
             error={isError}
@@ -85,9 +91,9 @@ const CreateWorkoutModal = ({ showModal, setShowModal, handleOnPress }) => {
             value={inputData}
             onChangeText={handleChange}></TextInput>
           {isError && (
-            <Caption style={{ color: colors.error }}>
+            <HelperText style={{ color: colors.error }}>
               {'*Please enter a workout name'}
-            </Caption>
+            </HelperText>
           )}
         </Card.Content>
         <Card.Actions style={{ marginTop: 15, justifyContent: 'flex-end' }}>

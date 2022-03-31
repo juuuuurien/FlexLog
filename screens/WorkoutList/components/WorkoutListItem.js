@@ -1,18 +1,15 @@
 import React, { useContext, useState } from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { StyleSheet, Pressable, Alert } from 'react-native';
 import { List, Colors, Caption, useTheme } from 'react-native-paper';
-import PressableComponent from '../../../components/global/PressableComponent';
-import { Alert } from 'react-native';
 import { UserDataContext } from '../../../context/UserDataContext';
-import { omit } from '../../../util/omit';
 
 const WorkoutListItem = ({ item, id, navigation }) => {
-  const { blueGrey100, blueGrey200 } = Colors;
+  const { blueGrey200 } = Colors;
   const { colors } = useTheme();
   const { dispatch } = useContext(UserDataContext);
-  const [longPressed, setLongPressed] = useState(false);
   const [pressed, setPressed] = useState(false);
   const handleLongPress = () => {
+    setPressed(false);
     Alert.alert(
       'Delete this workout?',
       `Do you want to delete "${item.name}" ?`,
@@ -34,6 +31,18 @@ const WorkoutListItem = ({ item, id, navigation }) => {
     );
   };
 
+  const handleCaption = () => {
+    if (item.finished) return 'Finished';
+    if (item.started && !item.finished) return 'In Progress';
+    return 'Not Started';
+  };
+
+  const handleColor = ()=> {
+       if(item.started && !item.finished) return Colors.red600
+    if(item.started ===  true && item.finished === true) return Colors.green600
+    return Colors.grey600
+  }
+
   const styles = StyleSheet.create({
     listItem: {
       flex: 1,
@@ -44,6 +53,7 @@ const WorkoutListItem = ({ item, id, navigation }) => {
       elevation: 1,
     },
     caption: {
+      color: handleColor(),
       padding: 10,
       textAlign: 'center',
       textAlignVertical: 'center',
@@ -53,9 +63,10 @@ const WorkoutListItem = ({ item, id, navigation }) => {
 
   return (
     <Pressable
+      onLongPress={handleLongPress}
       onPressIn={() => setPressed(true)}
-      onPressOut={() => {
-        setPressed(false);
+      onPressOut={() => setPressed(false)}
+      onPress={() => {
         navigation.navigate('WorkoutPage', { id: id });
       }}>
       <List.Item
@@ -63,7 +74,9 @@ const WorkoutListItem = ({ item, id, navigation }) => {
         titleStyle={styles.titleStyle}
         title={item.name}
         description={`Created: ${item.date}`}
-        right={(props) => <Caption style={styles.caption}>Not Started</Caption>}
+        right={(props) => (
+          <Caption style={styles.caption}>{handleCaption()}</Caption>
+        )}
       />
     </Pressable>
   );

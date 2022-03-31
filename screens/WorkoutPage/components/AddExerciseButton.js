@@ -1,19 +1,5 @@
-import React, { useState, useContext } from "react";
-import {
-  Box,
-  Text,
-  FlatList,
-  Heading,
-  HStack,
-  Pressable,
-  Button,
-  VStack,
-  Center,
-  Fab,
-  AddIcon,
-  Container,
-  Input,
-} from "native-base";
+import React, { useContext } from "react";
+import { Button } from "react-native-paper";
 import { WorkoutDataContext } from "../../../context/WorkoutDataContext";
 
 const AddExerciseButton = (props) => {
@@ -21,17 +7,15 @@ const AddExerciseButton = (props) => {
   // maybe just set up the reducer to handle state changes globally rather than
   // using local states
 
-  const { workoutData, setWorkoutData, id } = useContext(WorkoutDataContext);
-
-  const empty_exercise = {
-    exercise_name: "",
-    sets: [{ weight: 0, reps: 0 }],
-  };
+  const { workoutData, setWorkoutData } = useContext(WorkoutDataContext);
 
   const handlePress = () => {
     setWorkoutData({
       ...workoutData,
-      exercises: [...workoutData.exercises, empty_exercise],
+      exercises: [
+        ...workoutData.exercises,
+        { exercise_name: "", sets: [{ weight: "", reps: "" }] },
+      ],
     });
   };
 

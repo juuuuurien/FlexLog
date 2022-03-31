@@ -18,14 +18,14 @@
 //     },
 //   },
 
-import { omit } from "../util/omit";
+import { omit } from '../util/omit';
 
 export const userDataReducer = (state, action) => {
   switch (action.type) {
-    case "INITIALIZE_STATE": {
+    case 'INITIALIZE_STATE': {
       return { ...action.payload };
     }
-    case "CREATE_WORKOUT": {
+    case 'CREATE_WORKOUT': {
       return {
         ...state,
         workouts: {
@@ -34,14 +34,41 @@ export const userDataReducer = (state, action) => {
         },
       };
     }
-    case "DELETE_WORKOUT": {
+    case 'UPDATE_WORKOUT_STATUS': {
+      if (Object.keys(action.payload).includes('started'))
+        return {
+          ...state,
+          workouts: {
+            ...state.workouts,
+            [action.payload.id]: {
+              ...state.workouts[action.payload.id],
+              started: action.payload.started,
+            },
+          },
+        };
+
+         if (Object.keys(action.payload).includes('finished'))
+        return {
+          ...state,
+          workouts: {
+            ...state.workouts,
+            [action.payload.id]: {
+              ...state.workouts[action.payload.id],
+              finished: action.payload.finished,
+            },
+          },
+        };
+
+      return { ...state };
+    }
+    case 'DELETE_WORKOUT': {
       const newWorkoutsObj = omit({ ...state.workouts }, action.payload);
       return {
         ...state,
         workouts: newWorkoutsObj,
       };
     }
-    case "UPDATE_EXERCISE": {
+    case 'UPDATE_EXERCISE': {
       return {
         ...state,
         workouts: {
@@ -50,10 +77,10 @@ export const userDataReducer = (state, action) => {
         },
       };
     }
-    case "CLEAR_DATA": {
+    case 'CLEAR_DATA': {
       return { ...action.payload };
     }
     default:
-      return;
+      return state;
   }
 };

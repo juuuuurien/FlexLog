@@ -1,22 +1,13 @@
 import React, { useState, useEffect, useReducer, useRef } from "react";
-import { View, Text, StyleSheet, AppState } from "react-native";
+import { AppState } from "react-native";
+import { UserDataContextProvider } from "./context/UserDataContext";
+import { DefaultTheme, Provider as PaperProvider } from "react-native-paper";
 import { NavigationContainer } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-import { DefaultTheme, Provider as PaperProvider } from "react-native-paper";
-
+import { useAsyncStorage } from "./hooks/useAsyncStorage";
+import { userDataReducer } from "./reducers/UserDataReducer";
 import Loading from "./components/global/Loading";
 import WorkoutListNavigator from "./screens/WorkoutList/WorkoutListNavigator";
-import WorkoutList from "./screens/WorkoutList/WorkoutList";
-
-import { userDataReducer } from "./reducers/UserDataReducer";
-import { useAsyncStorage } from "./hooks/useAsyncStorage";
-import theme from "./theme";
-
-import { NativeBaseProvider, Box, Fab, Icon } from "native-base";
-import { UserDataContextProvider } from "./context/UserDataContext";
-
-import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
 // let userData = {
 //   workouts: {
@@ -40,8 +31,6 @@ import { Ionicons, FontAwesome } from "@expo/vector-icons";
 // };
 
 export default function App() {
-  // load and cache data
-  // if there is no data, set initial skeleton of data.
   const initial_state = {
     workouts: {},
   };
@@ -50,7 +39,9 @@ export default function App() {
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const [loading, setLoading] = useState(true);
-  const [storageValue, updateStorage] = useAsyncStorage("userData");
+  const [storageValue, updateStorage] = useAsyncStorage("userData", {
+    ...initial_state,
+  });
 
   const storeData = async () => {
     try {
@@ -70,6 +61,7 @@ export default function App() {
         appState.current.match(/inactive|background/) &&
         nextAppState === "active"
       ) {
+        console.log('in the background')
       }
 
       appState.current = nextAppState;
@@ -98,9 +90,9 @@ export default function App() {
         } else {
           console.log("no data found, setting initial data to asyncstorage");
           try {
-            await AsyncStorage.setItem(
+            AsyncStorage.setItem(
               "userData",
-              JSON.stringify(initial_state)
+              JSON.stringify({ ...initial_state })
             );
             dispatch({ type: "INITIALIZE_STATE", payload: initial_state });
           } catch (err) {
@@ -123,6 +115,7 @@ export default function App() {
       console.log("storing data");
       storeData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
   const papertheme = {
@@ -149,14 +142,12 @@ export default function App() {
     <UserDataContextProvider
       value={{ state, dispatch, loading, setLoading, storeData }}
     >
-      <NativeBaseProvider theme={theme}>
-        <PaperProvider theme={papertheme}>
-          <NavigationContainer>
-            {loading && <Loading />}
-            {state !== null && <WorkoutListNavigator />}
-          </NavigationContainer>
-        </PaperProvider>
-      </NativeBaseProvider>
+      <PaperProvider theme={papertheme}>
+        <NavigationContainer>
+          {loading && <Loading />}
+          {state !== null && <WorkoutListNavigator />}
+        </NavigationContainer>
+      </PaperProvider>
     </UserDataContextProvider>
   );
 }

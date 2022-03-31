@@ -4,80 +4,77 @@ import React, {
   useEffect,
   createContext,
   useRef,
-} from "react";
-import { Alert } from "react-native";
-import {
-  Box,
-  Text,
-  FlatList,
-  Heading,
-  HStack,
-  Pressable,
-  Button,
-  VStack,
-  Center,
-  Fab,
-  AddIcon,
-  Container,
-  Input,
-} from "native-base";
-import { UserDataContext } from "../../context/UserDataContext";
-import {
-  WorkoutDataContextProvider,
-  WorkoutDataContext,
-} from "../../context/WorkoutDataContext";
-import ExerciseComponent from "./components/ExerciseComponent";
-import AddExerciseButton from "./components/AddExerciseButton";
+} from 'react';
+import { View, FlatList, StyleSheet } from 'react-native';
+import {Button, Colors} from 'react-native-paper'
+
+import { UserDataContext } from '../../context/UserDataContext';
+import { WorkoutDataContextProvider } from '../../context/WorkoutDataContext';
+import ExerciseComponent from './components/ExerciseComponent';
+import AddExerciseButton from './components/AddExerciseButton';
+import StartWorkoutButton from './components/StartWorkoutButton'
 // loop through workouts and render exercise containers
 
 const WorkoutPage = ({ navigation, route }) => {
+
   const { state, dispatch, setLoading, storeData } =
     useContext(UserDataContext);
   const id = route.params.id;
-  const [workoutData, setWorkoutData] = useState(state.workouts[id]);
+  const [workoutData, setWorkoutData] = useState(null);
 
   // find
   // const exercises = state.exercises[id];
 
+  useEffect(()=>{
+    setWorkoutData(state.workouts[id])
+  },[state.workouts[id]])
+
+
   useEffect(() => {
+    if(workoutData === null) return
     // check if this particular exercise has any added
     // and initialize workout page with data
-    console.log("How many times does this even run");
-
     navigation.setOptions({ title: workoutData.name });
-
     if (state.workouts[id].exercises !== workoutData.exercises)
       dispatch({
-        type: "UPDATE_EXERCISE",
+        type: 'UPDATE_EXERCISE',
         payload: { id: id, data: workoutData },
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [workoutData]);
+
+  const handleStartWorkout = () => {
+    return
+  }
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+  });
 
   return (
     <WorkoutDataContextProvider value={{ workoutData, setWorkoutData, id }}>
-      <VStack
-        display="flex"
-        _light={{ bg: "coolGray.50" }}
-        _dark={{ bg: "coolGray.900" }}
-        minHeight="100%"
-        minWidth="full"
-        p={5}
-        space={5}
-      >
-        <AddExerciseButton />
+      <View style={styles.container}>
         {workoutData && (
           <FlatList
-            flex={8}
+            removeClippedSubviews={false}
             data={workoutData.exercises}
             keyExtractor={(_, index) => index}
+            ListFooterComponent={() => !workoutData.finished ? <AddExerciseButton /> : null}
             renderItem={({ item, index }) => {
               return (
-                <ExerciseComponent key={index} data={item} index={index} />
+                <ExerciseComponent
+                  key={index}
+                  exerciseData={item}
+                  exerciseIndex={index}
+                />
               );
             }}
           />
         )}
-      </VStack>
+        <StartWorkoutButton />
+      </View>
     </WorkoutDataContextProvider>
   );
 };
