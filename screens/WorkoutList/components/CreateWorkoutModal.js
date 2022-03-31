@@ -31,7 +31,7 @@ const CreateWorkoutModal = ({ showModal, setShowModal, handleOnPress }) => {
   const handleClose = () => {
     setShowModal(false);
     setInputData('');
-    setIsError(false);   
+    setIsError(false);
   };
 
   const handlePress = () => {
@@ -40,10 +40,13 @@ const CreateWorkoutModal = ({ showModal, setShowModal, handleOnPress }) => {
         type: 'CREATE_WORKOUT',
         payload: {
           id: dayjs().unix(),
+
           data: {
             date: dayjs().format('MM/D/YY'),
             name: inputData.trim(),
             exercises: [],
+            started: false,
+            finished: false,
           },
         },
       });
@@ -75,7 +78,10 @@ const CreateWorkoutModal = ({ showModal, setShowModal, handleOnPress }) => {
       onDismiss={handleClose}
       contentContainerStyle={styles.modalContainer}>
       <Card style={styles.contentContainer}>
-        <Card.Title title={'Create a Workout'} subtitle={'What are you working out today?'} />
+        <Card.Title
+          title={'Create a Workout'}
+          subtitle={'What are you working out today?'}
+        />
         <Card.Content>
           <TextInput
             error={isError}

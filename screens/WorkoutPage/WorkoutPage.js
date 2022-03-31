@@ -4,34 +4,48 @@ import React, {
   useEffect,
   createContext,
   useRef,
-} from "react";
-import { View, FlatList, StyleSheet } from "react-native";
+} from 'react';
+import { View, FlatList, StyleSheet } from 'react-native';
+import {Button, Colors} from 'react-native-paper'
 
-import { UserDataContext } from "../../context/UserDataContext";
-import { WorkoutDataContextProvider } from "../../context/WorkoutDataContext";
-import ExerciseComponent from "./components/ExerciseComponent";
-import AddExerciseButton from "./components/AddExerciseButton";
+import { UserDataContext } from '../../context/UserDataContext';
+import { WorkoutDataContextProvider } from '../../context/WorkoutDataContext';
+import ExerciseComponent from './components/ExerciseComponent';
+import AddExerciseButton from './components/AddExerciseButton';
+import StartWorkoutButton from './components/StartWorkoutButton'
 // loop through workouts and render exercise containers
 
 const WorkoutPage = ({ navigation, route }) => {
+
   const { state, dispatch, setLoading, storeData } =
     useContext(UserDataContext);
   const id = route.params.id;
-  const [workoutData, setWorkoutData] = useState(state.workouts[id]);
+  const [workoutData, setWorkoutData] = useState(null);
 
   // find
   // const exercises = state.exercises[id];
 
+  useEffect(()=>{
+    setWorkoutData(state.workouts[id])
+  },[state.workouts[id]])
+
+
   useEffect(() => {
+    if(workoutData === null) return
     // check if this particular exercise has any added
     // and initialize workout page with data
     navigation.setOptions({ title: workoutData.name });
     if (state.workouts[id].exercises !== workoutData.exercises)
       dispatch({
-        type: "UPDATE_EXERCISE",
+        type: 'UPDATE_EXERCISE',
         payload: { id: id, data: workoutData },
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [workoutData]);
+
+  const handleStartWorkout = () => {
+    return
+  }
 
   const styles = StyleSheet.create({
     container: {
@@ -47,7 +61,7 @@ const WorkoutPage = ({ navigation, route }) => {
             removeClippedSubviews={false}
             data={workoutData.exercises}
             keyExtractor={(_, index) => index}
-            ListFooterComponent={() => <AddExerciseButton />}
+            ListFooterComponent={() => !workoutData.finished ? <AddExerciseButton /> : null}
             renderItem={({ item, index }) => {
               return (
                 <ExerciseComponent
@@ -59,6 +73,7 @@ const WorkoutPage = ({ navigation, route }) => {
             }}
           />
         )}
+        <StartWorkoutButton />
       </View>
     </WorkoutDataContextProvider>
   );

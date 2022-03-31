@@ -1,5 +1,5 @@
-import React, { useState, useContext, useEffect } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import React, { useState, useContext, useEffect } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 import {
   TextInput,
   Colors,
@@ -7,20 +7,21 @@ import {
   Button,
   Menu,
   useTheme,
-} from "react-native-paper";
-import { WorkoutDataContext } from "../../../context/WorkoutDataContext";
-import ExerciseTable from "./ExerciseTable/ExerciseTable";
-import { empty_set } from "../../../static/empty_set";
+} from 'react-native-paper';
+import { WorkoutDataContext } from '../../../context/WorkoutDataContext';
+import ExerciseTable from './ExerciseTable/ExerciseTable';
+import { empty_set } from '../../../static/empty_set';
 
 const ExerciseComponent = ({ exerciseData, exerciseIndex }) => {
   const { colors } = useTheme();
   const { grey400 } = Colors;
   const { workoutData, setWorkoutData } = useContext(WorkoutDataContext);
-  const [name, setName] = useState("");
+  const [name, setName] = useState('');
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
     setName(exerciseData.exercise_name);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [workoutData]);
 
   const handleNameChange = (str) => {
@@ -38,17 +39,17 @@ const ExerciseComponent = ({ exerciseData, exerciseIndex }) => {
   const styles = StyleSheet.create({
     textInputContainer: {
       flex: 1,
-      flexDirection: "row",
+      flexDirection: 'row',
       borderBottomWidth: 1,
       borderBottomColor: grey400,
-      justifyContent: "space-between",
-      textAlign: "center",
-      alignItems: "center",
+      justifyContent: 'space-between',
+      textAlign: 'center',
+      alignItems: 'center',
     },
     textInput: {
       flex: 1,
       color: colors.primary,
-      backgroundColor: "transparent",
+      backgroundColor: 'transparent',
       height: 54,
       paddingHorizontal: 25,
       fontSize: 20,
@@ -79,8 +80,9 @@ const ExerciseComponent = ({ exerciseData, exerciseIndex }) => {
           onChangeText={handleNameChange}
           onBlur={handleBlur}
           onEndEditing={handleBlur}
+          disabled={workoutData.finished}
         />
-        <Menu
+       {!workoutData.finished && <Menu
           visible={visible}
           onDismiss={() => setVisible(false)}
           anchor={
@@ -88,10 +90,9 @@ const ExerciseComponent = ({ exerciseData, exerciseIndex }) => {
               icon="dots-vertical"
               color={colors.primary}
               size={28}
-              onPress={() => setVisible(true)}
+              onPress={() =>  setVisible(true)}
             />
-          }
-        >
+          }>
           <Menu.Item
             onPress={() => {
               setVisible(false);
@@ -100,13 +101,12 @@ const ExerciseComponent = ({ exerciseData, exerciseIndex }) => {
               setWorkoutData({ ...workoutData, exercises: oldExerciseArray });
             }}
             title="Remove Exercise"
-            icon={"trash-can-outline"}
+            icon={'trash-can-outline'}
           />
-        </Menu>
+        </Menu>}
       </View>
-
       <ExerciseTable>
-        <ExerciseTable.Header labels={["set", "weight", "reps"]} />
+        <ExerciseTable.Header labels={['set', 'weight', 'reps']} />
         {exerciseData.sets &&
           exerciseData.sets.map((data, i) => {
             return (
@@ -119,7 +119,7 @@ const ExerciseComponent = ({ exerciseData, exerciseIndex }) => {
             );
           })}
       </ExerciseTable>
-      <Button onPress={handleAddSet}>Add Set</Button>
+      {!workoutData.finished && <Button onPress={handleAddSet}>Add Set</Button>}
     </View>
   );
 };

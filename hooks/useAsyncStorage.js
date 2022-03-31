@@ -35,6 +35,7 @@ export const useAsyncStorage = (key, defaultValue) => {
 
   useEffect(() => {
     getStorageValue();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updated]);
 
   return [storageValue, updateStorage];

@@ -61,6 +61,7 @@ export default function App() {
         appState.current.match(/inactive|background/) &&
         nextAppState === "active"
       ) {
+        console.log('in the background')
       }
 
       appState.current = nextAppState;
@@ -114,6 +115,7 @@ export default function App() {
       console.log("storing data");
       storeData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
   const papertheme = {
