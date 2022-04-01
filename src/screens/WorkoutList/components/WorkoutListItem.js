@@ -1,7 +1,7 @@
-import React, { useContext, useState } from 'react';
-import { StyleSheet, Pressable, Alert } from 'react-native';
-import { List, Colors, Caption, useTheme } from 'react-native-paper';
-import { UserDataContext } from '../../../context/UserDataContext';
+import React, { useContext, useState } from "react";
+import { StyleSheet, Pressable, Alert } from "react-native";
+import { List, Colors, Caption, useTheme } from "react-native-paper";
+import { UserDataContext } from "../../../context/UserDataContext";
 
 const WorkoutListItem = ({ item, id, navigation }) => {
   const { blueGrey200 } = Colors;
@@ -11,20 +11,20 @@ const WorkoutListItem = ({ item, id, navigation }) => {
   const handleLongPress = () => {
     setPressed(false);
     Alert.alert(
-      'Delete this workout?',
+      "Delete this workout?",
       `Do you want to delete "${item.name}" ?`,
       [
         {
-          text: 'Cancel',
+          text: "Cancel",
           onPress: () => {
             return;
           },
-          style: 'cancel',
+          style: "cancel",
         },
         {
-          text: 'Yes',
+          text: "Yes",
           onPress: () => {
-            dispatch({ type: 'DELETE_WORKOUT', payload: id });
+            dispatch({ type: "DELETE_WORKOUT", payload: id });
           },
         },
       ]
@@ -32,16 +32,16 @@ const WorkoutListItem = ({ item, id, navigation }) => {
   };
 
   const handleCaption = () => {
-    if (item.finished) return 'Finished';
-    if (item.started && !item.finished) return 'In Progress';
-    return 'Not Started';
+    if (item.finished) return "Finished";
+    if (item.started && !item.finished) return "In Progress";
+    return "Not Started";
   };
 
-  const handleColor = ()=> {
-       if(item.started && !item.finished) return Colors.red600
-    if(item.started ===  true && item.finished === true) return Colors.green600
-    return Colors.grey600
-  }
+  const handleColor = () => {
+    if (item.started && !item.finished) return Colors.green600;
+    if (item.started === true && item.finished === true) return Colors.grey600;
+    return Colors.grey600;
+  };
 
   const styles = StyleSheet.create({
     listItem: {
@@ -55,10 +55,10 @@ const WorkoutListItem = ({ item, id, navigation }) => {
     caption: {
       color: handleColor(),
       padding: 10,
-      textAlign: 'center',
-      textAlignVertical: 'center',
+      textAlign: "center",
+      textAlignVertical: "center",
     },
-    titleStyle: { fontWeight: 'bold', fontSize: 22 },
+    titleStyle: { fontWeight: "bold", fontSize: 22 },
   });
 
   return (
@@ -67,14 +67,15 @@ const WorkoutListItem = ({ item, id, navigation }) => {
       onPressIn={() => setPressed(true)}
       onPressOut={() => setPressed(false)}
       onPress={() => {
-        navigation.navigate('WorkoutPage', { id: id });
-      }}>
+        navigation.navigate("WorkoutPage", { id: id });
+      }}
+    >
       <List.Item
         style={styles.listItem}
         titleStyle={styles.titleStyle}
         title={item.name}
         description={`Created: ${item.date}`}
-        right={(props) => (
+        right={() => (
           <Caption style={styles.caption}>{handleCaption()}</Caption>
         )}
       />

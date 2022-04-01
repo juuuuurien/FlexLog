@@ -1,4 +1,3 @@
-import React from 'react'
 import { DataTable } from "react-native-paper";
 import ExerciseTableHeader from "./ExerciseTableHeader";
 import ExerciseTableSet from "./ExerciseTableSet";

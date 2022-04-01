@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useReducer, useRef } from "react";
 import { AppState } from "react-native";
-import { UserDataContextProvider } from "./context/UserDataContext";
 import { DefaultTheme, Provider as PaperProvider } from "react-native-paper";
+import { UserDataContextProvider } from "./src/context/UserDataContext";
 import { NavigationContainer } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useAsyncStorage } from "./hooks/useAsyncStorage";
-import { userDataReducer } from "./reducers/UserDataReducer";
-import Loading from "./components/global/Loading";
-import WorkoutListNavigator from "./screens/WorkoutList/WorkoutListNavigator";
+import { useAsyncStorage } from "./src/hooks/useAsyncStorage";
+import { userDataReducer } from "./src/reducers/UserDataReducer";
+import Loading from "./src/components/global/Loading";
+import WorkoutListNavigator from "./src/screens/WorkoutList/WorkoutListNavigator";
 
 // let userData = {
 //   workouts: {
@@ -61,7 +61,7 @@ export default function App() {
         appState.current.match(/inactive|background/) &&
         nextAppState === "active"
       ) {
-        console.log('in the background')
+        console.log("in the background");
       }
 
       appState.current = nextAppState;

@@ -1,15 +1,13 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Alert } from 'react-native';
-import { Button, Colors } from 'react-native-paper';
-import { WorkoutDataContext } from '../../../context/WorkoutDataContext';
-import { UserDataContext } from '../../../context/UserDataContext';
+import React, { useContext, useEffect, useState } from "react";
+import { Alert } from "react-native";
+import { Button, Colors } from "react-native-paper";
+import { WorkoutDataContext } from "../../../../context/WorkoutDataContext";
+import { UserDataContext } from "../../../../context/UserDataContext";
 
-const StartWorkoutButton = (props) => {
+const StartWorkoutButton = () => {
   // this will update WorkoutDataState and append it with an empty exercise
-  // maybe just set up the reducer to handle state changes globally rather than
-  // using local states
 
-  const { workoutData, setWorkoutData, id } = useContext(WorkoutDataContext);
+  const { id } = useContext(WorkoutDataContext);
   const { state, dispatch } = useContext(UserDataContext);
 
   const [started, setStarted] = useState(false);
@@ -17,7 +15,6 @@ const StartWorkoutButton = (props) => {
 
   useEffect(() => {
     // initialize button state depending on store
-    console.log(state.workouts[id]);
     if (state.workouts[id].started) setStarted(true);
     if (state.workouts[id].started && state.workouts[id].finished)
       setFinished(true);
@@ -30,34 +27,34 @@ const StartWorkoutButton = (props) => {
   };
 
   const handleButtonText = () => {
-    if (started && !finished) return 'Finish Workout';
-    if (started && finished) return 'Finished';
-    return 'Start Workout';
+    if (started && !finished) return "Finish Workout";
+    if (started && finished) return "Finished";
+    return "Start Workout";
   };
 
   const handlePress = () => {
     if (!started) {
       dispatch({
-        type: 'UPDATE_WORKOUT_STATUS',
+        type: "UPDATE_WORKOUT_STATUS",
         payload: { id: id, started: true },
       });
       return;
     }
 
     if (started && !finished) {
-      Alert.alert('Finish Workout', `Are you finished with this workout?`, [
+      Alert.alert("Finish Workout", `Are you finished with this workout?`, [
         {
-          text: 'Cancel',
+          text: "Cancel",
           onPress: () => {
             return;
           },
-          style: 'cancel',
+          style: "cancel",
         },
         {
-          text: 'Yes, finish this workout.',
+          text: "Yes, finish this workout.",
           onPress: () => {
             dispatch({
-              type: 'UPDATE_WORKOUT_STATUS',
+              type: "UPDATE_WORKOUT_STATUS",
               payload: { id: id, finished: true },
             });
           },
@@ -70,12 +67,11 @@ const StartWorkoutButton = (props) => {
 
   return (
     <Button
-      {...props}
-  
       contentStyle={{ height: 64 }}
       mode="contained"
       color={handleColor()}
-      onPress={handlePress}>
+      onPress={handlePress}
+    >
       {handleButtonText()}
     </Button>
   );

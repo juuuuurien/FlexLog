@@ -37,7 +37,7 @@ const WorkoutList = ({ navigation }) => {
   //   );
   // };
 
-  const ListComponent = () => {
+  const ListScreen = () => {
     return (
       <FlatList
         style={{ width: "100%", padding: 5 }}
@@ -58,7 +58,7 @@ const WorkoutList = ({ navigation }) => {
     );
   };
 
-  const EmptyListComponent = () => {
+  const EmptyListScreen = () => {
     return (
       <View style={styles.container}>
         <Text>{"You have not logged any workouts."}</Text>
@@ -70,9 +70,9 @@ const WorkoutList = ({ navigation }) => {
   return (
     <View style={styles.container}>
       {state.workouts !== null && Object.keys(state.workouts).length > 0 ? (
-        <ListComponent />
+        <ListScreen />
       ) : (
-        <EmptyListComponent />
+        <EmptyListScreen />
       )}
       <Portal>
         <CreateWorkoutModal showModal={showModal} setShowModal={setShowModal} />

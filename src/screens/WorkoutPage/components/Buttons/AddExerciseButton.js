@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Button } from "react-native-paper";
-import { WorkoutDataContext } from "../../../context/WorkoutDataContext";
+import { WorkoutDataContext } from "../../../../context/WorkoutDataContext";
 
 const AddExerciseButton = (props) => {
   // this will update WorkoutDataState and append it with an empty exercise
