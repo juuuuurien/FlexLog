@@ -1,10 +1,11 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import {
   DataTable,
   TextInput,
   IconButton,
   TouchableRipple,
+  Portal,
   useTheme,
 } from 'react-native-paper';
 import { WorkoutDataContext } from '../../../../context/WorkoutDataContext';

@@ -1,8 +1,16 @@
 import React, { useState, useEffect, useReducer, useRef } from "react";
 import { AppState } from "react-native";
-import { DefaultTheme, Provider as PaperProvider } from "react-native-paper";
+import {
+  DefaultTheme as PaperDefaultTheme,
+  DarkTheme as PaperDarkTheme,
+  Provider as PaperProvider,
+} from "react-native-paper";
 import { UserDataContextProvider } from "./src/context/UserDataContext";
-import { NavigationContainer } from "@react-navigation/native";
+import {
+  NavigationContainer,
+  DarkTheme as NavigationDarkTheme,
+  DefaultTheme as NavigationDefaultTheme,
+} from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAsyncStorage } from "./src/hooks/useAsyncStorage";
 import { userDataReducer } from "./src/reducers/UserDataReducer";
@@ -119,7 +127,7 @@ export default function App() {
   }, [state]);
 
   const papertheme = {
-    ...DefaultTheme,
+    ...PaperDarkTheme,
   };
 
   // const ClearDataFab = () => {
@@ -138,12 +146,23 @@ export default function App() {
   //   );
   // };
 
+  const CombinedDarkTheme = {
+    ...PaperDarkTheme,
+    ...NavigationDarkTheme,
+    colors: {
+      ...PaperDarkTheme.colors,
+      ...NavigationDarkTheme.colors,
+      backgroundColor: "#121317",
+      cardColor: "#1F2024",
+    },
+  };
+
   return (
     <UserDataContextProvider
       value={{ state, dispatch, loading, setLoading, storeData }}
     >
-      <PaperProvider theme={papertheme}>
-        <NavigationContainer>
+      <PaperProvider theme={CombinedDarkTheme}>
+        <NavigationContainer theme={CombinedDarkTheme}>
           {loading && <Loading />}
           {state !== null && <WorkoutListNavigator />}
         </NavigationContainer>

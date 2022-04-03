@@ -1,25 +1,18 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import {
-  TextInput,
-  Colors,
-  Button,
-  Menu,
-  useTheme,
-  Divider,
-} from "react-native-paper";
+import { StyleSheet, View } from "react-native";
+import { TextInput, Colors, useTheme, Subheading } from "react-native-paper";
 import { WorkoutDataContext } from "../../../context/WorkoutDataContext";
 import ExerciseTable from "./ExerciseTable/ExerciseTable";
-import { empty_set } from "../../../static/empty_set";
 import ExerciseSettingsDots from "./Buttons/ExerciseSettingsDots";
+import AddSetButton from "./Buttons/AddSetButton";
+import ExerciseTemplateModal from "./ExerciseTemplateModal";
 
 const ExerciseComponent = ({ exerciseData, exerciseIndex }) => {
   const { colors } = useTheme();
   const { grey400 } = Colors;
   const { workoutData, setWorkoutData } = useContext(WorkoutDataContext);
   const [name, setName] = useState("");
-  const [visible, setVisible] = useState(false);
-  const [expanded, setExpanded] = useState(false);
+  const [templateModalVisible, setTemplateModalVisible] = useState(false);
 
   useEffect(() => {
     setName(exerciseData.exercise_name);
@@ -44,6 +37,7 @@ const ExerciseComponent = ({ exerciseData, exerciseIndex }) => {
       flexDirection: "row",
       borderBottomWidth: 1,
       borderBottomColor: grey400,
+      paddingHorizontal: 14,
       justifyContent: "space-between",
       textAlign: "center",
       alignItems: "center",
@@ -52,9 +46,10 @@ const ExerciseComponent = ({ exerciseData, exerciseIndex }) => {
       flex: 1,
       color: colors.primary,
       backgroundColor: "transparent",
-      height: 54,
-      paddingHorizontal: 25,
-      fontSize: 20,
+      height: 48,
+      fontSize: 24,
+      fontWeight: "bold",
+      lineHeight: 3,
     },
     exercise: {
       borderRadius: 5,
@@ -63,29 +58,38 @@ const ExerciseComponent = ({ exerciseData, exerciseIndex }) => {
     },
   });
 
-  const handleAddSet = () => {
-    // append this exercises set array with a new empty set
-    const newExercises = workoutData.exercises;
-    const newSetArray = [...exerciseData.sets, { ...empty_set }];
-    newExercises[exerciseIndex].sets = newSetArray;
-    setWorkoutData({ ...workoutData, exercises: newExercises });
-  };
-
   return (
     <View style={styles.exercise}>
       <View style={styles.textInputContainer}>
-        <TextInput
-          placeholder="'Workout Name'"
-          style={styles.textInput}
-          value={name}
-          underlineColor="transparent"
-          onChangeText={handleNameChange}
-          onBlur={handleBlur}
-          onEndEditing={handleBlur}
-          disabled={workoutData.finished}
-        />
+        <View>
+          <TextInput
+            placeholder="'Workout Name'"
+            style={styles.textInput}
+            value={name}
+            underlineColor="none"
+            activeUnderlineColor="none"
+            onChangeText={handleNameChange}
+            onBlur={handleBlur}
+            onEndEditing={handleBlur}
+            disabled={workoutData.finished}
+          />
+          <Subheading style={{ paddingHorizontal: 12 }}>
+            {`${workoutData.exercises[exerciseIndex].sets.length} sets x ${
+              workoutData.exercises[exerciseIndex].sets.length > 0
+                ? workoutData.exercises[exerciseIndex].sets[0].reps === ""
+                  ? "0"
+                  : workoutData.exercises[exerciseIndex].sets[0].reps
+                : "0"
+            } reps`}
+          </Subheading>
+        </View>
 
-        <ExerciseSettingsDots exerciseIndex={exerciseIndex} />
+        <ExerciseSettingsDots
+          exerciseIndex={exerciseIndex}
+          exerciseData={exerciseData}
+          templateModalVisible={templateModalVisible}
+          setTemplateModalVisible={setTemplateModalVisible}
+        />
       </View>
       <ExerciseTable>
         <ExerciseTable.Header labels={["set", "weight", "reps"]} />
@@ -102,7 +106,18 @@ const ExerciseComponent = ({ exerciseData, exerciseIndex }) => {
             );
           })}
       </ExerciseTable>
-      {!workoutData.finished && <Button onPress={handleAddSet}>Add Set</Button>}
+      <ExerciseTemplateModal
+        templateModalVisible={templateModalVisible}
+        setTemplateModalVisible={setTemplateModalVisible}
+      />
+      {!workoutData.finished && (
+        <AddSetButton
+          workoutData={workoutData}
+          exerciseIndex={exerciseIndex}
+          exerciseData={exerciseData}
+          setWorkoutData={setWorkoutData}
+        />
+      )}
     </View>
   );
 };

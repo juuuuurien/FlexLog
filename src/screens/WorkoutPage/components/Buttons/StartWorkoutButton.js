@@ -18,6 +18,7 @@ const StartWorkoutButton = () => {
     if (state.workouts[id].started) setStarted(true);
     if (state.workouts[id].started && state.workouts[id].finished)
       setFinished(true);
+          // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.workouts[id]]);
 
   const handleColor = () => {
