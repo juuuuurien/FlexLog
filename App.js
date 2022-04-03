@@ -16,6 +16,7 @@ import { useAsyncStorage } from "./src/hooks/useAsyncStorage";
 import { userDataReducer } from "./src/reducers/UserDataReducer";
 import Loading from "./src/components/global/Loading";
 import WorkoutListNavigator from "./src/screens/WorkoutList/WorkoutListNavigator";
+import { StatusBar } from "expo-status-bar";
 
 // let userData = {
 //   workouts: {
@@ -126,26 +127,6 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
-  const papertheme = {
-    ...PaperDarkTheme,
-  };
-
-  // const ClearDataFab = () => {
-  //   return (
-  //     <Fab
-  //       renderInPortal={false}
-  //       onPress={() => {
-  //         AsyncStorage.clear();
-  //         dispatch({ type: 'CLEAR_DATA', payload: initial_state });
-  //       }}
-  //       bg="#bd1133"
-  //       size="lg"
-  //       placement={'bottom-left'}
-  //       icon={<Icon as={FontAwesome} name="times" size="sm" />}
-  //     />
-  //   );
-  // };
-
   const CombinedDarkTheme = {
     ...PaperDarkTheme,
     ...NavigationDarkTheme,
@@ -154,6 +135,7 @@ export default function App() {
       ...NavigationDarkTheme.colors,
       backgroundColor: "#121317",
       cardColor: "#1F2024",
+      card: "#1F2024",
     },
   };
 
@@ -166,6 +148,7 @@ export default function App() {
           {loading && <Loading />}
           {state !== null && <WorkoutListNavigator />}
         </NavigationContainer>
+        <StatusBar style="light" />
       </PaperProvider>
     </UserDataContextProvider>
   );

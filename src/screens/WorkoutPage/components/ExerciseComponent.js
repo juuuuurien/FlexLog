@@ -1,6 +1,14 @@
 import React, { useState, useContext, useEffect } from "react";
-import { StyleSheet, View } from "react-native";
-import { TextInput, Colors, useTheme, Subheading } from "react-native-paper";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  TextInput,
+  Colors,
+  Button,
+  Menu,
+  useTheme,
+  Divider,
+  Subheading,
+} from "react-native-paper";
 import { WorkoutDataContext } from "../../../context/WorkoutDataContext";
 import ExerciseTable from "./ExerciseTable/ExerciseTable";
 import ExerciseSettingsDots from "./Buttons/ExerciseSettingsDots";
@@ -13,6 +21,8 @@ const ExerciseComponent = ({ exerciseData, exerciseIndex }) => {
   const { workoutData, setWorkoutData } = useContext(WorkoutDataContext);
   const [name, setName] = useState("");
   const [templateModalVisible, setTemplateModalVisible] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     setName(exerciseData.exercise_name);
@@ -32,47 +42,62 @@ const ExerciseComponent = ({ exerciseData, exerciseIndex }) => {
   };
 
   const styles = StyleSheet.create({
-    textInputContainer: {
+    buttonContainer: {
       flex: 1,
       flexDirection: "row",
-      borderBottomWidth: 1,
-      borderBottomColor: grey400,
+    },
+    exerciseHeaderContainer: {
+      flex: 1,
       paddingHorizontal: 14,
       justifyContent: "space-between",
-      textAlign: "center",
-      alignItems: "center",
     },
+    exerciseNameContainer: { flex: 1, marginVertical: 5 },
     textInput: {
       flex: 1,
       color: colors.primary,
       backgroundColor: "transparent",
       height: 48,
       fontSize: 24,
-      fontWeight: "bold",
       lineHeight: 3,
     },
     exercise: {
-      borderRadius: 5,
-      backgroundColor: colors.background,
-      marginBottom: 15,
+      marginHorizontal: 18,
+      marginTop: 18,
+      paddingVertical: 10,
+      borderRadius: 10,
+      backgroundColor: colors.cardColor,
     },
   });
 
   return (
     <View style={styles.exercise}>
-      <View style={styles.textInputContainer}>
-        <View>
+      <View style={styles.exerciseHeaderContainer}>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
           <TextInput
-            placeholder="'Workout Name'"
+            placeholder="'Name'"
             style={styles.textInput}
             value={name}
             underlineColor="none"
-            activeUnderlineColor="none"
+            activeUnderlineColor="transparent"
+            selectionColor={colors.primary}
             onChangeText={handleNameChange}
             onBlur={handleBlur}
             onEndEditing={handleBlur}
             disabled={workoutData.finished}
+            multiline={true}
           />
+          <Button onPress={() => {}} icon="pencil-outline">
+            Notes
+          </Button>
+          <ExerciseSettingsDots
+            style={{ margin: 0 }}
+            exerciseIndex={exerciseIndex}
+            exerciseData={exerciseData}
+            templateModalVisible={templateModalVisible}
+            setTemplateModalVisible={setTemplateModalVisible}
+          />
+        </View>
+        <View>
           <Subheading style={{ paddingHorizontal: 12 }}>
             {`${workoutData.exercises[exerciseIndex].sets.length} sets x ${
               workoutData.exercises[exerciseIndex].sets.length > 0
@@ -83,13 +108,6 @@ const ExerciseComponent = ({ exerciseData, exerciseIndex }) => {
             } reps`}
           </Subheading>
         </View>
-
-        <ExerciseSettingsDots
-          exerciseIndex={exerciseIndex}
-          exerciseData={exerciseData}
-          templateModalVisible={templateModalVisible}
-          setTemplateModalVisible={setTemplateModalVisible}
-        />
       </View>
       <ExerciseTable>
         <ExerciseTable.Header labels={["set", "weight", "reps"]} />

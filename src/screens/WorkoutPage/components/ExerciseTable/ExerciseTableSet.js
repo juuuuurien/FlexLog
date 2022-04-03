@@ -1,5 +1,5 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { View, StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import React, { useState, useContext, useEffect } from "react";
+import { View, StyleSheet, TouchableWithoutFeedback } from "react-native";
 import {
   DataTable,
   TextInput,
@@ -7,15 +7,15 @@ import {
   TouchableRipple,
   Portal,
   useTheme,
-} from 'react-native-paper';
-import { WorkoutDataContext } from '../../../../context/WorkoutDataContext';
+} from "react-native-paper";
+import { WorkoutDataContext } from "../../../../context/WorkoutDataContext";
 
 const ExerciseTableSet = ({ set_count, setData, exerciseIndex, setIndex }) => {
   const { colors } = useTheme();
   const { workoutData, setWorkoutData } = useContext(WorkoutDataContext);
 
-  const [weight, setWeight] = useState('');
-  const [reps, setReps] = useState('');
+  const [weight, setWeight] = useState("");
+  const [reps, setReps] = useState("");
   const [pressed, setPressed] = useState(false);
 
   const setWeightFromState =
@@ -81,23 +81,25 @@ const ExerciseTableSet = ({ set_count, setData, exerciseIndex, setIndex }) => {
     },
     offsetTitle: {
       marginLeft: 10,
-      justifyContent: 'space-around',
+      justifyContent: "space-around",
     },
     textInput: {
-      textAlign: 'center',
+      backgroundColor: "transparent",
+      textAlign: "center",
       width: 72,
     },
   });
 
   return (
-    <View style={{ flex: 1, flexDirection: 'row' }}>
+    <View style={{ flex: 1, flexDirection: "row" }}>
       <TouchableRipple
-        style={{ flex: 1, flexDirection: 'row' }}
+        style={{ flex: 1, flexDirection: "row" }}
         onLongPress={() => {
           if (!workoutData.finished) setPressed(true);
         }}
         onPress={!workoutData.finished ? dismissDelete : null}
-        rippleColor={colors.primary}>
+        rippleColor={colors.primary}
+      >
         <DataTable.Row style={styles.row}>
           <DataTable.Cell>{set_count}</DataTable.Cell>
           <DataTable.Cell style={styles.offsetTitle} numeric>
@@ -138,13 +140,13 @@ const ExerciseTableSet = ({ set_count, setData, exerciseIndex, setIndex }) => {
           }}
           style={{
             margin: 0,
-            height: 'auto',
+            height: "auto",
             width: 48,
             borderRadius: 0,
-            backgroundColor: 'red',
+            backgroundColor: "red",
           }}
           icon="trash-can-outline"
-          color={'white'}
+          color={"white"}
         />
       )}
     </View>

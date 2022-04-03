@@ -12,17 +12,13 @@ import {
 } from "react-native-paper";
 
 import dayjs from "dayjs";
-import { workoutSchema } from "../../../static/schemas/WorkoutSchema";
 import { UserDataContext } from "../../../context/UserDataContext";
-import useAsyncStorage from "../../../hooks/useAsyncStorage";
 
 const CreateWorkoutModal = ({ showModal, setShowModal, handleOnPress }) => {
   const { colors } = useTheme();
-  const { state, dispatch, saveData } = useContext(UserDataContext);
+  const { dispatch } = useContext(UserDataContext);
   const [inputData, setInputData] = useState("");
   const [isError, setIsError] = useState(false);
-
-  const containerStyle = { backgroundColor: "white", padding: 20 };
 
   const handleChange = (text) => {
     setInputData(text);
@@ -42,7 +38,7 @@ const CreateWorkoutModal = ({ showModal, setShowModal, handleOnPress }) => {
           id: dayjs().unix(),
 
           data: {
-            date: dayjs().format("MM/D/YY"),
+            date: dayjs().format("MMM D, YY"),
             name: inputData.trim(),
             exercises: [],
             started: false,
@@ -65,9 +61,11 @@ const CreateWorkoutModal = ({ showModal, setShowModal, handleOnPress }) => {
     contentContainer: {
       padding: 10,
       width: "100%",
+      borderRadius: 12,
     },
     input: {
       height: 48,
+      fontSize: 22,
     },
   });
 

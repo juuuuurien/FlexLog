@@ -7,13 +7,12 @@ import { UserDataContext } from "../../context/UserDataContext";
 import CreateWorkoutModal from "./components/CreateWorkoutModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { Ionicons, FontAwesome, Feather } from "@expo/vector-icons";
-
 const initial_state = {
   workouts: {},
 };
 
 const WorkoutList = ({ navigation }) => {
+  const { colors } = useTheme();
   const { state, dispatch } = useContext(UserDataContext);
   const [showModal, setShowModal] = useState(false);
 
@@ -61,8 +60,12 @@ const WorkoutList = ({ navigation }) => {
   const EmptyListScreen = () => {
     return (
       <View style={styles.container}>
-        <Text>{"You have not logged any workouts."}</Text>
-        <Text>{`Press the '+' to add one.`}</Text>
+        <Text style={{ color: colors.text }}>
+          {"You have not logged any workouts."}
+        </Text>
+        <Text
+          style={{ color: colors.text }}
+        >{`Press the '+' to add one.`}</Text>
       </View>
     );
   };
