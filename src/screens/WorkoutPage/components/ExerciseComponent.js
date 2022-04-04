@@ -1,27 +1,29 @@
-import React, { useState, useContext, useEffect } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import React, { useState, useContext, useEffect } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import {
   TextInput,
   Colors,
   Button,
   Menu,
+  Modal,
   useTheme,
   Divider,
   Subheading,
-} from "react-native-paper";
-import { WorkoutDataContext } from "../../../context/WorkoutDataContext";
-import ExerciseTable from "./ExerciseTable/ExerciseTable";
-import ExerciseSettingsDots from "./Buttons/ExerciseSettingsDots";
-import AddSetButton from "./Buttons/AddSetButton";
-import ExerciseTemplateModal from "./ExerciseTemplateModal";
+} from 'react-native-paper';
+import { WorkoutDataContext } from '../../../context/WorkoutDataContext';
+import ExerciseTable from './ExerciseTable/ExerciseTable';
+import ExerciseSettingsDots from './Buttons/ExerciseSettingsDots';
+import AddSetButton from './Buttons/AddSetButton';
+import ExerciseTemplateModal from './Modals/ExerciseTemplateModal';
+import ExerciseNotesModal from './Modals/ExerciseNotesModal';
 
 const ExerciseComponent = ({ exerciseData, exerciseIndex }) => {
   const { colors } = useTheme();
-  const { grey400 } = Colors;
   const { workoutData, setWorkoutData } = useContext(WorkoutDataContext);
-  const [name, setName] = useState("");
-  const [templateModalVisible, setTemplateModalVisible] = useState(false);
+  const [name, setName] = useState('');
   const [visible, setVisible] = useState(false);
+  const [templateModalVisible, setTemplateModalVisible] = useState(false);
+  const [notesModalVisible, setNotesModalVisible] = useState(false);
   const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
@@ -41,21 +43,29 @@ const ExerciseComponent = ({ exerciseData, exerciseIndex }) => {
     }
   };
 
+  const handleAddFromTemplate = (sets, reps, weight) => {
+    const set = { weight: weight, reps: reps };
+    let newSetArray = [];
+    for (let i = 0; i < sets; i++) {
+      newSetArray.push(set);
+    }
+
+    const newExercises = workoutData.exercises;
+    newExercises[exerciseIndex].sets = newSetArray;
+    setWorkoutData({ ...workoutData, exercises: newExercises });
+  };
+
   const styles = StyleSheet.create({
-    buttonContainer: {
-      flex: 1,
-      flexDirection: "row",
-    },
     exerciseHeaderContainer: {
       flex: 1,
       paddingHorizontal: 14,
-      justifyContent: "space-between",
+      justifyContent: 'space-between',
     },
-    exerciseNameContainer: { flex: 1, marginVertical: 5 },
+
     textInput: {
       flex: 1,
       color: colors.primary,
-      backgroundColor: "transparent",
+      backgroundColor: 'transparent',
       height: 48,
       fontSize: 24,
       lineHeight: 3,
@@ -72,9 +82,9 @@ const ExerciseComponent = ({ exerciseData, exerciseIndex }) => {
   return (
     <View style={styles.exercise}>
       <View style={styles.exerciseHeaderContainer}>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <TextInput
-            placeholder="'Name'"
+            placeholder="'Exercise'"
             style={styles.textInput}
             value={name}
             underlineColor="none"
@@ -84,9 +94,8 @@ const ExerciseComponent = ({ exerciseData, exerciseIndex }) => {
             onBlur={handleBlur}
             onEndEditing={handleBlur}
             disabled={workoutData.finished}
-            multiline={true}
           />
-          <Button onPress={() => {}} icon="pencil-outline">
+          <Button onPress={() => setNotesModalVisible(true)} icon="pencil-outline">
             Notes
           </Button>
           <ExerciseSettingsDots
@@ -101,16 +110,16 @@ const ExerciseComponent = ({ exerciseData, exerciseIndex }) => {
           <Subheading style={{ paddingHorizontal: 12 }}>
             {`${workoutData.exercises[exerciseIndex].sets.length} sets x ${
               workoutData.exercises[exerciseIndex].sets.length > 0
-                ? workoutData.exercises[exerciseIndex].sets[0].reps === ""
-                  ? "0"
+                ? workoutData.exercises[exerciseIndex].sets[0].reps === ''
+                  ? '0'
                   : workoutData.exercises[exerciseIndex].sets[0].reps
-                : "0"
+                : '0'
             } reps`}
           </Subheading>
         </View>
       </View>
       <ExerciseTable>
-        <ExerciseTable.Header labels={["set", "weight", "reps"]} />
+        <ExerciseTable.Header labels={['set', 'weight', 'reps']} />
         {exerciseData.sets &&
           exerciseData.sets.map((data, i) => {
             return (
@@ -125,8 +134,15 @@ const ExerciseComponent = ({ exerciseData, exerciseIndex }) => {
           })}
       </ExerciseTable>
       <ExerciseTemplateModal
+        handleAddFromTemplate={handleAddFromTemplate}
         templateModalVisible={templateModalVisible}
         setTemplateModalVisible={setTemplateModalVisible}
+      />
+      <ExerciseNotesModal
+      exerciseIndex={exerciseIndex}
+        notesModalVisible={notesModalVisible}
+        setNotesModalVisible={setNotesModalVisible}
+        exerciseName={exerciseData.exercise_name}
       />
       {!workoutData.finished && (
         <AddSetButton
