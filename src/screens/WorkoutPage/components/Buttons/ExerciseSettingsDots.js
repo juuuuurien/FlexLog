@@ -102,10 +102,5 @@ const ExerciseSettingsDots = ({
   );
 };
 
-const styles = StyleSheet.create({
-  input: {
-    height: 48,
-  },
-});
 
 export default ExerciseSettingsDots;
