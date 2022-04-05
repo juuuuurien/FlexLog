@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
-import { View, StyleSheet, TouchableWithoutFeedback } from "react-native";
+import { View, StyleSheet, Dimensions } from "react-native";
 import {
+  Button,
   DataTable,
   TextInput,
   IconButton,
@@ -8,7 +9,23 @@ import {
   Portal,
   useTheme,
 } from "react-native-paper";
+
 import { WorkoutDataContext } from "../../../../context/WorkoutDataContext";
+
+import { PanGestureHandler } from "react-native-gesture-handler";
+
+import Animated, {
+  useSharedValue,
+  withSpring,
+  withTiming,
+  useAnimatedStyle,
+  useAnimatedGestureHandler,
+  FadeOutLeft,
+  runOnJS,
+  FadeOut,
+  SlideInUp,
+  FadeInUp,
+} from "react-native-reanimated";
 
 const ExerciseTableSet = ({ set_count, setData, exerciseIndex, setIndex }) => {
   const { colors } = useTheme();
@@ -66,11 +83,10 @@ const ExerciseTableSet = ({ set_count, setData, exerciseIndex, setIndex }) => {
   const dismissDelete = () => (pressed ? setPressed(false) : null);
 
   const handleDelete = () => {
-    const newSetArray = [...workoutData.exercises[exerciseIndex].sets];
-    newSetArray.splice(setIndex, 1);
+    const setArray = [...workoutData.exercises[exerciseIndex].sets];
+    const newSetArray = setArray.filter((el, index) => index !== setIndex);
     const newExerciseArray = [...workoutData.exercises];
     newExerciseArray[exerciseIndex].sets = newSetArray;
-
     setWorkoutData({ ...workoutData, exercises: newExerciseArray });
   };
 
@@ -90,65 +106,113 @@ const ExerciseTableSet = ({ set_count, setData, exerciseIndex, setIndex }) => {
     },
   });
 
+  // ANIMATIONS ==========================================
+  const SCREEN_WIDTH = Dimensions.get("window").width;
+
+  const translateX = useSharedValue(0);
+  const fadeOut = useSharedValue(0);
+  const gestureHandler = useAnimatedGestureHandler({
+    onStart: (_, ctx) => {
+      fadeOut.value = 1;
+    },
+    onActive: (event, ctx) => {
+      if (event.translationX < 0) {
+        translateX.value = event.translationX;
+      }
+    },
+    onEnd: (event, ctx) => {
+      if (event.translationX < -SCREEN_WIDTH / 4 || event.velocityX < -1300) {
+        fadeOut.value = withTiming(0);
+        translateX.value = withTiming(-SCREEN_WIDTH, {}, (isFinished) => {
+          if (isFinished) {
+            runOnJS(handleDelete)();
+          }
+        });
+      } else {
+        translateX.value = withTiming(0);
+      }
+    },
+  });
+
+  const animatedSlideStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateX: translateX.value,
+        },
+      ],
+    };
+  });
+
+  const animatedFadeStyle = useAnimatedStyle(() => {
+    return {
+      opacity: fadeOut.value,
+    };
+  });
+
   return (
-    <View style={{ flex: 1, flexDirection: "row" }}>
-      <TouchableRipple
-        style={{ flex: 1, flexDirection: "row" }}
-        onLongPress={() => {
-          if (!workoutData.finished) setPressed(true);
-        }}
-        onPress={!workoutData.finished ? dismissDelete : null}
-        rippleColor={colors.primary}
+    <View>
+      <Animated.View
+        style={[
+          {
+            flex: 1,
+            height: "100%",
+            width: "100%",
+            flexDirection: "row",
+            position: "absolute",
+            backgroundColor: colors.error,
+            justifyContent: "flex-end",
+          },
+          animatedFadeStyle,
+        ]}
       >
-        <DataTable.Row style={styles.row}>
-          <DataTable.Cell>{set_count}</DataTable.Cell>
-          <DataTable.Cell style={styles.offsetTitle} numeric>
-            <TextInput
-              disabled={workoutData.finished}
-              dense
-              underlineColor="transparent"
-              keyboardType="numeric"
-              style={styles.textInput}
-              value={weight}
-              onFocus={dismissDelete}
-              onChangeText={handleWeightChange}
-              onBlur={handleWeightBlur}
-              maxLength={3}
-            />
-          </DataTable.Cell>
-          <DataTable.Cell style={styles.offsetTitle} numeric>
-            <TextInput
-              disabled={workoutData.finished}
-              dense
-              underlineColor="transparent"
-              keyboardType="numeric"
-              style={styles.textInput}
-              value={reps}
-              onFocus={dismissDelete}
-              onChangeText={handleRepsChange}
-              onBlur={handleRepsBlur}
-              maxLength={3}
-            />
-          </DataTable.Cell>
-        </DataTable.Row>
-      </TouchableRipple>
-      {pressed && (
-        <IconButton
-          onPress={() => {
-            setPressed(false);
-            handleDelete();
-          }}
-          style={{
-            margin: 0,
-            height: "auto",
-            width: 48,
-            borderRadius: 0,
-            backgroundColor: "red",
-          }}
-          icon="trash-can-outline"
-          color={"white"}
-        />
-      )}
+        <IconButton icon="trash-can-outline" />
+      </Animated.View>
+      <PanGestureHandler onGestureEvent={gestureHandler}>
+        <Animated.View
+          entering={FadeInUp}
+          style={[
+            {
+              flex: 1,
+              flexDirection: "row",
+              backgroundColor: colors.cardColor,
+            },
+            animatedSlideStyle,
+          ]}
+        >
+          <DataTable.Row style={styles.row}>
+            <DataTable.Cell>{set_count}</DataTable.Cell>
+            <DataTable.Cell style={styles.offsetTitle} numeric>
+              <TextInput
+                disabled={workoutData.finished}
+                dense
+                underlineColor="transparent"
+                keyboardType="numeric"
+                style={styles.textInput}
+                value={weight}
+                onFocus={dismissDelete}
+                onChangeText={handleWeightChange}
+                onBlur={handleWeightBlur}
+                maxLength={3}
+              />
+            </DataTable.Cell>
+            <DataTable.Cell style={styles.offsetTitle} numeric>
+              <TextInput
+                disabled={workoutData.finished}
+                dense
+                underlineColor="transparent"
+                keyboardType="numeric"
+                style={styles.textInput}
+                value={reps}
+                onFocus={dismissDelete}
+                onChangeText={handleRepsChange}
+                onBlur={handleRepsBlur}
+                maxLength={3}
+              />
+            </DataTable.Cell>
+          </DataTable.Row>
+        </Animated.View>
+      </PanGestureHandler>
     </View>
   );
 };
