@@ -2,6 +2,7 @@ import { Menu, IconButton, useTheme } from "react-native-paper";
 import { StyleSheet } from "react-native";
 import React, { useContext, useState } from "react";
 import { WorkoutDataContext } from "../../../../context/WorkoutDataContext";
+import { UserDataContext } from "../../../../context/UserDataContext";
 
 const ExerciseSettingsDots = ({
   exerciseIndex,
@@ -9,7 +10,8 @@ const ExerciseSettingsDots = ({
   templateModalVisible,
   setTemplateModalVisible,
 }) => {
-  const { workoutData, setWorkoutData } = useContext(WorkoutDataContext);
+  const { workoutData, setWorkoutData, id } = useContext(WorkoutDataContext);
+  const { state, dispatch } = useContext(UserDataContext);
   const { colors } = useTheme();
 
   const [menuVisible, setMenuVisible] = useState(false);
@@ -21,8 +23,6 @@ const ExerciseSettingsDots = ({
     for (let i = 0; i < sets; i++) {
       newSetArray.push(set);
     }
-
-    console.log(newSetArray);
 
     const newExercises = workoutData.exercises;
     newExercises[exerciseIndex].sets = newSetArray;
@@ -45,9 +45,10 @@ const ExerciseSettingsDots = ({
       <Menu.Item
         onPress={() => {
           setMenuVisible(false);
-          const oldExerciseArray = [...workoutData.exercises];
-          oldExerciseArray.splice(exerciseIndex, 1);
-          setWorkoutData({ ...workoutData, exercises: oldExerciseArray });
+          dispatch({
+            type: "DELETE_EXERCISE",
+            payload: { id: id, exerciseIndex: exerciseIndex },
+          });
         }}
         title="Remove Exercise"
         icon={"trash-can-outline"}
@@ -101,6 +102,5 @@ const ExerciseSettingsDots = ({
     </Menu>
   );
 };
-
 
 export default ExerciseSettingsDots;

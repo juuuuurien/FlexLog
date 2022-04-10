@@ -47,62 +47,62 @@ export default function App() {
   const [state, dispatch] = useReducer(userDataReducer, null);
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [storageValue, updateStorage] = useAsyncStorage("userData", {
     ...initial_state,
   });
 
   const storeData = async () => {
     try {
-      setLoading(true);
-      await updateStorage(state);
+      // console.log('Updating Storage');
+      // console.log(state, 'This is state');
+      updateStorage(state);
     } catch (e) {
-      console.log(e);
-    } finally {
-      setLoading(false);
+      console.warn(e);
     }
   };
 
   // listen to background foreground changes
-  useEffect(() => {
-    const subscription = AppState.addEventListener("change", (nextAppState) => {
-      if (
-        appState.current.match(/inactive|background/) &&
-        nextAppState === "active"
-      ) {
-        console.log("in the background");
-      }
+  // useEffect(() => {
+  //   const subscription = AppState.addEventListener("change", (nextAppState) => {
+  //     if (
+  //       appState.current.match(/inactive|background/) &&
+  //       nextAppState === "active"
+  //     ) {
+  //       console.log("in the background");
+  //     }
 
-      appState.current = nextAppState;
-      setAppStateVisible(appState.current);
-    });
+  //     appState.current = nextAppState;
+  //     setAppStateVisible(appState.current);
+  //   });
 
-    return () => {
-      if (subscription) subscription.remove();
-    };
-  }, []);
+  //   return () => {
+  //     if (subscription) subscription.remove();
+  //   };
+  // }, []);
 
   // listen to userData state and update on change
   useEffect(() => {
+    // console.log(state, 'This is state now after update')
     // AsyncStorage.clear();
     const cacheData = async () => {
       try {
         // try to laod data
-        // console.log('checking AsyncStorage data');
+        console.log("checking AsyncStorage data");
         const storageData = await AsyncStorage.getItem("userData");
         // if there is data, cache data into state,
         //  else set empty data in async storage and state.
         if (storageData !== null) {
-          console.log("data found");
-          const empty_data = JSON.parse(storageData);
-          dispatch({ type: "INITIALIZE_STATE", payload: empty_data });
+          // console.log('data found');
+          // console.log(storageData, "this is storage data")
+          dispatch({
+            type: "INITIALIZE_STATE",
+            payload: { ...JSON.parse(storageData) },
+          });
         } else {
-          console.log("no data found, setting initial data to asyncstorage");
+          // console.log('no data found, setting initial data to asyncstorage');
           try {
-            AsyncStorage.setItem(
-              "userData",
-              JSON.stringify({ ...initial_state })
-            );
+            updateStorage({ ...initial_state });
             dispatch({ type: "INITIALIZE_STATE", payload: initial_state });
           } catch (err) {
             console.warn(err);
@@ -112,8 +112,6 @@ export default function App() {
         (err) => {
           console.warn(err);
         };
-      } finally {
-        storeData();
       }
     };
 
@@ -121,8 +119,9 @@ export default function App() {
     if (state === null) {
       cacheData();
     } else {
-      console.log("storing data");
-      storeData();
+      // console.log("storing data");
+      // console.log(state);
+      // storeData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);

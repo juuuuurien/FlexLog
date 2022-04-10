@@ -1,4 +1,3 @@
-
 import { View, Text, StyleSheet } from 'react-native';
 import React, { useState, useEffect, useContext } from 'react';
 import { Portal, Modal, Card, TextInput, Button } from 'react-native-paper';
@@ -20,13 +19,12 @@ const ExerciseTemplateModal = ({
   }, []);
 
   const handleSaveNotes = () => {
-    if(workoutData.exercises[exerciseIndex].notes === notes) return
+    if (workoutData.exercises[exerciseIndex].notes === notes) return;
     const newExerciseArray = [...workoutData.exercises];
     newExerciseArray[exerciseIndex].notes = notes;
     setWorkoutData({ ...workoutData, exercises: newExerciseArray });
   };
   const handleChangeText = (v) => {
-    console.log(v);
     setNotes(v);
   };
 
@@ -62,9 +60,10 @@ const ExerciseTemplateModal = ({
           <Card.Actions style={{ marginTop: 15, justifyContent: 'flex-end' }}>
             <Button
               mode="contained"
+              style={styles.button}
               onPress={() => {
                 setNotesModalVisible(false);
-                handleSaveNotes();
+                handleSaveNotes()
               }}>
               Save
             </Button>
@@ -76,15 +75,14 @@ const ExerciseTemplateModal = ({
 };
 
 const styles = StyleSheet.create({
+  button: { marginHorizontal: 5 },
   contentContainer: {
-    justifyContent: 'flex-start',
     padding: 10,
     width: '100%',
   },
   modalContainer: {
-    flex: 1,
+        justifyContent:'flex-start',
     margin: 25,
-    justifyContent: 'center',
     alignItems: 'center',
   },
 });

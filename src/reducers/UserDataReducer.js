@@ -18,14 +18,15 @@
 //     },
 //   },
 
-import { omit } from '../util/omit';
+import { omit } from "../util/omit";
+import { empty_set } from "../static/empty_set";
 
 export const userDataReducer = (state, action) => {
   switch (action.type) {
-    case 'INITIALIZE_STATE': {
+    case "INITIALIZE_STATE": {
       return { ...action.payload };
     }
-    case 'CREATE_WORKOUT': {
+    case "CREATE_WORKOUT": {
       return {
         ...state,
         workouts: {
@@ -34,8 +35,8 @@ export const userDataReducer = (state, action) => {
         },
       };
     }
-    case 'UPDATE_WORKOUT_STATUS': {
-      if (Object.keys(action.payload).includes('started'))
+    case "UPDATE_WORKOUT_STATUS": {
+      if (Object.keys(action.payload).includes("started"))
         return {
           ...state,
           workouts: {
@@ -47,7 +48,7 @@ export const userDataReducer = (state, action) => {
           },
         };
 
-         if (Object.keys(action.payload).includes('finished'))
+      if (Object.keys(action.payload).includes("finished"))
         return {
           ...state,
           workouts: {
@@ -61,14 +62,26 @@ export const userDataReducer = (state, action) => {
 
       return { ...state };
     }
-    case 'DELETE_WORKOUT': {
+    case "DELETE_WORKOUT": {
       const newWorkoutsObj = omit({ ...state.workouts }, action.payload);
       return {
         ...state,
         workouts: newWorkoutsObj,
       };
     }
-    case 'UPDATE_EXERCISE': {
+    case "CREATE_EXERCISE": {
+      const { data, id } = action.payload;
+
+      return {
+        ...state,
+        workouts: {
+          ...state.workouts,
+          [id]: { ...state.workouts[id], exercises: data },
+        },
+      };
+    }
+    case "UPDATE_EXERCISE": {
+      console.log("in reducer, updating exercises.....");
       return {
         ...state,
         workouts: {
@@ -77,7 +90,55 @@ export const userDataReducer = (state, action) => {
         },
       };
     }
-    case 'CLEAR_DATA': {
+    case "DELETE_EXERCISE": {
+      const { id, exerciseIndex } = action.payload;
+
+      // filter array to accept all elements that do no match given id
+      const newExerciseArray = state.workouts[id].exercises.filter(
+        (e, i) => i !== exerciseIndex
+      );
+      return {
+        ...state,
+        workouts: {
+          ...state.workouts,
+          [id]: { ...state.workouts[id], exercises: newExerciseArray },
+        },
+      };
+    }
+    case "CREATE_SET": {
+      // data should be the exercise object with new
+      const { id, exerciseIndex, data } = action.payload;
+
+      // const newExerciseArray = [...state.workouts[id].exercises];
+      // newExerciseArray[exerciseIndex] = {
+      //   ...newExerciseArray[exerciseIndex],
+      //   sets: [...newExerciseArray[exerciseIndex], { ...empty_set }],
+      // };
+
+      return {
+        ...state,
+        workouts: {
+          ...state.workouts,
+          [id]: { ...state.workouts[id], exercises: data },
+        },
+      };
+    }
+    case "DELETE_SET": {
+      const { id, exerciseIndex, setIndex } = action.payload;
+      const setArray = state.workouts[id].exercises[exerciseIndex].sets;
+      setArray.splice(setIndex, 1);
+      const newExerciseArray = [...state.workouts[id].exercises];
+      newExerciseArray[exerciseIndex].sets = setArray;
+
+      return {
+        ...state,
+        workouts: {
+          ...state.workouts,
+          [id]: { ...state.workouts[id], exercises: newExerciseArray },
+        },
+      };
+    }
+    case "CLEAR_DATA": {
       return { ...action.payload };
     }
     default:

@@ -4,10 +4,9 @@ import { Button, Colors } from 'react-native-paper';
 import { WorkoutDataContext } from '../../../../context/WorkoutDataContext';
 import { UserDataContext } from '../../../../context/UserDataContext';
 
-const StartWorkoutButton = () => {
+const StartWorkoutButton = ({id}) => {
   // this will update WorkoutDataState and append it with an empty exercise
 
-  const { id } = useContext(WorkoutDataContext);
   const { state, dispatch } = useContext(UserDataContext);
 
   const [started, setStarted] = useState(false);
@@ -29,9 +28,9 @@ const StartWorkoutButton = () => {
   };
 
   const handleButtonText = () => {
-    if (started && !finished) return 'Finish Workout';
+    if (started && !finished) return 'Finish';
     if (started && finished) return 'Finished';
-    return 'Start Workout';
+    return 'Start';
   };
 
   const handlePress = () => {
@@ -100,8 +99,6 @@ const StartWorkoutButton = () => {
 
   return (
     <Button
-      contentStyle={{ height: 64 }}
-      mode="contained"
       color={handleColor()}
       onPress={handlePress}
       onLongPress={handleLongPress}>

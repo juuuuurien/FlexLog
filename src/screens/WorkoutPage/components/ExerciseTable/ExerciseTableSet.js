@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useCallback } from "react";
 import { View, StyleSheet, Dimensions } from "react-native";
 import {
   Button,
@@ -16,20 +16,20 @@ import { PanGestureHandler } from "react-native-gesture-handler";
 
 import Animated, {
   useSharedValue,
-  withSpring,
   withTiming,
   useAnimatedStyle,
   useAnimatedGestureHandler,
-  FadeOutLeft,
   runOnJS,
-  FadeOut,
-  SlideInUp,
-  FadeInUp,
+  Layout,
+  FadeInDown,
+  SlideOutLeft,
 } from "react-native-reanimated";
+import { UserDataContext } from "../../../../context/UserDataContext";
 
-const ExerciseTableSet = ({ set_count, setData, exerciseIndex, setIndex }) => {
+const ExerciseTableSet = ({ set_count, exerciseIndex, setIndex }) => {
   const { colors } = useTheme();
-  const { workoutData, setWorkoutData } = useContext(WorkoutDataContext);
+  const { workoutData, setWorkoutData, id } = useContext(WorkoutDataContext);
+  const { state, dispatch } = useContext(UserDataContext);
 
   const [weight, setWeight] = useState("");
   const [reps, setReps] = useState("");
@@ -80,19 +80,27 @@ const ExerciseTableSet = ({ set_count, setData, exerciseIndex, setIndex }) => {
     setReps(value.toString());
   };
 
+  const handleSetDelete = useCallback(() => {
+    dispatch({
+      type: "DELETE_SET",
+      payload: { id: id, setIndex: setIndex, exerciseIndex: exerciseIndex },
+    });
+  }, [workoutData.exercises]);
+
   const dismissDelete = () => (pressed ? setPressed(false) : null);
 
-  const handleDelete = () => {
-    const setArray = [...workoutData.exercises[exerciseIndex].sets];
-    const newSetArray = setArray.filter((el, index) => index !== setIndex);
-    const newExerciseArray = [...workoutData.exercises];
-    newExerciseArray[exerciseIndex].sets = newSetArray;
-    setWorkoutData({ ...workoutData, exercises: newExerciseArray });
-  };
-
   const styles = StyleSheet.create({
+    trashCanContainer: {
+      flex: 1,
+      width: "100%",
+      flexDirection: "row",
+      position: "absolute",
+      backgroundColor: colors.error,
+      justifyContent: "flex-end",
+    },
     row: {
       flex: 1,
+      backgroundColor: colors.cardColor,
       paddingHorizontal: 30,
     },
     offsetTitle: {
@@ -100,7 +108,7 @@ const ExerciseTableSet = ({ set_count, setData, exerciseIndex, setIndex }) => {
       justifyContent: "space-around",
     },
     textInput: {
-      backgroundColor: "transparent",
+      backgroundColor: colors.cardColorLight,
       textAlign: "center",
       width: 72,
     },
@@ -108,9 +116,15 @@ const ExerciseTableSet = ({ set_count, setData, exerciseIndex, setIndex }) => {
 
   // ANIMATIONS ==========================================
   const SCREEN_WIDTH = Dimensions.get("window").width;
-
   const translateX = useSharedValue(0);
   const fadeOut = useSharedValue(0);
+  const animatedHeight = useSharedValue(48);
+
+  useEffect(() => {
+    translateX.value = 0;
+    animatedHeight.value = 48;
+  }, [workoutData]);
+
   const gestureHandler = useAnimatedGestureHandler({
     onStart: (_, ctx) => {
       fadeOut.value = 1;
@@ -125,7 +139,7 @@ const ExerciseTableSet = ({ set_count, setData, exerciseIndex, setIndex }) => {
         fadeOut.value = withTiming(0);
         translateX.value = withTiming(-SCREEN_WIDTH, {}, (isFinished) => {
           if (isFinished) {
-            runOnJS(handleDelete)();
+            runOnJS(handleSetDelete)(setIndex, exerciseIndex);
           }
         });
       } else {
@@ -136,11 +150,7 @@ const ExerciseTableSet = ({ set_count, setData, exerciseIndex, setIndex }) => {
 
   const animatedSlideStyle = useAnimatedStyle(() => {
     return {
-      transform: [
-        {
-          translateX: translateX.value,
-        },
-      ],
+      transform: [{ translateX: translateX.value }],
     };
   });
 
@@ -150,36 +160,27 @@ const ExerciseTableSet = ({ set_count, setData, exerciseIndex, setIndex }) => {
     };
   });
 
+  // const animatedRowStyle = useAnimatedStyle(() => {
+  //   return {
+  //     transform: [
+  //       {
+  //         translateX: translateX.value,
+  //       },
+  //     ],
+  //   };
+  // });
+
   return (
-    <View>
-      <Animated.View
-        style={[
-          {
-            flex: 1,
-            height: "100%",
-            width: "100%",
-            flexDirection: "row",
-            position: "absolute",
-            backgroundColor: colors.error,
-            justifyContent: "flex-end",
-          },
-          animatedFadeStyle,
-        ]}
-      >
+    <Animated.View
+      layout={Layout}
+      exiting={SlideOutLeft}
+      entering={FadeInDown.delay(200)}
+    >
+      <Animated.View style={[styles.trashCanContainer, animatedFadeStyle]}>
         <IconButton icon="trash-can-outline" />
       </Animated.View>
       <PanGestureHandler onGestureEvent={gestureHandler}>
-        <Animated.View
-          entering={FadeInUp}
-          style={[
-            {
-              flex: 1,
-              flexDirection: "row",
-              backgroundColor: colors.cardColor,
-            },
-            animatedSlideStyle,
-          ]}
-        >
+        <Animated.View style={[animatedSlideStyle]}>
           <DataTable.Row style={styles.row}>
             <DataTable.Cell>{set_count}</DataTable.Cell>
             <DataTable.Cell style={styles.offsetTitle} numeric>
@@ -213,7 +214,7 @@ const ExerciseTableSet = ({ set_count, setData, exerciseIndex, setIndex }) => {
           </DataTable.Row>
         </Animated.View>
       </PanGestureHandler>
-    </View>
+    </Animated.View>
   );
 };
 

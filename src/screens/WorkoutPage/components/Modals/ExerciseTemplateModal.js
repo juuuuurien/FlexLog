@@ -1,12 +1,13 @@
 import { View, Text, StyleSheet } from 'react-native';
 import React, { useState } from 'react';
-import { Portal, Modal, Card, TextInput, Button } from 'react-native-paper';
+import { Portal, Modal, Card, TextInput, Button, useTheme } from 'react-native-paper';
 
 const ExerciseTemplateModal = ({
   handleAddFromTemplate,
   templateModalVisible,
   setTemplateModalVisible,
 }) => {
+  const {colors} = useTheme()
   const [sets, setSets] = useState('');
   const [reps, setReps] = useState('');
   const [weight, setWeight] = useState('');
@@ -47,7 +48,7 @@ const ExerciseTemplateModal = ({
                 value={sets}
                 dense
               />
-              <Text style={{ fontWeight: 'bold' }}> {'X'} </Text>
+              <Text style={{ fontWeight: 'bold', color: colors.text }}> {'X'} </Text>
               <TextInput
                 maxLength={2}
                 keyboardType="numeric"
@@ -56,7 +57,7 @@ const ExerciseTemplateModal = ({
                 value={reps}
                 dense
               />
-              <Text style={{ fontWeight: 'bold' }}> {'@'} </Text>
+              <Text style={{ fontWeight: 'bold', color: colors.text }}> {'@'} </Text>
               <TextInput
                 style={{ width: 'auto' }}
                 maxLength={3}
