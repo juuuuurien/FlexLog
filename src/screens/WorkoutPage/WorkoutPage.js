@@ -1,98 +1,186 @@
-import React, { useState, useContext, useEffect, useLayoutEffect } from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
-import Animated, { Layout } from "react-native-reanimated";
+import React, {
+  useState,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useCallback,
+  useMemo,
+} from "react";
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  ToastAndroid,
+} from "react-native";
+import Animated, { Layout, SequencedTransition } from "react-native-reanimated";
 import { UserDataContext } from "../../context/UserDataContext";
 import { WorkoutDataContextProvider } from "../../context/WorkoutDataContext";
 import ExerciseComponent from "./components/ExerciseComponent";
 import AddExerciseButton from "./components/Buttons/AddExerciseButton";
 import StartWorkoutButton from "./components/Buttons/StartWorkoutButton";
-import { Portal } from "react-native-paper";
-import { useMemo } from "react";
-// loop through workouts and render exercise containers
+import { Portal, Button } from "react-native-paper";
+import { useAsyncStorage } from "../../../src/hooks/useAsyncStorage";
+import { empty_exercise } from "../../static/empty_exercise";
+import { create_uid } from "../../util/create_uid";
 
 const WorkoutPage = ({ navigation, route }) => {
-  const { state, dispatch, setLoading, storeData } =
-    useContext(UserDataContext);
+  const [storageValue, updateStorage] = useAsyncStorage("userData");
+  const { state, dispatch, setLoading, loading } = useContext(UserDataContext);
   const id = route.params.id;
 
-  const workoutData = state.workouts[id];
+  // upon navigation, create a context that wraps all children
+  // with this workout's data, fetched via state.
 
-  // console.log(state.workouts[id]);
-  console.log("in workout data, data is ....... ", workoutData);
+  // upon leaving this screen, save data back to state store.
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state]);
+  const [workoutData, setWorkoutData] = useState(state.workouts[id]);
 
-  useEffect(() => {
-    // check if this particular exercise has any added
-    // and initialize workout page with data
+  useEffect(
+    () =>
+      navigation.addListener("beforeRemove", (e) => {
+        if (workoutData !== state.workouts[id]) {
+          // If we don't have unsaved changes, then we don't need to do anything
+          e.preventDefault();
+          // Prompt the user before leaving the screen
+          Alert.alert(
+            "Save changes?",
+            "You have unsaved changes. Do you want to save and leave?",
+            [
+              {
+                text: "Leave without saving",
+                style: "destructive",
+                // If the user confirmed, then we dispatch the action we blocked earlier
+                // This will continue the action that had triggered the removal of the screen
+                onPress: () => {
+                  navigation.dispatch(e.data.action);
+                },
+              },
+              {
+                text: "Save",
+                style: "cancel",
+                onPress: () => {
+                  dispatch({
+                    type: "UPDATE_WORKOUT",
+                    payload: {
+                      id: id,
+                      data: workoutData,
+                    },
+                  });
+                  navigation.dispatch(e.data.action);
+                },
+              },
+            ],
+            { cancelable: true }
+          );
+        }
 
-    if (workoutData === null) return;
-    // if (state.workouts[id].exercises !== workoutData.exercises) {
-    //   console.log("workkout data in state !== localWorkoutPage Data changed");
-    //   console.log("... dispatching to update exercises");
-    //   dispatch({
-    //     type: "UPDATE_EXERCISE",
-    //     payload: { id: id, data: workoutData },
-    //   });
-    // }
+        return;
+      }),
+    [navigation, workoutData, state.workouts[id]]
+  );
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state]);
+  const handleSaveData = async () => {
+    dispatch({
+      type: "UPDATE_WORKOUT",
+      payload: {
+        id: id,
+        data: workoutData,
+      },
+    });
+    ToastAndroid.show("Saved!", ToastAndroid.SHORT);
+  };
+
+  const HeaderRightComponent = () => {
+    return (
+      <View style={{ flexDirection: "row" }}>
+        <StartWorkoutButton id={id} />
+        {workoutData !== state.workouts[id] && (
+          <Button onPress={handleSaveData}>Save Changes</Button>
+        )}
+      </View>
+    );
+  };
 
   useLayoutEffect(() => {
     if (workoutData === null) return;
     navigation.setOptions({
       title: workoutData.name,
-      headerRight: () => <StartWorkoutButton id={id} />,
+      headerRight: () => <HeaderRightComponent />,
     });
-  });
+  }, [workoutData, state.workouts[id]]);
 
   const styles = StyleSheet.create({
     container: {
-      flex: 1,
+      flexGrow: 1,
     },
   });
 
+  const handleAddExercise = useCallback(() => {
+    setWorkoutData((data) => {
+      return {
+        ...data,
+        exercises: [
+          ...data.exercises,
+          {
+            exercise_name: "",
+            sets: [{ weight: "", reps: "", id: create_uid() }],
+            id: create_uid(),
+          },
+        ],
+      };
+    });
+  }, [workoutData]);
+
+  const handleDeleteSet = useCallback(
+    (set_id) => {
+      const newSets = exerciseData.sets.filter((e, i) => {
+        return e.id !== set_id;
+      });
+
+      const newExercises = [...workoutData.exercises];
+      newExercises[exerciseIndex].sets = newSets;
+
+      setWorkoutData((data) => {
+        return { ...data, exercises: [...newExercises] };
+      });
+    },
+    [workoutData.exercises]
+  );
+
+  const handleDeleteExercise = useCallback(
+    (exercise_id) => {
+      const newExercises = workoutData.exercises.filter((e, i) => {
+        return e.id !== exercise_id;
+      });
+
+      setWorkoutData((data) => {
+        return { ...data, exercises: [...newExercises] };
+      });
+    },
+    [workoutData.exercises]
+  );
+
   return (
-    <Portal.Host>
-      <WorkoutDataContextProvider value={{ workoutData, id }}>
-        <Animated.View layout={Layout} style={styles.container}>
-          {/* {
-            <Animated.FlatList
-              removeClippedSubviews={false}
-              data={workoutData.exercises}
-              keyExtractor={(_, index) => index}
-              ListFooterComponent={() =>
-                !workoutData.finished ? <AddExerciseButton /> : null
-              }
-              renderItem={({ item, index }) => {
-                return (
-                  <ExerciseComponent
-                    key={index}
-                    exerciseData={item}
-                    exerciseIndex={index}
-                  />
-                );
-              }}
+    <WorkoutDataContextProvider value={{ workoutData, setWorkoutData, id }}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.container}
+      >
+        {workoutData.exercises.map((item, index) => {
+          return (
+            <ExerciseComponent
+              key={item.id}
+              exercise_id={item.id}
+              exerciseIndex={index}
+              exerciseData={item}
+              handleDeleteExercise={handleDeleteExercise}
             />
-          } */}
-          <ScrollView>
-            {state.workouts[id].exercises.map((item, index) => {
-              return (
-                <ExerciseComponent
-                  key={index}
-                  exerciseData={item}
-                  exerciseIndex={index}
-                />
-              );
-            })}
-            <AddExerciseButton />
-          </ScrollView>
-        </Animated.View>
-      </WorkoutDataContextProvider>
-    </Portal.Host>
+          );
+        })}
+        <AddExerciseButton handleAddExercise={handleAddExercise} />
+      </ScrollView>
+    </WorkoutDataContextProvider>
   );
 };
 

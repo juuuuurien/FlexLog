@@ -23,26 +23,37 @@ import Animated, {
   Layout,
   FadeInDown,
   SlideOutLeft,
+  FadeOut,
+  combineTransition,
+  FadeIn,
+  StretchInY,
+  SequencedTransition,
 } from "react-native-reanimated";
 import { UserDataContext } from "../../../../context/UserDataContext";
 
-const ExerciseTableSet = ({ set_count, exerciseIndex, setIndex }) => {
+const ExerciseTableSet = ({
+  set_count,
+  exerciseIndex,
+  setIndex,
+  setData,
+  set_id,
+  handleDeleteSet,
+}) => {
   const { colors } = useTheme();
   const { workoutData, setWorkoutData, id } = useContext(WorkoutDataContext);
   const { state, dispatch } = useContext(UserDataContext);
-
-  const [weight, setWeight] = useState("");
-  const [reps, setReps] = useState("");
+  const [weight, setWeight] = useState(setData.weight);
+  const [reps, setReps] = useState(setData.reps);
   const [pressed, setPressed] = useState(false);
 
-  const setWeightFromState =
-    workoutData.exercises[exerciseIndex].sets[setIndex].weight;
-  const setRepsFromState =
-    workoutData.exercises[exerciseIndex].sets[setIndex].reps;
+  console.log("this weight from setData", setData.weight);
+
+  const setWeightFromState = setData.weight;
+  const setRepsFromState = setData.reps;
 
   useEffect(() => {
-    setWeight(setWeightFromState);
-    setReps(setRepsFromState);
+    setWeight(setData.weight);
+    setReps(setData.reps);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [workoutData]);
 
@@ -80,13 +91,6 @@ const ExerciseTableSet = ({ set_count, exerciseIndex, setIndex }) => {
     setReps(value.toString());
   };
 
-  const handleSetDelete = useCallback(() => {
-    dispatch({
-      type: "DELETE_SET",
-      payload: { id: id, setIndex: setIndex, exerciseIndex: exerciseIndex },
-    });
-  }, [workoutData.exercises]);
-
   const dismissDelete = () => (pressed ? setPressed(false) : null);
 
   const styles = StyleSheet.create({
@@ -99,7 +103,6 @@ const ExerciseTableSet = ({ set_count, exerciseIndex, setIndex }) => {
       justifyContent: "flex-end",
     },
     row: {
-      flex: 1,
       backgroundColor: colors.cardColor,
       paddingHorizontal: 30,
     },
@@ -139,7 +142,7 @@ const ExerciseTableSet = ({ set_count, exerciseIndex, setIndex }) => {
         fadeOut.value = withTiming(0);
         translateX.value = withTiming(-SCREEN_WIDTH, {}, (isFinished) => {
           if (isFinished) {
-            runOnJS(handleSetDelete)(setIndex, exerciseIndex);
+            runOnJS(handleDeleteSet)(setData.id);
           }
         });
       } else {
@@ -171,12 +174,11 @@ const ExerciseTableSet = ({ set_count, exerciseIndex, setIndex }) => {
   // });
 
   return (
-    <Animated.View
-      layout={Layout}
-      exiting={SlideOutLeft}
-      entering={FadeInDown.delay(200)}
-    >
-      <Animated.View style={[styles.trashCanContainer, animatedFadeStyle]}>
+    <Animated.View layout={SequencedTransition} entering={FadeIn.delay(250)}>
+      <Animated.View
+        layout={SequencedTransition}
+        style={[styles.trashCanContainer, animatedFadeStyle]}
+      >
         <IconButton icon="trash-can-outline" />
       </Animated.View>
       <PanGestureHandler onGestureEvent={gestureHandler}>

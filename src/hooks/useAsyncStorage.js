@@ -18,11 +18,13 @@ export const useAsyncStorage = (key, defaultValue) => {
   }
 
   async function updateStorage(newValue) {
+    console.log('attempting to save.....')
     try {
       if (newValue === null) {
         await AsyncStorage.removeItem(key);
       } else {
         const value = JSON.stringify(newValue);
+        console.log(value)
         await AsyncStorage.setItem(key, value);
       }
     } catch (e) {

@@ -3,10 +3,12 @@ import { StyleSheet } from "react-native";
 import React, { useContext, useState } from "react";
 import { WorkoutDataContext } from "../../../../context/WorkoutDataContext";
 import { UserDataContext } from "../../../../context/UserDataContext";
+import { create_uid } from "../../../../util/create_uid";
 
 const ExerciseSettingsDots = ({
+  exercise_id,
   exerciseIndex,
-  exerciseData,
+  handleDeleteExercise,
   templateModalVisible,
   setTemplateModalVisible,
 }) => {
@@ -18,13 +20,13 @@ const ExerciseSettingsDots = ({
   const [subMenuVisible, setSubMenuVisible] = useState(false);
 
   const handleAddFromTemplate = (sets, reps, weight) => {
-    const set = { weight: weight, reps: reps };
     let newSetArray = [];
     for (let i = 0; i < sets; i++) {
+      const set = { weight: weight, reps: reps, id: create_uid() };
       newSetArray.push(set);
     }
 
-    const newExercises = workoutData.exercises;
+    const newExercises = [...workoutData.exercises];
     newExercises[exerciseIndex].sets = newSetArray;
     setWorkoutData({ ...workoutData, exercises: newExercises });
   };
@@ -45,10 +47,7 @@ const ExerciseSettingsDots = ({
       <Menu.Item
         onPress={() => {
           setMenuVisible(false);
-          dispatch({
-            type: "DELETE_EXERCISE",
-            payload: { id: id, exerciseIndex: exerciseIndex },
-          });
+          handleDeleteExercise(exercise_id);
         }}
         title="Remove Exercise"
         icon={"trash-can-outline"}

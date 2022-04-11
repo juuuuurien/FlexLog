@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useCallback } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { TextInput, useTheme, IconButton } from "react-native-paper";
 import Animated, {
@@ -6,29 +6,33 @@ import Animated, {
   SlideOutLeft,
   FadeInDown,
   SequencedTransition,
+  StretchInY,
   FadeOutDown,
 } from "react-native-reanimated";
 import { WorkoutDataContext } from "../../../context/WorkoutDataContext";
 import { UserDataContext } from "../../../context/UserDataContext";
-
 import ExerciseTable from "./ExerciseTable/ExerciseTable";
 import ExerciseSettingsDots from "./Buttons/ExerciseSettingsDots";
 import AddSetButton from "./Buttons/AddSetButton";
 import ExerciseTemplateModal from "./Modals/ExerciseTemplateModal";
 import ExerciseNotesModal from "./Modals/ExerciseNotesModal";
 import SetsByRepsComponent from "./SetsByRepsComponent";
-import { useCallback } from "react";
+import { create_uid } from "../../../util/create_uid";
 
-const ExerciseComponent = ({ exerciseData, exerciseIndex }) => {
+const ExerciseComponent = ({
+  exerciseData,
+  exerciseIndex,
+  handleDeleteExercise,
+}) => {
   const { colors } = useTheme();
-  const { workoutData, id } = useContext(WorkoutDataContext);
-  console.log(id);
+  const { workoutData, setWorkoutData, id } = useContext(WorkoutDataContext);
   const { state, dispatch } = useContext(UserDataContext);
   const [name, setName] = useState(exerciseData.exercise_name);
   const [templateModalVisible, setTemplateModalVisible] = useState(false);
   const [notesModalVisible, setNotesModalVisible] = useState(false);
 
   useEffect(() => {
+    setName(exerciseData.exercise_name);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [workoutData]);
 
@@ -50,10 +54,8 @@ const ExerciseComponent = ({ exerciseData, exerciseIndex }) => {
 
       let newExerciseArray = workoutData.exercises;
       newExerciseArray[exerciseIndex].exercise_name = _name;
-      dispatch({
-        type: "UPDATE_EXERCISE",
-        payload: { id: id, data: newExerciseArray },
-      });
+      setName(_name);
+      setWorkoutData({ ...workoutData, exercises: newExerciseArray });
     }
   };
 
@@ -63,14 +65,42 @@ const ExerciseComponent = ({ exerciseData, exerciseIndex }) => {
     for (let i = 0; i < sets; i++) {
       newSetArray.push(set);
     }
-
-    const newExercises = workoutData.exercises;
-    newExercises[exerciseIndex].sets = newSetArray;
+    const newExerciseArray = workoutData.exercises;
+    newExerciseArray[exerciseIndex].sets = newSetArray;
+    setWorkoutData(
+      setWorkoutData({ ...workoutData, exercises: [...newExerciseArray] })
+    );
   };
+
+  const handleAddSet = useCallback(() => {
+    const exercises = [...workoutData.exercises];
+    exercises[exerciseIndex].sets = [
+      ...exerciseData.sets,
+      { weight: "", reps: "", id: create_uid() },
+    ];
+
+    setWorkoutData((data) => {
+      return { ...data, exercises: exercises };
+    });
+  }, [workoutData.exercises]);
+
+  const handleDeleteSet = useCallback(
+    (set_id) => {
+      const newSets = exerciseData.sets.filter((e, i) => {
+        return e.id !== set_id;
+      });
+      const newExercises = [...workoutData.exercises];
+      newExercises[exerciseIndex].sets = newSets;
+
+      setWorkoutData((data) => {
+        return { ...data, exercises: [...newExercises] };
+      });
+    },
+    [workoutData.exercises]
+  );
 
   const styles = StyleSheet.create({
     exerciseHeaderContainer: {
-      flex: 1,
       paddingHorizontal: 14,
       justifyContent: "space-between",
     },
@@ -83,7 +113,7 @@ const ExerciseComponent = ({ exerciseData, exerciseIndex }) => {
       fontSize: 24,
       lineHeight: 3,
     },
-    exercise: {
+    container: {
       marginHorizontal: 18,
       marginTop: 18,
       paddingVertical: 10,
@@ -94,10 +124,10 @@ const ExerciseComponent = ({ exerciseData, exerciseIndex }) => {
 
   return (
     <Animated.View
-      style={styles.exercise}
-      layout={Layout}
-      entering={FadeInDown}
-      exiting={FadeOutDown}
+      layout={SequencedTransition}
+      entering={FadeInDown.delay(200)}
+      exiting={FadeOutDown.duration(150)}
+      style={styles.container}
     >
       <View style={styles.exerciseHeaderContainer}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -120,8 +150,9 @@ const ExerciseComponent = ({ exerciseData, exerciseIndex }) => {
           />
           <ExerciseSettingsDots
             style={{ margin: 0 }}
+            exercise_id={exerciseData.id}
             exerciseIndex={exerciseIndex}
-            exerciseData={exerciseData}
+            handleDeleteExercise={handleDeleteExercise}
             templateModalVisible={templateModalVisible}
             setTemplateModalVisible={setTemplateModalVisible}
           />
@@ -135,18 +166,29 @@ const ExerciseComponent = ({ exerciseData, exerciseIndex }) => {
       </View>
       <ExerciseTable>
         <ExerciseTable.Header labels={["set", "weight", "reps"]} />
-        {state.workouts[id].exercises[exerciseIndex].sets &&
-          exerciseData.sets.map((data, i) => {
+        {exerciseData &&
+          exerciseData.sets.map((set, i) => {
+            // the reason layout animations aren't working is because
+            // each element doesn't have a unique key.
+            // Need to have each set have a unique key when creating it.
             return (
               <ExerciseTable.Set
-                key={i}
+                key={set.id}
+                set_id={set.id}
                 setIndex={i}
                 exerciseIndex={exerciseIndex}
                 set_count={i + 1}
-                setData={data}
+                setData={set}
+                handleDeleteSet={handleDeleteSet}
               />
             );
           })}
+        <AddSetButton
+          workoutData={workoutData}
+          exerciseIndex={exerciseIndex}
+          exerciseData={exerciseData}
+          handleAddSet={handleAddSet}
+        />
       </ExerciseTable>
       <ExerciseTemplateModal
         handleAddFromTemplate={handleAddFromTemplate}
@@ -159,13 +201,6 @@ const ExerciseComponent = ({ exerciseData, exerciseIndex }) => {
         setNotesModalVisible={setNotesModalVisible}
         exerciseName={exerciseData.exercise_name}
       />
-      {!workoutData.finished && (
-        <AddSetButton
-          workoutData={workoutData}
-          exerciseIndex={exerciseIndex}
-          exerciseData={exerciseData}
-        />
-      )}
     </Animated.View>
   );
 };

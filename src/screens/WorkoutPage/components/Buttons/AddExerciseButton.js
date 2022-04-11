@@ -2,31 +2,20 @@ import React, { useContext } from "react";
 import { useCallback } from "react";
 import { StyleSheet } from "react-native";
 import { Button } from "react-native-paper";
+import Animated, { SequencedTransition } from "react-native-reanimated";
 import { UserDataContext } from "../../../../context/UserDataContext";
 import { WorkoutDataContext } from "../../../../context/WorkoutDataContext";
 import { empty_exercise } from "../../../../static/empty_exercise";
+import { create_uid } from "../../../../util/create_uid";
 
-const AddExerciseButton = (props) => {
+const AddExerciseButton = ({ handleAddExercise }) => {
   // this will update state with new exercise data...
-
-  const { state, dispatch } = useContext(UserDataContext);
-  const { id } = useContext(WorkoutDataContext);
-
-  const handlePress = useCallback(() => {
-    const newStateExercises = [
-      ...state.workouts[id].exercises,
-      { ...empty_exercise },
-    ];
-
-    dispatch({
-      type: "CREATE_EXERCISE",
-      payload: { id: id, data: newStateExercises },
-    });
-  }, [state]);
   return (
-    <Button {...props} style={styles.button} onPress={handlePress}>
-      {"Add an exercise"}
-    </Button>
+    <Animated.View layout={SequencedTransition}>
+      <Button style={styles.button} onPress={handleAddExercise}>
+        {"Add an exercise"}
+      </Button>
+    </Animated.View>
   );
 };
 

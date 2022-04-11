@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useReducer, useRef } from "react";
-import { AppState } from "react-native";
+import { AppState, ToastAndroid } from "react-native";
 import {
   DefaultTheme as PaperDefaultTheme,
   DarkTheme as PaperDarkTheme,
@@ -56,9 +56,12 @@ export default function App() {
     try {
       // console.log('Updating Storage');
       // console.log(state, 'This is state');
+      setLoading(true)
       updateStorage(state);
     } catch (e) {
       console.warn(e);
+    }finally {
+      setLoading(false)
     }
   };
 
@@ -121,7 +124,7 @@ export default function App() {
     } else {
       // console.log("storing data");
       // console.log(state);
-      // storeData();
+      storeData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);

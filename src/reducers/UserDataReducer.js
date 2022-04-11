@@ -35,6 +35,15 @@ export const userDataReducer = (state, action) => {
         },
       };
     }
+    case "UPDATE_WORKOUT": {
+      return {
+        ...state,
+        workouts: {
+          ...state.workouts,
+          [action.payload.id]: action.payload.data,
+        },
+      };
+    }
     case "UPDATE_WORKOUT_STATUS": {
       if (Object.keys(action.payload).includes("started"))
         return {

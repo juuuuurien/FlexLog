@@ -1,7 +1,7 @@
-import { View, Text, StyleSheet } from 'react-native';
-import React, { useState, useEffect, useContext } from 'react';
-import { Portal, Modal, Card, TextInput, Button } from 'react-native-paper';
-import { WorkoutDataContext } from '../../../../context/WorkoutDataContext';
+import { View, Text, StyleSheet } from "react-native";
+import React, { useState, useEffect, useContext } from "react";
+import { Portal, Modal, Card, TextInput, Button } from "react-native-paper";
+import { WorkoutDataContext } from "../../../../context/WorkoutDataContext";
 
 const ExerciseTemplateModal = ({
   exerciseName,
@@ -11,7 +11,7 @@ const ExerciseTemplateModal = ({
 }) => {
   const { workoutData, setWorkoutData } = useContext(WorkoutDataContext);
 
-  const [notes, setNotes] = useState('');
+  const [notes, setNotes] = useState("");
 
   useEffect(() => {
     if (workoutData.exercises[exerciseIndex].notes)
@@ -25,7 +25,7 @@ const ExerciseTemplateModal = ({
     setWorkoutData({ ...workoutData, exercises: newExerciseArray });
   };
   const handleChangeText = (v) => {
-    setNotes(v);
+    setNotes(v.trim());
   };
 
   return (
@@ -34,7 +34,8 @@ const ExerciseTemplateModal = ({
         visible={notesModalVisible}
         onDismiss={() => setNotesModalVisible(false)}
         animationPreset="slide"
-        contentContainerStyle={styles.modalContainer}>
+        contentContainerStyle={styles.modalContainer}
+      >
         <Card style={styles.contentContainer}>
           <Card.Title
             title={`${exerciseName} Notes:`}
@@ -43,10 +44,11 @@ const ExerciseTemplateModal = ({
           <Card.Content>
             <View
               style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}>
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
               <TextInput
                 style={{ flex: 1 }}
                 multiline={true}
@@ -57,14 +59,15 @@ const ExerciseTemplateModal = ({
               />
             </View>
           </Card.Content>
-          <Card.Actions style={{ marginTop: 15, justifyContent: 'flex-end' }}>
+          <Card.Actions style={{ marginTop: 15, justifyContent: "flex-end" }}>
             <Button
               mode="contained"
               style={styles.button}
               onPress={() => {
                 setNotesModalVisible(false);
-                handleSaveNotes()
-              }}>
+                handleSaveNotes();
+              }}
+            >
               Save
             </Button>
           </Card.Actions>
@@ -78,12 +81,12 @@ const styles = StyleSheet.create({
   button: { marginHorizontal: 5 },
   contentContainer: {
     padding: 10,
-    width: '100%',
+    width: "100%",
   },
   modalContainer: {
-        justifyContent:'flex-start',
+    justifyContent: "flex-start",
     margin: 25,
-    alignItems: 'center',
+    alignItems: "center",
   },
 });
 

@@ -10,8 +10,8 @@ import {
   withTheme,
   useTheme,
 } from "react-native-paper";
-
 import dayjs from "dayjs";
+import { create_uid } from "../../../util/create_uid";
 import { UserDataContext } from "../../../context/UserDataContext";
 
 const CreateWorkoutModal = ({ showModal, setShowModal, handleOnPress }) => {
@@ -35,8 +35,7 @@ const CreateWorkoutModal = ({ showModal, setShowModal, handleOnPress }) => {
       dispatch({
         type: "CREATE_WORKOUT",
         payload: {
-          id: dayjs().unix(),
-
+          id: create_uid(),
           data: {
             date: dayjs().format("MMM D, YY"),
             name: inputData.trim(),

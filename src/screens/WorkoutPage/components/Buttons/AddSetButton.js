@@ -4,31 +4,23 @@ import { Button } from "react-native-paper";
 import { empty_set } from "../../../../static/empty_set";
 import { UserDataContext } from "../../../../context/UserDataContext";
 import { WorkoutDataContext } from "../../../../context/WorkoutDataContext";
+import Animated, { SequencedTransition } from "react-native-reanimated";
 
 const AddSetButton = ({
   workoutData,
   exerciseIndex,
   exerciseData,
-  setWorkoutData,
+  handleAddSet,
 }) => {
   const { state, dispatch } = useContext(UserDataContext);
-  const { id } = useContext(WorkoutDataContext);
-
-  const handleAddSet = useCallback(() => {
-    // append this exercises set array with a new empty set
-    const newExercises = workoutData.exercises;
-    const newSetArray = [...exerciseData.sets, { ...empty_set }];
-    newExercises[exerciseIndex].sets = newSetArray;
-    dispatch({
-      type: "CREATE_SET",
-      payload: { id: id, exerciseIndex: exerciseIndex, data: newExercises },
-    });
-  }, [workoutData.exercises]);
+  const { id, workkoutData, setWorkoutData } = useContext(WorkoutDataContext);
 
   return (
-    <Button style={styles.button} onPress={handleAddSet}>
-      Add Set
-    </Button>
+    <Animated.View layout={SequencedTransition}>
+      <Button style={styles.button} onPress={handleAddSet}>
+        Add Set
+      </Button>
+    </Animated.View>
   );
 };
 
