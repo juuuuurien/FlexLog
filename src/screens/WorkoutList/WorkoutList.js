@@ -36,10 +36,25 @@ const WorkoutList = ({ navigation }) => {
   //   );
   // };
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    fab: {
+      position: "absolute",
+      margin: 16,
+      right: 0,
+      bottom: 0,
+      backgroundColor: colors.primary,
+    },
+  });
+
   const ListScreen = () => {
     return (
       <FlatList
-        style={{ width: "100%", padding: 5 }}
+        style={{ flex: 1, width: "100%", paddingTop: 16 }}
         data={Object.keys(state.workouts)}
         keyExtractor={(item) => {
           return item;
@@ -93,25 +108,17 @@ const WorkoutList = ({ navigation }) => {
           AsyncStorage.clear();
         }}
         color="red"
-        style={{ margin: 16, position: "absolute", left: 0, bottom: 0 }}
+        style={{
+          margin: 16,
+          position: "absolute",
+          left: 0,
+          bottom: 0,
+          backgroundColor: colors.error,
+        }}
         icon={"close"}
       />
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  fab: {
-    position: "absolute",
-    margin: 16,
-    right: 0,
-    bottom: 0,
-  },
-});
 
 export default withTheme(WorkoutList);

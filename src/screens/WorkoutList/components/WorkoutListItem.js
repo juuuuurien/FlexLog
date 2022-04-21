@@ -1,30 +1,47 @@
-import React, { useContext, useState } from 'react';
-import { StyleSheet, Pressable, Alert, Platform } from 'react-native';
-import { List, Colors, Caption, useTheme } from 'react-native-paper';
-import { UserDataContext } from '../../../context/UserDataContext';
+import React, { useContext, useState } from "react";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  Platform,
+  View,
+  Text,
+} from "react-native";
+import {
+  List,
+  Colors,
+  Caption,
+  Headline,
+  Subheading,
+  useTheme,
+} from "react-native-paper";
+import { UserDataContext } from "../../../context/UserDataContext";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+dayjs.extend(customParseFormat);
 
 const WorkoutListItem = ({ item, id, navigation }) => {
-  const { blueGrey200 } = Colors;
-  const { colors } = useTheme();
+  const { date, exercises } = item;
+  const dateInFormat = dayjs(date).format("ddd DD MMM");
+  const [day, dayNum] = dateInFormat.split(" ");
+
   const { dispatch } = useContext(UserDataContext);
-  const [pressed, setPressed] = useState(false);
   const handleLongPress = () => {
-    setPressed(false);
     Alert.alert(
-      'Delete this workout?',
+      "Delete this workout?",
       `Do you want to delete "${item.name}" ?`,
       [
         {
-          text: 'Cancel',
+          text: "Cancel",
           onPress: () => {
             return;
           },
-          style: 'cancel',
+          style: "cancel",
         },
         {
-          text: 'Yes',
+          text: "Yes",
           onPress: () => {
-            dispatch({ type: 'DELETE_WORKOUT', payload: id });
+            dispatch({ type: "DELETE_WORKOUT", payload: id });
           },
         },
       ]
@@ -32,9 +49,9 @@ const WorkoutListItem = ({ item, id, navigation }) => {
   };
 
   const handleCaption = () => {
-    if (item.finished) return 'Finished';
-    if (item.started && !item.finished) return 'In Progress';
-    return 'Not Started';
+    if (item.finished) return "Finished";
+    if (item.started && !item.finished) return "In Progress";
+    return "Not Started";
   };
 
   const handleColor = () => {
@@ -43,46 +60,81 @@ const WorkoutListItem = ({ item, id, navigation }) => {
     return Colors.grey600;
   };
 
+  const handleDescription = () => {
+    let description = "";
+
+    if (exercises.length > 0) {
+      exercises.forEach(({ exercise_name }, i) => {
+        if (i !== exercises.length - 1) {
+          description += exercise_name + ", ";
+        } else {
+          description += exercise_name;
+        }
+      });
+      // concat with trailing dots if the character length hits above 45
+      if (description.length >= 45)
+        return description.substring(0, 45).concat("...");
+      return description;
+    }
+
+    return "Empty";
+  };
+
   const styles = StyleSheet.create({
+    container: {
+      margin: 4,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: Colors.grey900,
+      borderRadius: 10,
+    },
     listItem: {
       flex: 1,
-      margin: 5,
-      backgroundColor: pressed ? blueGrey200 : colors.background,
-      borderBottomWidth: 2,
-      borderColor: blueGrey200,
+      height: "100%",
       elevation: 1,
+      backgroundColor: Colors.grey800,
+      borderRadius: 10,
     },
     caption: {
       color: handleColor(),
       padding: 10,
-      textAlign: 'center',
-      textAlignVertical: 'center',
     },
-    titleStyle: { fontWeight: 'bold', fontSize: 22 },
+    titleStyle: { fontWeight: "bold", fontSize: 26 },
+    subheading: { margin: 0, fontSize: 14 },
+    dateTab: {
+      justifyContent: "center",
+      alignItems: "center",
+      textAlign: "center",
+      textAlignVertical: "center",
+      width: "20%",
+      padding: 6,
+    },
   });
 
   return (
-    <Pressable
+    <TouchableOpacity
+      activeOpacity={0.5}
+      style={styles.container}
       onLongPress={handleLongPress}
-      onPressIn={() => {
-        Platform.OS === 'web'
-          ? navigation.navigate('WorkoutPage', { id: id })
-          : setPressed(true);
-      }}
-      onPressOut={() => setPressed(false)}
       onPress={() => {
-        navigation.navigate('WorkoutPage', { id: id });
-      }}>
+        navigation.navigate("WorkoutPage", { id: id });
+      }}
+    >
+      <View style={styles.dateTab}>
+        <Subheading style={[styles.subheading]}>{day}</Subheading>
+        <Headline style={[styles.titleStyle]}>{dayNum}</Headline>
+      </View>
       <List.Item
         style={styles.listItem}
         titleStyle={styles.titleStyle}
         title={item.name}
-        description={`Created: ${item.date}`}
+        description={handleDescription()}
         right={() => (
           <Caption style={styles.caption}>{handleCaption()}</Caption>
         )}
       />
-    </Pressable>
+    </TouchableOpacity>
   );
 };
 
