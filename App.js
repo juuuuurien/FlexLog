@@ -1,22 +1,20 @@
 import React, { useState, useEffect, useReducer, useRef } from "react";
-import { AppState, ToastAndroid } from "react-native";
-import {
-  DefaultTheme as PaperDefaultTheme,
-  DarkTheme as PaperDarkTheme,
-  Provider as PaperProvider,
-} from "react-native-paper";
+import { AppState } from "react-native";
+import { Provider as PaperProvider } from "react-native-paper";
 import { UserDataContextProvider } from "./src/context/UserDataContext";
-import {
-  NavigationContainer,
-  DarkTheme as NavigationDarkTheme,
-  DefaultTheme as NavigationDefaultTheme,
-} from "@react-navigation/native";
+
+import { NavigationContainer } from "@react-navigation/native";
+import WorkoutListNavigator from "./src/screens/WorkoutList/WorkoutListNavigator";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAsyncStorage } from "./src/hooks/useAsyncStorage";
+
 import { userDataReducer } from "./src/reducers/UserDataReducer";
+
 import Loading from "./src/components/global/Loading";
-import WorkoutListNavigator from "./src/screens/WorkoutList/WorkoutListNavigator";
 import { StatusBar } from "expo-status-bar";
+
+import { CombinedDarkTheme } from "./src/theme";
 
 // let userData = {
 //   workouts: {
@@ -182,19 +180,6 @@ export default function App() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
-
-  const CombinedDarkTheme = {
-    ...PaperDarkTheme,
-    ...NavigationDarkTheme,
-    colors: {
-      ...PaperDarkTheme.colors,
-      ...NavigationDarkTheme.colors,
-      surface: "#425158",
-      background: "#0E1619",
-      cardColor: "#1F2024",
-      card: "#1F2024",
-    },
-  };
 
   return (
     <UserDataContextProvider

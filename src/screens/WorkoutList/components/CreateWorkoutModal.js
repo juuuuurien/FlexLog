@@ -20,6 +20,8 @@ const CreateWorkoutModal = ({ showModal, setShowModal, handleOnPress }) => {
   const [inputData, setInputData] = useState("");
   const [isError, setIsError] = useState(false);
 
+  console.log("rendering in workout modal");
+
   const handleChange = (text) => {
     setInputData(text);
   };

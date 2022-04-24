@@ -2,8 +2,6 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import WorkoutList from "./WorkoutList";
 import WorkoutPage from "../WorkoutPage/WorkoutPage";
-
-import StartWorkoutButton from "../WorkoutPage/components/Buttons/StartWorkoutButton";
 import { useTheme } from "react-native-paper";
 
 const Stack = createStackNavigator();

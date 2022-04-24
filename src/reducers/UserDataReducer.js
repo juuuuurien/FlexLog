@@ -90,7 +90,6 @@ export const userDataReducer = (state, action) => {
       };
     }
     case "UPDATE_EXERCISE": {
-      console.log("in reducer, updating exercises.....");
       return {
         ...state,
         workouts: {

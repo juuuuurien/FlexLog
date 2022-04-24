@@ -17,6 +17,8 @@ const WorkoutList = ({ navigation }) => {
   const { state, dispatch } = useContext(UserDataContext);
   const [showModal, setShowModal] = useState(false);
 
+  console.log("rendering in workout list");
+
   // const ListComponent = () => {
   //   return (
   //     <FlatList

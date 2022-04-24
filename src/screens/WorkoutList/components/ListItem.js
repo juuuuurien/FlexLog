@@ -21,7 +21,6 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 dayjs.extend(customParseFormat);
 
 const ListItem = ({ item, id, navigation }) => {
-  console.log(item);
   const { date, exercises } = item;
   const dateInFormat = dayjs(date).format("ddd DD MMM");
   const [day, dayNum] = dateInFormat.split(" ");
@@ -62,8 +61,8 @@ const ListItem = ({ item, id, navigation }) => {
   };
 
   const handleCardColor = () => {
-    // if (exercises[0] === undefined) return "#162227";
-    // const { exercise_name } = exercises[0];
+    if (exercises[0] === undefined) return "#162227";
+    const { exercise_name } = exercises[0];
 
     //  check if exercises includes certain keywords
     const pushKeywords = ["bench", "press", "push", "tricep", "shoulder"];
@@ -71,13 +70,13 @@ const ListItem = ({ item, id, navigation }) => {
     const legsKeywords = ["squat", "leg", "hamstring", "romanian"];
     const otherKeywords = ["run", "plank", "ab", "abs"];
 
-    if (pushKeywords.some((e) => item.name.toLowerCase().includes(e)))
-      return "#B63030";
-    if (pullKeywords.some((e) => item.name.toLowerCase().includes(e)))
-      return "#1575AB";
-    if (legsKeywords.some((e) => item.name.toLowerCase().includes(e)))
+    if (pushKeywords.some((e) => exercise_name.toLowerCase().includes(e)))
+      return "#C33939";
+    if (pullKeywords.some((e) => exercise_name.toLowerCase().includes(e)))
+      return "#4067D4";
+    if (legsKeywords.some((e) => exercise_name.toLowerCase().includes(e)))
       return "#339A4A";
-    if (otherKeywords.some((e) => item.name.toLowerCase().includes(e)))
+    if (otherKeywords.some((e) => exercise_name.toLowerCase().includes(e)))
       return "#5828A7";
 
     return "#162227";
@@ -116,6 +115,14 @@ const ListItem = ({ item, id, navigation }) => {
       <View style={[styles.dateTab]}>
         <Subheading style={[styles.subheading]}>{day}</Subheading>
         <Headline style={[styles.dateMonth]}>{dayNum}</Headline>
+        {/* <View
+          style={{
+            borderRadius: 100,
+            height: 10,
+            width: 10,
+            backgroundColor: handleCardColor(),
+          }}
+        ></View> */}
       </View>
       <List.Item
         style={styles.listItem}
