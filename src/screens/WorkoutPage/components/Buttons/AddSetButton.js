@@ -4,7 +4,7 @@ import { Button } from "react-native-paper";
 import { empty_set } from "../../../../static/empty_set";
 import { UserDataContext } from "../../../../context/UserDataContext";
 import { WorkoutDataContext } from "../../../../context/WorkoutDataContext";
-import Animated, { SequencedTransition } from "react-native-reanimated";
+import Animated, { Layout } from "react-native-reanimated";
 
 const AddSetButton = ({
   workoutData,
@@ -16,7 +16,7 @@ const AddSetButton = ({
   const { id, workkoutData, setWorkoutData } = useContext(WorkoutDataContext);
 
   return (
-    <Animated.View layout={SequencedTransition}>
+    <Animated.View layout={Layout}>
       <Button style={styles.button} onPress={handleAddSet}>
         Add Set
       </Button>

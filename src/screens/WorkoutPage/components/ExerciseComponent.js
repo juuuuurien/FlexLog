@@ -124,7 +124,7 @@ const ExerciseComponent = ({
 
   return (
     <Animated.View
-      layout={SequencedTransition}
+      layout={Layout}
       entering={FadeInDown.delay(200)}
       exiting={FadeOutDown.duration(150)}
       style={styles.container}

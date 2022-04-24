@@ -46,8 +46,6 @@ const ExerciseTableSet = ({
   const [reps, setReps] = useState(setData.reps);
   const [pressed, setPressed] = useState(false);
 
-  console.log("this weight from setData", setData.weight);
-
   const setWeightFromState = setData.weight;
   const setRepsFromState = setData.reps;
 
@@ -174,9 +172,9 @@ const ExerciseTableSet = ({
   // });
 
   return (
-    <Animated.View layout={SequencedTransition} entering={FadeIn.delay(250)}>
+    <Animated.View layout={Layout} entering={FadeIn}>
       <Animated.View
-        layout={SequencedTransition}
+        layout={Layout}
         style={[styles.trashCanContainer, animatedFadeStyle]}
       >
         <IconButton icon="trash-can-outline" />

@@ -56,12 +56,12 @@ export default function App() {
     try {
       // console.log('Updating Storage');
       // console.log(state, 'This is state');
-      setLoading(true)
+      setLoading(true);
       updateStorage(state);
     } catch (e) {
       console.warn(e);
-    }finally {
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -84,6 +84,60 @@ export default function App() {
   //   };
   // }, []);
 
+  const fake_data = {
+    workouts: {
+      l3azxdoohq0okwmwzjc: {
+        date: "Apr 22, 24",
+        exercises: [],
+        finished: false,
+        name: "T",
+        started: false,
+      },
+      l4b0low64a97ueok30m: {
+        date: "June 22, 22",
+        exercises: [],
+        finished: false,
+        name: "T",
+        started: false,
+      },
+      l5b0low64a97ueok30m: {
+        date: "June 22, 22",
+        exercises: [],
+        finished: false,
+        name: "T",
+        started: false,
+      },
+      l6b0lmug5tijuibslr6: {
+        date: "May 22, 22",
+        exercises: [],
+        finished: false,
+        name: "H",
+        started: false,
+      },
+      l7b0low64a97ueok30m: {
+        date: "June 22, 22",
+        exercises: [],
+        finished: false,
+        name: "T",
+        started: false,
+      },
+      l8b0lmug5tijuibslr6: {
+        date: "Jul 22, 22",
+        exercises: [],
+        finished: false,
+        name: "H",
+        started: false,
+      },
+      l9b0lmug5tijuibslr6: {
+        date: "May 22, 22",
+        exercises: [],
+        finished: false,
+        name: "H",
+        started: false,
+      },
+    },
+  };
+
   // listen to userData state and update on change
   useEffect(() => {
     // console.log(state, 'This is state now after update')
@@ -105,8 +159,8 @@ export default function App() {
         } else {
           // console.log('no data found, setting initial data to asyncstorage');
           try {
-            updateStorage({ ...initial_state });
-            dispatch({ type: "INITIALIZE_STATE", payload: initial_state });
+            updateStorage({ ...fake_data });
+            dispatch({ type: "INITIALIZE_STATE", payload: fake_data });
           } catch (err) {
             console.warn(err);
           }
@@ -135,7 +189,8 @@ export default function App() {
     colors: {
       ...PaperDarkTheme.colors,
       ...NavigationDarkTheme.colors,
-      backgroundColor: "#121317",
+      surface: "#425158",
+      background: "#0E1619",
       cardColor: "#1F2024",
       card: "#1F2024",
     },
