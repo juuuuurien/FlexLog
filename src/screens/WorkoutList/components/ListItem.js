@@ -18,6 +18,7 @@ import {
 import { UserDataContext } from "../../../context/UserDataContext";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import SwipeToDelete from "../../../components/animations/SwipeToDelete";
 dayjs.extend(customParseFormat);
 
 const ListItem = ({ item, id, navigation }) => {
@@ -105,6 +106,7 @@ const ListItem = ({ item, id, navigation }) => {
 
   return (
     <TouchableOpacity
+      delayLongPress={250}
       activeOpacity={0.5}
       style={[styles.container, { backgroundColor: handleCardColor() }]}
       onLongPress={handleLongPress}

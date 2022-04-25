@@ -30,6 +30,7 @@ import Animated, {
   SequencedTransition,
 } from "react-native-reanimated";
 import { UserDataContext } from "../../../../context/UserDataContext";
+import SwipeToDelete from "../../../../components/animations/SwipeToDelete";
 
 const ExerciseTableSet = ({
   set_count,
@@ -116,50 +117,50 @@ const ExerciseTableSet = ({
   });
 
   // ANIMATIONS ==========================================
-  const SCREEN_WIDTH = Dimensions.get("window").width;
-  const translateX = useSharedValue(0);
-  const fadeOut = useSharedValue(0);
-  const animatedHeight = useSharedValue(48);
+  // const SCREEN_WIDTH = Dimensions.get("window").width;
+  // const translateX = useSharedValue(0);
+  // const fadeOut = useSharedValue(0);
+  // const animatedHeight = useSharedValue(48);
 
-  useEffect(() => {
-    translateX.value = 0;
-    animatedHeight.value = 48;
-  }, [workoutData]);
+  // useEffect(() => {
+  //   translateX.value = 0;
+  //   animatedHeight.value = 48;
+  // }, [workoutData]);
 
-  const gestureHandler = useAnimatedGestureHandler({
-    onStart: (_, ctx) => {
-      fadeOut.value = 1;
-    },
-    onActive: (event, ctx) => {
-      if (event.translationX < 0) {
-        translateX.value = event.translationX;
-      }
-    },
-    onEnd: (event, ctx) => {
-      if (event.translationX < -SCREEN_WIDTH / 4 || event.velocityX < -1300) {
-        fadeOut.value = withTiming(0);
-        translateX.value = withTiming(-SCREEN_WIDTH, {}, (isFinished) => {
-          if (isFinished) {
-            runOnJS(handleDeleteSet)(setData.id);
-          }
-        });
-      } else {
-        translateX.value = withTiming(0);
-      }
-    },
-  });
+  // const gestureHandler = useAnimatedGestureHandler({
+  //   onStart: (_, ctx) => {
+  //     fadeOut.value = 1;
+  //   },
+  //   onActive: (event, ctx) => {
+  //     if (event.translationX < 0) {
+  //       translateX.value = event.translationX;
+  //     }
+  //   },
+  //   onEnd: (event, ctx) => {
+  //     if (event.translationX < -SCREEN_WIDTH / 4 || event.velocityX < -1300) {
+  //       fadeOut.value = withTiming(0);
+  //       translateX.value = withTiming(-SCREEN_WIDTH, {}, (isFinished) => {
+  //         if (isFinished) {
+  //           runOnJS(handleDeleteSet)(setData.id);
+  //         }
+  //       });
+  //     } else {
+  //       translateX.value = withTiming(0);
+  //     }
+  //   },
+  // });
 
-  const animatedSlideStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateX: translateX.value }],
-    };
-  });
+  // const animatedSlideStyle = useAnimatedStyle(() => {
+  //   return {
+  //     transform: [{ translateX: translateX.value }],
+  //   };
+  // });
 
-  const animatedFadeStyle = useAnimatedStyle(() => {
-    return {
-      opacity: fadeOut.value,
-    };
-  });
+  // const animatedFadeStyle = useAnimatedStyle(() => {
+  //   return {
+  //     opacity: fadeOut.value,
+  //   };
+  // });
 
   // const animatedRowStyle = useAnimatedStyle(() => {
   //   return {
@@ -172,49 +173,82 @@ const ExerciseTableSet = ({
   // });
 
   return (
-    <Animated.View layout={Layout} entering={FadeIn}>
-      <Animated.View
-        layout={Layout}
-        style={[styles.trashCanContainer, animatedFadeStyle]}
-      >
-        <IconButton icon="trash-can-outline" />
-      </Animated.View>
-      <PanGestureHandler onGestureEvent={gestureHandler}>
-        <Animated.View style={[animatedSlideStyle]}>
-          <DataTable.Row style={styles.row}>
-            <DataTable.Cell>{set_count}</DataTable.Cell>
-            <DataTable.Cell style={styles.offsetTitle} numeric>
-              <TextInput
-                disabled={workoutData.finished}
-                dense
-                underlineColor="transparent"
-                keyboardType="numeric"
-                style={styles.textInput}
-                value={weight}
-                onFocus={dismissDelete}
-                onChangeText={handleWeightChange}
-                onBlur={handleWeightBlur}
-                maxLength={3}
-              />
-            </DataTable.Cell>
-            <DataTable.Cell style={styles.offsetTitle} numeric>
-              <TextInput
-                disabled={workoutData.finished}
-                dense
-                underlineColor="transparent"
-                keyboardType="numeric"
-                style={styles.textInput}
-                value={reps}
-                onFocus={dismissDelete}
-                onChangeText={handleRepsChange}
-                onBlur={handleRepsBlur}
-                maxLength={3}
-              />
-            </DataTable.Cell>
-          </DataTable.Row>
-        </Animated.View>
-      </PanGestureHandler>
-    </Animated.View>
+    // <Animated.View layout={Layout} entering={FadeIn}>
+    //   <Animated.View
+    //     layout={Layout}
+    //     style={[styles.trashCanContainer, animatedFadeStyle]}
+    //   >
+    //     <IconButton icon="trash-can-outline" />
+    //   </Animated.View>
+    //   <PanGestureHandler onGestureEvent={gestureHandler}>
+    //     <Animated.View style={[animatedSlideStyle]}>
+    //       <DataTable.Row style={styles.row}>
+    //         <DataTable.Cell>{set_count}</DataTable.Cell>
+    //         <DataTable.Cell style={styles.offsetTitle} numeric>
+    //           <TextInput
+    //             disabled={workoutData.finished}
+    //             dense
+    //             underlineColor="transparent"
+    //             keyboardType="numeric"
+    //             style={styles.textInput}
+    //             value={weight}
+    //             onFocus={dismissDelete}
+    //             onChangeText={handleWeightChange}
+    //             onBlur={handleWeightBlur}
+    //             maxLength={3}
+    //           />
+    //         </DataTable.Cell>
+    //         <DataTable.Cell style={styles.offsetTitle} numeric>
+    //           <TextInput
+    //             disabled={workoutData.finished}
+    //             dense
+    //             underlineColor="transparent"
+    //             keyboardType="numeric"
+    //             style={styles.textInput}
+    //             value={reps}
+    //             onFocus={dismissDelete}
+    //             onChangeText={handleRepsChange}
+    //             onBlur={handleRepsBlur}
+    //             maxLength={3}
+    //           />
+    //         </DataTable.Cell>
+    //       </DataTable.Row>
+    //     </Animated.View>
+    //   </PanGestureHandler>
+    // </Animated.View>
+    <SwipeToDelete deleteFn={handleDeleteSet} id={setData.id}>
+      <DataTable.Row style={styles.row}>
+        <DataTable.Cell>{set_count}</DataTable.Cell>
+        <DataTable.Cell style={styles.offsetTitle} numeric>
+          <TextInput
+            disabled={workoutData.finished}
+            dense
+            underlineColor="transparent"
+            keyboardType="numeric"
+            style={styles.textInput}
+            value={weight}
+            onFocus={dismissDelete}
+            onChangeText={handleWeightChange}
+            onBlur={handleWeightBlur}
+            maxLength={3}
+          />
+        </DataTable.Cell>
+        <DataTable.Cell style={styles.offsetTitle} numeric>
+          <TextInput
+            disabled={workoutData.finished}
+            dense
+            underlineColor="transparent"
+            keyboardType="numeric"
+            style={styles.textInput}
+            value={reps}
+            onFocus={dismissDelete}
+            onChangeText={handleRepsChange}
+            onBlur={handleRepsBlur}
+            maxLength={3}
+          />
+        </DataTable.Cell>
+      </DataTable.Row>
+    </SwipeToDelete>
   );
 };
 

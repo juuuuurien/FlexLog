@@ -18,6 +18,7 @@ import ExerciseTemplateModal from "./Modals/ExerciseTemplateModal";
 import ExerciseNotesModal from "./Modals/ExerciseNotesModal";
 import SetsByRepsComponent from "./SetsByRepsComponent";
 import { create_uid } from "../../../util/create_uid";
+import { capitalize } from "../../../util/capitalize";
 
 const ExerciseComponent = ({
   exerciseData,
@@ -45,12 +46,7 @@ const ExerciseComponent = ({
       workoutData.exercises[exerciseIndex].exercise_name !== name &&
       name.length > 0
     ) {
-      const _arr = name.trim().split(" ");
-      const _name = _arr
-        .map((word) => {
-          return word[0].toUpperCase() + word.substring(1);
-        })
-        .join(" ");
+      const _name = capitalize(name);
 
       let newExerciseArray = workoutData.exercises;
       newExerciseArray[exerciseIndex].exercise_name = _name;
@@ -98,30 +94,31 @@ const ExerciseComponent = ({
     },
     [workoutData.exercises]
   );
-
   const styles = StyleSheet.create({
     exerciseHeaderContainer: {
-      paddingHorizontal: 14,
+      flex: 1,
+      paddingHorizontal: 22,
       justifyContent: "space-between",
+      elevation: 3,
     },
 
-    textInput: {
+    exerciseNameInput: {
       flex: 1,
       color: colors.primary,
-      backgroundColor: "transparent",
       height: 48,
-      fontSize: 24,
+      backgroundColor: "transparent",
+      paddingHorizontal: 0,
+      fontSize: 20,
       lineHeight: 3,
     },
-    container: {
+    exercise: {
       marginHorizontal: 18,
       marginTop: 18,
       paddingVertical: 10,
       borderRadius: 10,
-      backgroundColor: colors.cardColor,
+      backgroundColor: colors.surface,
     },
   });
-
   return (
     <Animated.View
       layout={Layout}

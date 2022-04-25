@@ -17,7 +17,8 @@ const WorkoutList = ({ navigation }) => {
   const { state, dispatch } = useContext(UserDataContext);
   const [showModal, setShowModal] = useState(false);
 
-  console.log("rendering in workout list");
+  console.log("this is rendering ins WORKOUTLIST");
+  console.log(showModal);
 
   // const ListComponent = () => {
   //   return (
@@ -131,7 +132,13 @@ const WorkoutList = ({ navigation }) => {
         <EmptyListScreen />
       )}
       <Portal>
-        <CreateWorkoutModal showModal={showModal} setShowModal={setShowModal} />
+        <CreateWorkoutModal
+          show={() => {
+            setShowModal(true);
+          }}
+          hide={() => setShowModal(false)}
+          visible={showModal}
+        />
       </Portal>
       <FAB
         style={[styles.fab, { backgroundColor: colors.primary }]}
