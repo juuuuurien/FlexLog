@@ -1,6 +1,6 @@
 import { Menu, IconButton, useTheme } from "react-native-paper";
 import { StyleSheet } from "react-native";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useCallback } from "react";
 import { WorkoutDataContext } from "../../../../context/WorkoutDataContext";
 import { UserDataContext } from "../../../../context/UserDataContext";
 import { create_uid } from "../../../../util/create_uid";
@@ -9,6 +9,7 @@ const ExerciseSettingsDots = ({
   exercise_id,
   exerciseIndex,
   handleDeleteExercise,
+  handleAddFromTemplate,
   templateModalVisible,
   setTemplateModalVisible,
 }) => {
@@ -19,17 +20,20 @@ const ExerciseSettingsDots = ({
   const [menuVisible, setMenuVisible] = useState(false);
   const [subMenuVisible, setSubMenuVisible] = useState(false);
 
-  const handleAddFromTemplate = (sets, reps, weight) => {
-    let newSetArray = [];
-    for (let i = 0; i < sets; i++) {
-      const set = { weight: weight, reps: reps, id: create_uid() };
-      newSetArray.push(set);
-    }
+  // const handleAddFromTemplate = (sets, reps, weight) => {
+  //   let newSetArray = [];
+  //   for (let i = 0; i < sets; i++) {
+  //     const set = { weight: weight, reps: reps, id: create_uid() };
+  //     newSetArray.push(set);
+  //   }
 
-    const newExercises = [...workoutData.exercises];
-    newExercises[exerciseIndex].sets = newSetArray;
-    setWorkoutData({ ...workoutData, exercises: newExercises });
-  };
+  // console.log(workoutData.exercises)
+  //   const newExercises = [...workoutData.exercises];
+  //   // newExercises[exerciseIndex].sets = newSetArray;
+  //   // setWorkoutData({ ...workoutData, exercises: newExercises });
+  // };
+
+
 
   return (
     <Menu

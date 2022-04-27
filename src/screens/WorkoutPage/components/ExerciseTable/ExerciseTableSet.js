@@ -102,7 +102,7 @@ const ExerciseTableSet = ({
       justifyContent: "flex-end",
     },
     row: {
-      backgroundColor: colors.cardColor,
+      backgroundColor: colors.surface,
       paddingHorizontal: 30,
     },
     offsetTitle: {
@@ -173,49 +173,7 @@ const ExerciseTableSet = ({
   // });
 
   return (
-    // <Animated.View layout={Layout} entering={FadeIn}>
-    //   <Animated.View
-    //     layout={Layout}
-    //     style={[styles.trashCanContainer, animatedFadeStyle]}
-    //   >
-    //     <IconButton icon="trash-can-outline" />
-    //   </Animated.View>
-    //   <PanGestureHandler onGestureEvent={gestureHandler}>
-    //     <Animated.View style={[animatedSlideStyle]}>
-    //       <DataTable.Row style={styles.row}>
-    //         <DataTable.Cell>{set_count}</DataTable.Cell>
-    //         <DataTable.Cell style={styles.offsetTitle} numeric>
-    //           <TextInput
-    //             disabled={workoutData.finished}
-    //             dense
-    //             underlineColor="transparent"
-    //             keyboardType="numeric"
-    //             style={styles.textInput}
-    //             value={weight}
-    //             onFocus={dismissDelete}
-    //             onChangeText={handleWeightChange}
-    //             onBlur={handleWeightBlur}
-    //             maxLength={3}
-    //           />
-    //         </DataTable.Cell>
-    //         <DataTable.Cell style={styles.offsetTitle} numeric>
-    //           <TextInput
-    //             disabled={workoutData.finished}
-    //             dense
-    //             underlineColor="transparent"
-    //             keyboardType="numeric"
-    //             style={styles.textInput}
-    //             value={reps}
-    //             onFocus={dismissDelete}
-    //             onChangeText={handleRepsChange}
-    //             onBlur={handleRepsBlur}
-    //             maxLength={3}
-    //           />
-    //         </DataTable.Cell>
-    //       </DataTable.Row>
-    //     </Animated.View>
-    //   </PanGestureHandler>
-    // </Animated.View>
+
     <SwipeToDelete deleteFn={handleDeleteSet} id={setData.id}>
       <DataTable.Row style={styles.row}>
         <DataTable.Cell>{set_count}</DataTable.Cell>

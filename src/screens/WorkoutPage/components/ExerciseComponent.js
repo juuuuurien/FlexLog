@@ -55,18 +55,19 @@ const ExerciseComponent = ({
     }
   };
 
-  const handleAddFromTemplate = (sets, reps, weight) => {
-    const set = { weight: weight, reps: reps };
-    let newSetArray = [];
+ const handleAddFromTemplate = useCallback((sets, reps, weight) => {
+         let newSetArray = [];
     for (let i = 0; i < sets; i++) {
+      const set = { weight: weight, reps: reps, id: create_uid() };
       newSetArray.push(set);
     }
-    const newExerciseArray = workoutData.exercises;
-    newExerciseArray[exerciseIndex].sets = newSetArray;
-    setWorkoutData(
-      setWorkoutData({ ...workoutData, exercises: [...newExerciseArray] })
-    );
-  };
+    const exercises = [...workoutData.exercises];
+    exercises[exerciseIndex].sets = newSetArray;
+
+    setWorkoutData((data) => {
+      return { ...data, exercises: exercises };
+    });
+  }, [workoutData.exercises]);
 
   const handleAddSet = useCallback(() => {
     const exercises = [...workoutData.exercises];
@@ -101,7 +102,6 @@ const ExerciseComponent = ({
       justifyContent: "space-between",
       elevation: 3,
     },
-
     exerciseNameInput: {
       flex: 1,
       color: colors.primary,
@@ -124,15 +124,15 @@ const ExerciseComponent = ({
       layout={Layout}
       entering={FadeInDown.delay(200)}
       exiting={FadeOutDown.duration(150)}
-      style={styles.container}
+      style={styles.exercise}
     >
       <View style={styles.exerciseHeaderContainer}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <TextInput
             placeholder="'Exercise'"
-            style={styles.textInput}
+            style={styles.exerciseNameInput}
             value={name}
-            underlineColor="none"
+            underlineColor="transparent"
             activeUnderlineColor="transparent"
             selectionColor={colors.primary}
             onChangeText={handleNameChange}
@@ -150,6 +150,7 @@ const ExerciseComponent = ({
             exercise_id={exerciseData.id}
             exerciseIndex={exerciseIndex}
             handleDeleteExercise={handleDeleteExercise}
+            handleAddFromTemplate={handleAddFromTemplate}
             templateModalVisible={templateModalVisible}
             setTemplateModalVisible={setTemplateModalVisible}
           />

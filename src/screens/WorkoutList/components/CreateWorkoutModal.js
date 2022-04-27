@@ -20,7 +20,7 @@ const CreateWorkoutModal = ({ show, hide, visible }) => {
   const { dispatch } = useContext(UserDataContext);
   const [inputData, setInputData] = useState("");
   const [descriptionData, setDescriptionData] = useState("");
-  const [colorSelected, setColorSelected] = useState("#162227");
+  const [colorSelected, setColorSelected] = useState("auto");
   const [isError, setIsError] = useState(false);
 
   const RadioButton = ({ color }) => {
@@ -81,7 +81,7 @@ const CreateWorkoutModal = ({ show, hide, visible }) => {
   const handleClose = () => {
     setInputData("");
     setDescriptionData("");
-    setColorSelected("");
+    setColorSelected("auto");
     setIsError(false);
     hide();
   };

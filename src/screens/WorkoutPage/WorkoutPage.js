@@ -132,21 +132,6 @@ const WorkoutPage = ({ navigation, route }) => {
     });
   }, [workoutData]);
 
-  const handleDeleteSet = useCallback(
-    (set_id) => {
-      const newSets = exerciseData.sets.filter((e, i) => {
-        return e.id !== set_id;
-      });
-
-      const newExercises = [...workoutData.exercises];
-      newExercises[exerciseIndex].sets = newSets;
-
-      setWorkoutData((data) => {
-        return { ...data, exercises: [...newExercises] };
-      });
-    },
-    [workoutData.exercises]
-  );
 
   const handleDeleteExercise = useCallback(
     (exercise_id) => {
@@ -163,7 +148,7 @@ const WorkoutPage = ({ navigation, route }) => {
 
   return (
     <WorkoutDataContextProvider value={{ workoutData, setWorkoutData, id }}>
-      <ScrollView
+      <Animated.ScrollView
         style={styles.container}
         contentContainerStyle={styles.container}
       >
@@ -179,7 +164,7 @@ const WorkoutPage = ({ navigation, route }) => {
           );
         })}
         <AddExerciseButton handleAddExercise={handleAddExercise} />
-      </ScrollView>
+      </Animated.ScrollView>
     </WorkoutDataContextProvider>
   );
 };
