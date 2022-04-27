@@ -103,6 +103,7 @@ const CreateWorkoutModal = ({ show, hide, visible }) => {
           },
         },
       });
+      handleClose();
     } else {
       setIsError(true);
     }
@@ -191,24 +192,18 @@ const CreateWorkoutModal = ({ show, hide, visible }) => {
           <View style={styles.labelColorContainer}>
             <Text style={{ color: colors.text }}>{"Label color: "}</Text>
             <View style={styles.labelColorContainer}>
-              <RadioButton color={"#162227"} />
-              <RadioButton color={"#E7274A"} />
-              <RadioButton color={"#1D83BD"} />
-              <RadioButton color={"#53C86D"} />
-              <RadioButton color={"#5828A7"} />
+              <RadioButton color={"#1E3742"} />
+              <RadioButton color={"#C33939"} />
+              <RadioButton color={"#1D84BD"} />
+              <RadioButton color={"#3DBF5A"} />
+              <RadioButton color={"#4B228E"} />
               <RadioButton color={"auto"} />
             </View>
           </View>
         </Card.Content>
         <Card.Actions style={{ marginTop: 15, justifyContent: "flex-end" }}>
           <Button onPress={handleClose}>{"Cancel"}</Button>
-          <Button
-            mode="contained"
-            onPress={() => {
-              handleClose();
-              handleCreate();
-            }}
-          >
+          <Button mode="contained" onPress={() => handleCreate()}>
             {"Create"}
           </Button>
         </Card.Actions>

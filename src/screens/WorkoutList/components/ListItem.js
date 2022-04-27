@@ -62,7 +62,7 @@ const ListItem = ({ item, id, navigation }) => {
   };
 
   const handleCardColor = () => {
-    if (exercises[0] === undefined) return "#162227";
+    if (exercises[0] === undefined) return "#1E3742";
     const { exercise_name } = exercises[0];
 
     //  check if exercises includes certain keywords
@@ -74,13 +74,13 @@ const ListItem = ({ item, id, navigation }) => {
     if (pushKeywords.some((e) => exercise_name.toLowerCase().includes(e)))
       return "#C33939";
     if (pullKeywords.some((e) => exercise_name.toLowerCase().includes(e)))
-      return "#4067D4";
+      return "#1D84BD";
     if (legsKeywords.some((e) => exercise_name.toLowerCase().includes(e)))
-      return "#339A4A";
+      return "#3DBF5A";
     if (otherKeywords.some((e) => exercise_name.toLowerCase().includes(e)))
-      return "#5828A7";
+      return "#4B228E";
 
-    return "#162227";
+    return "#1E3742";
   };
 
   const handleDescription = () => {
@@ -104,11 +104,21 @@ const ListItem = ({ item, id, navigation }) => {
     return "Empty";
   };
 
+  console.log(item.cardColor, "THIS IS WITHIN ITEM");
+
   return (
     <TouchableOpacity
       delayLongPress={250}
       activeOpacity={0.5}
-      style={[styles.container, { backgroundColor: handleCardColor() }]}
+      style={[
+        styles.container,
+        {
+          backgroundColor:
+            item.cardColor === "" || item.cardColor === "auto"
+              ? handleCardColor()
+              : item.cardColor,
+        },
+      ]}
       onLongPress={handleLongPress}
       onPress={() => {
         navigation.navigate("WorkoutPage", { id: id });
@@ -156,7 +166,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: "100%",
     elevation: 1,
-    backgroundColor: "#425158",
+    backgroundColor: "#16242A",
     borderRadius: 12,
   },
   caption: {

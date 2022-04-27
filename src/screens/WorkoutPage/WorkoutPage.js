@@ -4,7 +4,7 @@ import React, {
   useEffect,
   useLayoutEffect,
   useCallback,
-  useMemo,
+  useRef,
 } from "react";
 import {
   View,
@@ -12,6 +12,7 @@ import {
   ScrollView,
   Alert,
   ToastAndroid,
+  Text,
 } from "react-native";
 import Animated, { Layout, SequencedTransition } from "react-native-reanimated";
 import { UserDataContext } from "../../context/UserDataContext";
@@ -88,13 +89,17 @@ const WorkoutPage = ({ navigation, route }) => {
         data: workoutData,
       },
     });
-    ToastAndroid.show("Saved!", ToastAndroid.SHORT);
+    ToastAndroid.show("Saved!", ToastAndroid.CENTER);
   };
 
   const HeaderRightComponent = () => {
     return (
-      <View style={{ flexDirection: "row" }}>
-        <StartWorkoutButton id={id} />
+      <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
+        <StartWorkoutButton
+          id={id}
+          workoutData={workoutData}
+          setWorkoutData={setWorkoutData}
+        />
         {workoutData !== state.workouts[id] && (
           <Button onPress={handleSaveData}>Save Changes</Button>
         )}
@@ -132,7 +137,6 @@ const WorkoutPage = ({ navigation, route }) => {
     });
   }, [workoutData]);
 
-
   const handleDeleteExercise = useCallback(
     (exercise_id) => {
       const newExercises = workoutData.exercises.filter((e, i) => {
@@ -146,8 +150,21 @@ const WorkoutPage = ({ navigation, route }) => {
     [workoutData.exercises]
   );
 
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let interval;
+
+    interval = setInterval(() => {
+      setCount((count) => count + 1);
+    });
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <WorkoutDataContextProvider value={{ workoutData, setWorkoutData, id }}>
+      <Text style={{ color: "white" }}>`{count}`</Text>
       <Animated.ScrollView
         style={styles.container}
         contentContainerStyle={styles.container}
