@@ -7,6 +7,7 @@ import { UserDataContext } from "../../context/UserDataContext";
 import CreateWorkoutModal from "./components/CreateWorkoutModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import dayjs from "dayjs";
+import { KeyboardAvoidingView } from "react-native-web";
 
 const initial_state = {
   workouts: {},

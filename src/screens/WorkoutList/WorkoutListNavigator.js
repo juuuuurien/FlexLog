@@ -25,7 +25,11 @@ const WorkoutListNavigator = () => {
         component={WorkoutList}
         options={{ title: "Your Workouts" }}
       />
-      <Stack.Screen name="WorkoutPage" component={WorkoutPage} />
+      <Stack.Screen
+        name="WorkoutPage"
+        options={{ presentation: "modal" }}
+        component={WorkoutPage}
+      />
     </Stack.Navigator>
   );
 };

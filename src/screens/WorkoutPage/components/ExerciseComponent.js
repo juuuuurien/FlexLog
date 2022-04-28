@@ -3,10 +3,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { TextInput, useTheme, IconButton } from "react-native-paper";
 import Animated, {
   Layout,
-  SlideOutLeft,
-  FadeInDown,
-  SequencedTransition,
-  StretchInY,
+  FadeInUp,
   FadeOutDown,
 } from "react-native-reanimated";
 import { WorkoutDataContext } from "../../../context/WorkoutDataContext";
@@ -35,7 +32,7 @@ const ExerciseComponent = ({
   useEffect(() => {
     setName(exerciseData.exercise_name);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [workoutData]);
+  }, [workoutData.name]);
 
   const handleNameChange = (str) => {
     setName(str);
@@ -55,19 +52,22 @@ const ExerciseComponent = ({
     }
   };
 
- const handleAddFromTemplate = useCallback((sets, reps, weight) => {
-         let newSetArray = [];
-    for (let i = 0; i < sets; i++) {
-      const set = { weight: weight, reps: reps, id: create_uid() };
-      newSetArray.push(set);
-    }
-    const exercises = [...workoutData.exercises];
-    exercises[exerciseIndex].sets = newSetArray;
+  const handleAddFromTemplate = useCallback(
+    (sets, reps, weight) => {
+      let newSetArray = [];
+      for (let i = 0; i < sets; i++) {
+        const set = { weight: weight, reps: reps, id: create_uid() };
+        newSetArray.push(set);
+      }
+      const exercises = [...workoutData.exercises];
+      exercises[exerciseIndex].sets = newSetArray;
 
-    setWorkoutData((data) => {
-      return { ...data, exercises: exercises };
-    });
-  }, [workoutData.exercises]);
+      setWorkoutData((data) => {
+        return { ...data, exercises: exercises };
+      });
+    },
+    [workoutData.exercises]
+  );
 
   const handleAddSet = useCallback(() => {
     const exercises = [...workoutData.exercises];
@@ -122,7 +122,7 @@ const ExerciseComponent = ({
   return (
     <Animated.View
       layout={Layout}
-      entering={FadeInDown.delay(200)}
+      entering={FadeInUp.delay(200)}
       exiting={FadeOutDown.duration(150)}
       style={styles.exercise}
     >

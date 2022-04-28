@@ -97,6 +97,8 @@ const CreateWorkoutModal = ({ show, hide, visible }) => {
             name: capitalize(inputData.trim()),
             exercises: [],
             started: false,
+            startTime: undefined,
+            finishTime: undefined,
             finished: false,
             cardColor: colorSelected,
             description: descriptionData.trim(),

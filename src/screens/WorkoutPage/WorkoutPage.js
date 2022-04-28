@@ -24,6 +24,8 @@ import { Portal, Button } from "react-native-paper";
 import { useAsyncStorage } from "../../../src/hooks/useAsyncStorage";
 import { empty_exercise } from "../../static/empty_exercise";
 import { create_uid } from "../../util/create_uid";
+import Stopwatch from "./components/Stopwatch";
+import dayjs from "dayjs";
 
 const WorkoutPage = ({ navigation, route }) => {
   const [storageValue, updateStorage] = useAsyncStorage("userData");
@@ -78,10 +80,10 @@ const WorkoutPage = ({ navigation, route }) => {
 
         return;
       }),
-    [navigation, workoutData, state.workouts[id]]
+    [workoutData, state.workouts[id]]
   );
 
-  const handleSaveData = async () => {
+  const handleSaveData = () => {
     dispatch({
       type: "UPDATE_WORKOUT",
       payload: {
@@ -89,7 +91,6 @@ const WorkoutPage = ({ navigation, route }) => {
         data: workoutData,
       },
     });
-    ToastAndroid.show("Saved!", ToastAndroid.CENTER);
   };
 
   const HeaderRightComponent = () => {
@@ -101,7 +102,7 @@ const WorkoutPage = ({ navigation, route }) => {
           setWorkoutData={setWorkoutData}
         />
         {workoutData !== state.workouts[id] && (
-          <Button onPress={handleSaveData}>Save Changes</Button>
+          <Button onPress={handleSaveData}>Save</Button>
         )}
       </View>
     );
@@ -150,21 +151,23 @@ const WorkoutPage = ({ navigation, route }) => {
     [workoutData.exercises]
   );
 
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    let interval;
-
-    interval = setInterval(() => {
-      setCount((count) => count + 1);
-    });
-
-    return () => clearInterval(interval);
-  }, []);
+  const handleResetTimer = () => {
+    setWorkoutData({ ...workoutData, startTime: dayjs().format() });
+  };
 
   return (
-    <WorkoutDataContextProvider value={{ workoutData, setWorkoutData, id }}>
-      <Text style={{ color: "white" }}>`{count}`</Text>
+    <WorkoutDataContextProvider
+      value={{ workoutData, setWorkoutData, id, handleSaveData }}
+    >
+      {workoutData.started && (
+        <Stopwatch
+          startTime={workoutData.startTime}
+          finishTime={workoutData.finishTime}
+          started={workoutData.started}
+          finished={workoutData.finished}
+          handleResetTimer={handleResetTimer}
+        />
+      )}
       <Animated.ScrollView
         style={styles.container}
         contentContainerStyle={styles.container}

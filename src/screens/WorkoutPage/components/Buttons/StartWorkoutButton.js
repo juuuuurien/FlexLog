@@ -3,9 +3,12 @@ import { Alert } from "react-native";
 import { Button, Colors } from "react-native-paper";
 import { WorkoutDataContext } from "../../../../context/WorkoutDataContext";
 import { UserDataContext } from "../../../../context/UserDataContext";
+import dayjs from "dayjs";
 
 const StartWorkoutButton = ({ id, workoutData, setWorkoutData }) => {
   // this will update WorkoutDataState and append it with an empty exercise
+
+  const { dispatch } = useContext(UserDataContext);
 
   const [started, setStarted] = useState(false);
   const [finished, setFinished] = useState(false);
@@ -33,9 +36,29 @@ const StartWorkoutButton = ({ id, workoutData, setWorkoutData }) => {
 
   const handlePress = () => {
     if (!started) {
-      setWorkoutData({ ...workoutData, started: true });
+      setWorkoutData({
+        ...workoutData,
+        started: true,
+        startTime: dayjs().format(),
+      });
       return;
     }
+
+    const getTimeString = (initial_time, end_time) => {
+      const hours = dayjs(end_time).diff(initial_time, "hours");
+      const minutes = dayjs(end_time).diff(initial_time, "minutes") % 60;
+      const seconds =
+        dayjs(end_time).diff(initial_time, "second") -
+        dayjs(end_time).diff(initial_time, "minutes") * 60;
+
+      const toDoubleDigits = (num) => {
+        return num >= 10 ? num : "0" + num;
+      };
+
+      return `${toDoubleDigits(hours)}:${toDoubleDigits(
+        minutes
+      )}:${toDoubleDigits(seconds)}`;
+    };
 
     if (started && !finished) {
       Alert.alert("Finish Workout", `Are you finished with this workout?`, [
@@ -49,7 +72,14 @@ const StartWorkoutButton = ({ id, workoutData, setWorkoutData }) => {
         {
           text: "Finish this workout.",
           onPress: () => {
-            setWorkoutData({ ...workoutData, finished: true });
+            setWorkoutData({
+              ...workoutData,
+              finished: true,
+              finishTime: getTimeString(
+                workoutData.startTime,
+                dayjs().format()
+              ),
+            });
           },
         },
       ]);

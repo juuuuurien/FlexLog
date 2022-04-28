@@ -53,8 +53,9 @@ const ExerciseTableSet = ({
   useEffect(() => {
     setWeight(setData.weight);
     setReps(setData.reps);
+    console.log("setting");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [workoutData]);
+  }, [workoutData.exercises[exerciseIndex]]);
 
   const handleWeightBlur = () => {
     // after editing text
@@ -173,7 +174,6 @@ const ExerciseTableSet = ({
   // });
 
   return (
-
     <SwipeToDelete deleteFn={handleDeleteSet} id={setData.id}>
       <DataTable.Row style={styles.row}>
         <DataTable.Cell>{set_count}</DataTable.Cell>
