@@ -23,7 +23,7 @@ const WorkoutListNavigator = () => {
       <Stack.Screen
         name="WorkoutList"
         component={WorkoutList}
-        options={{ title: "Your Workouts" }}
+        options={{ title: "Your Workouts", headerShown: false }}
       />
       <Stack.Screen
         name="WorkoutPage"
