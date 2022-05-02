@@ -1,35 +1,9 @@
-import React, { useState, useContext, useEffect, useCallback } from "react";
-import { View, StyleSheet, Dimensions } from "react-native";
-import {
-  Button,
-  DataTable,
-  TextInput,
-  IconButton,
-  TouchableRipple,
-  Portal,
-  useTheme,
-} from "react-native-paper";
+import React, { useState, useContext, useEffect } from "react";
+import { StyleSheet } from "react-native";
+import { DataTable, TextInput, useTheme } from "react-native-paper";
 
 import { WorkoutDataContext } from "../../../../context/WorkoutDataContext";
 
-import { PanGestureHandler } from "react-native-gesture-handler";
-
-import Animated, {
-  useSharedValue,
-  withTiming,
-  useAnimatedStyle,
-  useAnimatedGestureHandler,
-  runOnJS,
-  Layout,
-  FadeInDown,
-  SlideOutLeft,
-  FadeOut,
-  combineTransition,
-  FadeIn,
-  StretchInY,
-  SequencedTransition,
-} from "react-native-reanimated";
-import { UserDataContext } from "../../../../context/UserDataContext";
 import SwipeToDelete from "../../../../components/animations/SwipeToDelete";
 
 const ExerciseTableSet = ({
@@ -37,12 +11,10 @@ const ExerciseTableSet = ({
   exerciseIndex,
   setIndex,
   setData,
-  set_id,
   handleDeleteSet,
 }) => {
   const { colors } = useTheme();
-  const { workoutData, setWorkoutData, id } = useContext(WorkoutDataContext);
-  const { state, dispatch } = useContext(UserDataContext);
+  const { workoutData, setWorkoutData } = useContext(WorkoutDataContext);
   const [weight, setWeight] = useState(setData.weight);
   const [reps, setReps] = useState(setData.reps);
   const [pressed, setPressed] = useState(false);
@@ -111,67 +83,14 @@ const ExerciseTableSet = ({
       justifyContent: "space-around",
     },
     textInput: {
-      backgroundColor: colors.cardColorLight,
+      backgroundColor: colors.surfaceLight,
       textAlign: "center",
       width: 72,
+      height: 36,
+      borderRadius: 5,
+      paddingVertical: 0,
     },
   });
-
-  // ANIMATIONS ==========================================
-  // const SCREEN_WIDTH = Dimensions.get("window").width;
-  // const translateX = useSharedValue(0);
-  // const fadeOut = useSharedValue(0);
-  // const animatedHeight = useSharedValue(48);
-
-  // useEffect(() => {
-  //   translateX.value = 0;
-  //   animatedHeight.value = 48;
-  // }, [workoutData]);
-
-  // const gestureHandler = useAnimatedGestureHandler({
-  //   onStart: (_, ctx) => {
-  //     fadeOut.value = 1;
-  //   },
-  //   onActive: (event, ctx) => {
-  //     if (event.translationX < 0) {
-  //       translateX.value = event.translationX;
-  //     }
-  //   },
-  //   onEnd: (event, ctx) => {
-  //     if (event.translationX < -SCREEN_WIDTH / 4 || event.velocityX < -1300) {
-  //       fadeOut.value = withTiming(0);
-  //       translateX.value = withTiming(-SCREEN_WIDTH, {}, (isFinished) => {
-  //         if (isFinished) {
-  //           runOnJS(handleDeleteSet)(setData.id);
-  //         }
-  //       });
-  //     } else {
-  //       translateX.value = withTiming(0);
-  //     }
-  //   },
-  // });
-
-  // const animatedSlideStyle = useAnimatedStyle(() => {
-  //   return {
-  //     transform: [{ translateX: translateX.value }],
-  //   };
-  // });
-
-  // const animatedFadeStyle = useAnimatedStyle(() => {
-  //   return {
-  //     opacity: fadeOut.value,
-  //   };
-  // });
-
-  // const animatedRowStyle = useAnimatedStyle(() => {
-  //   return {
-  //     transform: [
-  //       {
-  //         translateX: translateX.value,
-  //       },
-  //     ],
-  //   };
-  // });
 
   return (
     <SwipeToDelete deleteFn={handleDeleteSet} id={setData.id}>
@@ -179,8 +98,8 @@ const ExerciseTableSet = ({
         <DataTable.Cell>{set_count}</DataTable.Cell>
         <DataTable.Cell style={styles.offsetTitle} numeric>
           <TextInput
-            disabled={workoutData.finished}
             dense
+            disabled={workoutData.finished}
             underlineColor="transparent"
             keyboardType="numeric"
             style={styles.textInput}
@@ -193,8 +112,8 @@ const ExerciseTableSet = ({
         </DataTable.Cell>
         <DataTable.Cell style={styles.offsetTitle} numeric>
           <TextInput
-            disabled={workoutData.finished}
             dense
+            disabled={workoutData.finished}
             underlineColor="transparent"
             keyboardType="numeric"
             style={styles.textInput}

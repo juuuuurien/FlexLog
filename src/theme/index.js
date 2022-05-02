@@ -9,11 +9,11 @@ import {
 } from "@react-navigation/native";
 
 export const CombinedDefaultTheme = {
-  ...PaperDarkTheme,
-  ...NavigationDarkTheme,
+  ...PaperDefaultTheme,
+  ...NavigationDefaultTheme,
   colors: {
-    ...PaperDarkTheme.colors,
-    ...NavigationDarkTheme.colors,
+    ...PaperDefaultTheme.colors,
+    ...NavigationDefaultTheme.colors,
   },
 };
 export const CombinedDarkTheme = {
@@ -23,6 +23,7 @@ export const CombinedDarkTheme = {
     ...PaperDarkTheme.colors,
     ...NavigationDarkTheme.colors,
     surface: "#16242A",
+    surfaceLight: "#1C3038",
     background: "#0E1619",
     cardColor: "#1F2024",
     card: "#1F2024",

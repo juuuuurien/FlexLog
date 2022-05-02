@@ -1,12 +1,5 @@
 import React, { useContext, useState } from "react";
-import {
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-  Platform,
-  View,
-  Text,
-} from "react-native";
+import { StyleSheet, Alert, Platform, View, Text } from "react-native";
 import {
   List,
   Colors,
@@ -18,10 +11,11 @@ import {
 import { UserDataContext } from "../../../context/UserDataContext";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import SwipeToDelete from "../../../components/animations/SwipeToDelete";
+
+import { TouchableOpacity } from "react-native-gesture-handler";
 dayjs.extend(customParseFormat);
 
-const ListItem = ({ item, id, navigation }) => {
+const ListItem = ({ item, id, navigation, index }) => {
   const { date, exercises } = item;
   const dateInFormat = dayjs(date).format("ddd DD MMM");
   const [day, dayNum] = dateInFormat.split(" ");
@@ -104,8 +98,6 @@ const ListItem = ({ item, id, navigation }) => {
     return "Empty";
   };
 
-  console.log(item.cardColor, "THIS IS WITHIN ITEM");
-
   return (
     <TouchableOpacity
       delayLongPress={250}
@@ -121,20 +113,12 @@ const ListItem = ({ item, id, navigation }) => {
       ]}
       onLongPress={handleLongPress}
       onPress={() => {
-        navigation.navigate("WorkoutPage", { id: id });
+        navigation.navigate("WorkoutPage", { id: id, index: index });
       }}
     >
       <View style={[styles.dateTab]}>
         <Subheading style={[styles.subheading]}>{day}</Subheading>
         <Headline style={[styles.dateMonth]}>{dayNum}</Headline>
-        {/* <View
-          style={{
-            borderRadius: 100,
-            height: 10,
-            width: 10,
-            backgroundColor: handleCardColor(),
-          }}
-        ></View> */}
       </View>
       <List.Item
         style={styles.listItem}

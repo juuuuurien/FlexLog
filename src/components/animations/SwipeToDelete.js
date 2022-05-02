@@ -104,7 +104,11 @@ const SwipeToDelete = ({ style, children, deleteFn, id }) => {
       >
         <IconButton icon="trash-can-outline" />
       </Animated.View>
-      <PanGestureHandler onGestureEvent={gestureHandler}>
+      <PanGestureHandler
+        failOffsetY={[-5, 5]}
+        activeOffsetX={[-5, 5]}
+        onGestureEvent={gestureHandler}
+      >
         <Animated.View style={[animatedSlideStyle]}>{children}</Animated.View>
       </PanGestureHandler>
     </Animated.View>

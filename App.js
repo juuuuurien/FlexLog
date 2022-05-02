@@ -14,8 +14,10 @@ import { userDataReducer } from "./src/reducers/UserDataReducer";
 import Loading from "./src/components/global/Loading";
 import { StatusBar } from "expo-status-bar";
 
-import { CombinedDarkTheme } from "./src/theme";
+import { CombinedDarkTheme, CombinedDefaultTheme } from "./src/theme";
+import { enableFreeze } from "react-native-screens";
 
+enableFreeze(true);
 // let userData = {
 //   workouts: {
 //     id: {
@@ -39,7 +41,7 @@ import { CombinedDarkTheme } from "./src/theme";
 
 export default function App() {
   const initial_state = {
-    workouts: {},
+    workouts: [],
   };
 
   const [state, dispatch] = useReducer(userDataReducer, null);
@@ -80,59 +82,59 @@ export default function App() {
   //   };
   // }, []);
 
-  const fake_data = {
-    workouts: {
-      l3azxdoohq0okwmwzjc: {
-        date: "Apr 22, 24",
-        exercises: [],
-        finished: false,
-        name: "T",
-        started: false,
-      },
-      l4b0low64a97ueok30m: {
-        date: "June 22, 22",
-        exercises: [],
-        finished: false,
-        name: "T",
-        started: false,
-      },
-      l5b0low64a97ueok30m: {
-        date: "June 22, 22",
-        exercises: [],
-        finished: false,
-        name: "T",
-        started: false,
-      },
-      l6b0lmug5tijuibslr6: {
-        date: "May 22, 22",
-        exercises: [],
-        finished: false,
-        name: "H",
-        started: false,
-      },
-      l7b0low64a97ueok30m: {
-        date: "June 22, 22",
-        exercises: [],
-        finished: false,
-        name: "T",
-        started: false,
-      },
-      l8b0lmug5tijuibslr6: {
-        date: "Jul 22, 22",
-        exercises: [],
-        finished: false,
-        name: "H",
-        started: false,
-      },
-      l9b0lmug5tijuibslr6: {
-        date: "May 22, 22",
-        exercises: [],
-        finished: false,
-        name: "H",
-        started: false,
-      },
-    },
-  };
+  // const fake_data = {
+  //   workouts: {
+  //     l3azxdoohq0okwmwzjc: {
+  //       date: "Apr 22, 24",
+  //       exercises: [],
+  //       finished: false,
+  //       name: "T",
+  //       started: false,
+  //     },
+  //     l4b0low64a97ueok30m: {
+  //       date: "June 22, 22",
+  //       exercises: [],
+  //       finished: false,
+  //       name: "T",
+  //       started: false,
+  //     },
+  //     l5b0low64a97ueok30m: {
+  //       date: "June 22, 22",
+  //       exercises: [],
+  //       finished: false,
+  //       name: "T",
+  //       started: false,
+  //     },
+  //     l6b0lmug5tijuibslr6: {
+  //       date: "May 22, 22",
+  //       exercises: [],
+  //       finished: false,
+  //       name: "H",
+  //       started: false,
+  //     },
+  //     l7b0low64a97ueok30m: {
+  //       date: "June 22, 22",
+  //       exercises: [],
+  //       finished: false,
+  //       name: "T",
+  //       started: false,
+  //     },
+  //     l8b0lmug5tijuibslr6: {
+  //       date: "Jul 22, 22",
+  //       exercises: [],
+  //       finished: false,
+  //       name: "H",
+  //       started: false,
+  //     },
+  //     l9b0lmug5tijuibslr6: {
+  //       date: "May 22, 22",
+  //       exercises: [],
+  //       finished: false,
+  //       name: "H",
+  //       started: false,
+  //     },
+  //   },
+  // };
 
   // listen to userData state and update on change
   useEffect(() => {
@@ -178,6 +180,17 @@ export default function App() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
+
+  // const BottomTabNavigator = () => {
+  //   const Tabs = createMaterialBottomTabNavigator();
+
+  //   return (
+  //     <Tabs.Navigator>
+  //       <Tabs.Screen name="Workout" component={HomeScreen} />
+  //       <Tabs.Screen name="Dashboard" component={SettingsScreen} />
+  //     </Tabs.Navigator>
+  //   );
+  // };
 
   return (
     <UserDataContextProvider

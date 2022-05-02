@@ -30,19 +30,30 @@ import dayjs from "dayjs";
 const WorkoutPage = ({ navigation, route }) => {
   const [storageValue, updateStorage] = useAsyncStorage("userData");
   const { state, dispatch, setLoading, loading } = useContext(UserDataContext);
-  const id = route.params.id;
+  const { id, index } = route.params;
 
   // upon navigation, create a context that wraps all children
   // with this workout's data, fetched via state.
 
   // upon leaving this screen, save data back to state store.
 
-  const [workoutData, setWorkoutData] = useState(state.workouts[id]);
+  const [workoutData, setWorkoutData] = useState(state.workouts[index]);
+
+  const handleSaveData = () => {
+    dispatch({
+      type: "UPDATE_WORKOUT",
+      payload: {
+        id: id,
+        index: index,
+        data: workoutData,
+      },
+    });
+  };
 
   useEffect(
     () =>
       navigation.addListener("beforeRemove", (e) => {
-        if (workoutData !== state.workouts[id]) {
+        if (workoutData !== state.workouts[index]) {
           // If we don't have unsaved changes, then we don't need to do anything
           e.preventDefault();
           // Prompt the user before leaving the screen
@@ -67,6 +78,7 @@ const WorkoutPage = ({ navigation, route }) => {
                     type: "UPDATE_WORKOUT",
                     payload: {
                       id: id,
+                      index: index,
                       data: workoutData,
                     },
                   });
@@ -80,18 +92,8 @@ const WorkoutPage = ({ navigation, route }) => {
 
         return;
       }),
-    [workoutData, state.workouts[id]]
+    [workoutData, state.workouts[index]]
   );
-
-  const handleSaveData = () => {
-    dispatch({
-      type: "UPDATE_WORKOUT",
-      payload: {
-        id: id,
-        data: workoutData,
-      },
-    });
-  };
 
   const HeaderRightComponent = () => {
     return (
@@ -101,7 +103,7 @@ const WorkoutPage = ({ navigation, route }) => {
           workoutData={workoutData}
           setWorkoutData={setWorkoutData}
         />
-        {workoutData !== state.workouts[id] && (
+        {workoutData !== state.workouts[index] && (
           <Button onPress={handleSaveData}>Save</Button>
         )}
       </View>
@@ -114,11 +116,12 @@ const WorkoutPage = ({ navigation, route }) => {
       title: workoutData.name,
       headerRight: () => <HeaderRightComponent />,
     });
-  }, [workoutData, state.workouts[id]]);
+  }, [workoutData, state.workouts[index]]);
 
   const styles = StyleSheet.create({
     container: {
       flexGrow: 1,
+      paddingHorizontal: 6,
     },
   });
 

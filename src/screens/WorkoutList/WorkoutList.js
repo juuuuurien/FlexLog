@@ -5,21 +5,22 @@ import React, {
   useRef,
   useEffect,
 } from "react";
-import { View, Text, StyleSheet, Dimensions } from "react-native";
-import { FlatList } from "react-native";
+import { View, Text, StyleSheet, Dimensions, FlatList } from "react-native";
+import { StatusBar } from "react-native";
 import { FAB, Portal, withTheme, useTheme, Colors } from "react-native-paper";
 import ListItem from "./components/ListItem";
 import { UserDataContext } from "../../context/UserDataContext";
 import CreateWorkoutModal from "./components/CreateWorkoutModal";
 import dayjs from "dayjs";
 import Animated, {
+  Extrapolate,
   Extrapolation,
   interpolate,
-  useAnimatedGestureHandler,
   useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
 } from "react-native-reanimated";
+import { ScrollView } from "react-native-gesture-handler";
 
 const initial_state = {
   workouts: {},
@@ -29,6 +30,8 @@ const WorkoutList = ({ navigation }) => {
   const { colors } = useTheme();
   const { state, dispatch } = useContext(UserDataContext);
   const [showModal, setShowModal] = useState(false);
+
+  const [flatListData, setFlatlistData] = useState(null);
   // const ListComponent = () => {
   //   return (
   //     <FlatList
@@ -56,7 +59,7 @@ const WorkoutList = ({ navigation }) => {
   //   console.log(dayjs(state.workouts[id].date).format('MMMM YYYY'))
   // }
 
-  const getFlatlistData = useCallback(() => {
+  const getFlatlistData = () => {
     const formatToMMMMYYYY = Object.keys(state.workouts).map((id) =>
       dayjs(state.workouts[id].date).format("MMMM YYYY")
     );
@@ -74,7 +77,7 @@ const WorkoutList = ({ navigation }) => {
     });
 
     return data;
-  }, [state.workouts]);
+  };
 
   const WorkoutListSection = ({ monthAndYear, ids }) => {
     return (
@@ -86,7 +89,6 @@ const WorkoutList = ({ navigation }) => {
           return (
             <ListItem
               key={id}
-              s
               id={id}
               item={state.workouts[id]}
               navigation={navigation}
@@ -97,13 +99,15 @@ const WorkoutList = ({ navigation }) => {
     );
   };
   // HEADER ANIMATIONS ========================
-  const HEADER_HEIGHT_MAX = 180;
-  const HEADER_HEIGHT_MIN = 75;
+  const HEADER_HEIGHT_MAX = 200;
+  const HEADER_HEIGHT_MIN = 80;
+  const STATUS_BAR_HEIGHT = StatusBar.currentHeight;
 
   const scrollY = useSharedValue(0);
+
   useEffect(() => {
     scrollY.value = 0;
-  });
+  }, [state.workouts]);
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event, ctx) => {
@@ -111,43 +115,36 @@ const WorkoutList = ({ navigation }) => {
     },
   });
 
-  const stylez = useAnimatedStyle(() => {
+  const headerContainer = useAnimatedStyle(() => {
     const height = HEADER_HEIGHT_MAX - scrollY.value;
 
     return {
+      width: "100%",
       position: "absolute",
       flexDirection: "column",
       height: height > HEADER_HEIGHT_MIN ? height : HEADER_HEIGHT_MIN,
       justifyContent: "flex-end",
       alignItems: "center",
-      width: "100%",
-      elevation: 100,
-    };
-  });
-
-  const headerFontStyle = useAnimatedStyle(() => {
-    const scale = interpolate(scrollY.value, [0, HEADER_HEIGHT_MIN], [1.2, 1]);
-    const x = interpolate(scrollY.value, [0, HEADER_HEIGHT_MIN], [35, 5]);
-
-    return {
-      color: "#FFF",
-      fontSize: 22,
-      transform: [
-        {
-          scale: scale,
-        },
-        { translateX: x },
-      ],
+      paddingHorizontal: 14,
+      backgroundColor: colors.background,
+      elevation: 5,
     };
   });
 
   const jumboFontStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(scrollY.value, [0, HEADER_HEIGHT_MIN], [1, 0]);
+    const opacity = interpolate(
+      scrollY.value,
+      [0, (HEADER_HEIGHT_MIN * 2) / 3],
+      [1, 0]
+    );
 
     const translateY = interpolate(
       scrollY.value,
       [0, HEADER_HEIGHT_MIN],
-      [0, -5]
+      [0, 55],
+      {
+        extrapolateRight: Extrapolate.CLAMP,
+      }
     );
 
     return {
@@ -159,13 +156,35 @@ const WorkoutList = ({ navigation }) => {
     };
   });
 
+  const headerLabelContainer = useAnimatedStyle(() => {
+    const translateContentY = interpolate(
+      scrollY.value,
+      [0, HEADER_HEIGHT_MIN],
+      [0, STATUS_BAR_HEIGHT],
+      {
+        extrapolateRight: Extrapolate.CLAMP,
+      }
+    );
+    const height = interpolate(
+      scrollY.value,
+      [0, HEADER_HEIGHT_MIN],
+      [HEADER_HEIGHT_MIN, HEADER_HEIGHT_MIN + STATUS_BAR_HEIGHT],
+      {
+        extrapolateRight: Extrapolate.CLAMP,
+      }
+    );
+    return {
+      height: HEADER_HEIGHT_MIN,
+      transform: [{ translateY: STATUS_BAR_HEIGHT / 2 }],
+    };
+  });
+
   const CustomHeader = () => {
     return (
-      <Animated.View style={[stylez]}>
+      <Animated.View style={[headerContainer]}>
         <View
           style={{
             width: "100%",
-            paddingTop: 20,
             backgroundColor: "transparent",
             justifyContent: "flex-end",
           }}
@@ -174,58 +193,28 @@ const WorkoutList = ({ navigation }) => {
             Good morning, Julien
           </Animated.Text>
         </View>
-        <View
-          style={{
-            height: HEADER_HEIGHT_MIN,
-            width: "100%",
-            backgroundColor: "transparent",
-            justifyContent: "center",
-          }}
+        <Animated.View
+          style={[
+            {
+              width: "100%",
+              flexDirection: "row",
+              alignItems: "center",
+            },
+            headerLabelContainer,
+          ]}
         >
-          <Animated.Text style={[headerFontStyle]}>Your workouts</Animated.Text>
-        </View>
+          <Animated.Text
+            style={[
+              {
+                color: "#FFF",
+                fontSize: 20,
+              },
+            ]}
+          >
+            Your workouts
+          </Animated.Text>
+        </Animated.View>
       </Animated.View>
-    );
-  };
-
-  const ListScreen = () => {
-    // Flatlist receives an object
-    // as such {
-    //          'dateString': [id, id id],
-    //          'dateString2': [id, id id]
-    //         }
-
-    const listRef = useRef();
-
-    return (
-      <View style={{ width: "100%" }}>
-        <CustomHeader />
-        <Animated.FlatList
-          onContentSizeChange={() => {
-            listRef.current?.scrollToEnd();
-          }}
-          contentContainerStyle={{
-            minHeight:
-              Dimensions.get("window").height +
-              HEADER_HEIGHT_MAX -
-              HEADER_HEIGHT_MIN,
-            paddingTop: HEADER_HEIGHT_MAX,
-          }}
-          bounces={false}
-          style={[styles.flatList]}
-          data={getFlatlistData()}
-          scrollEventThrottle={1}
-          onScroll={scrollHandler}
-          keyExtractor={(_, index) => {
-            return index;
-          }}
-          renderItem={({ item }) => {
-            const monthAndYear = Object.keys(item)[0];
-            const ids = item[monthAndYear];
-            return <WorkoutListSection monthAndYear={monthAndYear} ids={ids} />;
-          }}
-        />
-      </View>
     );
   };
 
@@ -242,47 +231,157 @@ const WorkoutList = ({ navigation }) => {
     );
   };
 
-  return (
-    <>
-      <View style={styles.container}>
-        {state.workouts !== null && Object.keys(state.workouts).length > 0 ? (
-          <ListScreen />
-        ) : (
-          <EmptyListScreen />
-        )}
-        <Portal>
-          <CreateWorkoutModal
-            show={() => {
-              setShowModal(true);
-            }}
-            hide={() => setShowModal(false)}
-            visible={showModal}
-          />
-        </Portal>
+  const ListScreen = () => {
+    // Flatlist receives an object
+    // as such {
+    //          'dateString': [id, id id],
+    //          'dateString2': [id, id id]
+    //         }
 
-        <FAB
-          style={[styles.fab, { backgroundColor: colors.primary }]}
-          icon={"plus"}
-          onPress={() => {
+    const listRef = useRef();
+
+    return (
+      <View style={{ width: "100%" }}>
+        <CustomHeader />
+      </View>
+    );
+  };
+
+  // useEffect(() => {
+  //   console.log("THIS IS STATE NOW...", state.workouts);
+  //   setFlatlistData(Object.keys(state.workouts));
+  // }, [state]);
+
+  // console.log(state.workouts);
+  console.log(
+    "*===========================================================================*"
+  );
+  console.log(
+    "*=                                                                       =*"
+  );
+  console.log(
+    "*=                                                                       =*"
+  );
+  console.log("                      ", state.workouts);
+  console.log(
+    "*=                                                                       =*"
+  );
+  console.log(
+    "*=                                                                       =*"
+  );
+  console.log(
+    "*===========================================================================*"
+  );
+  return (
+    <View style={styles.container}>
+      {/* <Animated.FlatList
+        ListEmptyComponent={EmptyListScreen}
+        contentContainerStyle={{
+          minHeight:
+            Dimensions.get("window").height +
+            HEADER_HEIGHT_MAX -
+            HEADER_HEIGHT_MIN +
+            STATUS_BAR_HEIGHT,
+          paddingTop: HEADER_HEIGHT_MAX,
+        }}
+        bounces={false}
+        style={[styles.flatList]}
+        data={getFlatlistData()}
+        extraData={state.workouts}
+        scrollEventThrottle={1}
+        onScroll={scrollHandler}
+        keyExtractor={(_, index) => {
+          return index;
+        }}
+        renderItem={({ item }) => {
+          const monthAndYear = Object.keys(item)[0];
+          const ids = item[monthAndYear];
+          return <WorkoutListSection monthAndYear={monthAndYear} ids={ids} />;
+        }}
+      /> */}
+
+      <FlatList
+        refreshing
+        contentContainerStyle={{
+          minHeight:
+            Dimensions.get("window").height +
+            HEADER_HEIGHT_MAX -
+            HEADER_HEIGHT_MIN +
+            STATUS_BAR_HEIGHT,
+          paddingTop: HEADER_HEIGHT_MAX,
+        }}
+        disableScrollViewPanResponder={true}
+        bounces={false}
+        style={[styles.flatList]}
+        data={state.workouts}
+        extraData={state.workouts}
+        keyExtractor={({ id }) => {
+          return id;
+        }}
+        renderItem={({ item, index }) => {
+          return (
+            <ListItem
+              id={item.id}
+              index={index}
+              item={item}
+              navigation={navigation}
+            />
+          );
+        }}
+      />
+      {/* <Animated.ScrollView
+        contentContainerStyle={{
+          minHeight:
+            Dimensions.get("window").height +
+            HEADER_HEIGHT_MAX -
+            HEADER_HEIGHT_MIN +
+            STATUS_BAR_HEIGHT,
+          paddingTop: HEADER_HEIGHT_MAX,
+        }}
+        bounces={false}
+        style={[styles.flatList]}
+      >
+        {Object.keys(state.workouts).map((id, index) => {
+          return (
+            <ListItem
+              key={id}
+              id={id}
+              item={state.workouts[id]}
+              navigation={navigation}
+            />
+          );
+        })}
+      </Animated.ScrollView> */}
+      <Portal>
+        <CreateWorkoutModal
+          show={() => {
             setShowModal(true);
           }}
+          hide={() => setShowModal(false)}
+          visible={showModal}
         />
-      </View>
-    </>
+      </Portal>
+      <FAB
+        style={[styles.fab, { backgroundColor: colors.primary }]}
+        icon={"plus"}
+        onPress={() => {
+          setShowModal(true);
+        }}
+      />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 8,
     justifyContent: "center",
     alignItems: "center",
   },
   sectionContainer: {
     marginVertical: 6,
   },
-  flatList: { width: "100%" },
+  flatList: { width: "100%", paddingHorizontal: 6 },
   dateHeader: {
     paddingHorizontal: 14,
     paddingBottom: 4,

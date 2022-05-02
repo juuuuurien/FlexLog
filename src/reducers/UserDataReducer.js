@@ -29,19 +29,15 @@ export const userDataReducer = (state, action) => {
     case "CREATE_WORKOUT": {
       return {
         ...state,
-        workouts: {
-          ...state.workouts,
-          [action.payload.id]: action.payload.data,
-        },
+        workouts: [action.payload, ...state.workouts],
       };
     }
     case "UPDATE_WORKOUT": {
+      const newWorkouts = [...state.workouts];
+      newWorkouts[action.payload.index] = action.payload.data;
       return {
         ...state,
-        workouts: {
-          ...state.workouts,
-          [action.payload.id]: action.payload.data,
-        },
+        workouts: [...newWorkouts],
       };
     }
     case "UPDATE_WORKOUT_STATUS": {
@@ -72,10 +68,11 @@ export const userDataReducer = (state, action) => {
       return { ...state };
     }
     case "DELETE_WORKOUT": {
-      const newWorkoutsObj = omit({ ...state.workouts }, action.payload);
+      const id = action.payload;
+      const newWorkouts = [...state.workouts].filter((item) => id !== item.id);
       return {
         ...state,
-        workouts: newWorkoutsObj,
+        workouts: newWorkouts,
       };
     }
     case "CREATE_EXERCISE": {

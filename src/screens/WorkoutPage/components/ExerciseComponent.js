@@ -112,7 +112,6 @@ const ExerciseComponent = ({
       lineHeight: 3,
     },
     exercise: {
-      marginHorizontal: 18,
       marginTop: 18,
       paddingVertical: 10,
       borderRadius: 10,
@@ -122,14 +121,14 @@ const ExerciseComponent = ({
   return (
     <Animated.View
       layout={Layout}
-      entering={FadeInUp.delay(200)}
+      entering={FadeInUp}
       exiting={FadeOutDown.duration(150)}
       style={styles.exercise}
     >
       <View style={styles.exerciseHeaderContainer}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <TextInput
-            placeholder="'Exercise'"
+            placeholder="'Name'"
             style={styles.exerciseNameInput}
             value={name}
             underlineColor="transparent"
