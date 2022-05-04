@@ -28,8 +28,7 @@ import Stopwatch from "./components/Stopwatch";
 import dayjs from "dayjs";
 
 const WorkoutPage = ({ navigation, route }) => {
-  const [storageValue, updateStorage] = useAsyncStorage("userData");
-  const { state, dispatch, setLoading, loading } = useContext(UserDataContext);
+  const { state, dispatch } = useContext(UserDataContext);
   const { id, index } = route.params;
 
   // upon navigation, create a context that wraps all children
@@ -53,46 +52,10 @@ const WorkoutPage = ({ navigation, route }) => {
   useEffect(
     () =>
       navigation.addListener("beforeRemove", (e) => {
-        if (workoutData !== state.workouts[index]) {
-          // If we don't have unsaved changes, then we don't need to do anything
-          e.preventDefault();
-          // Prompt the user before leaving the screen
-          Alert.alert(
-            "Save changes?",
-            "You have unsaved changes. Do you want to save and leave?",
-            [
-              {
-                text: "Leave without saving",
-                style: "destructive",
-                // If the user confirmed, then we dispatch the action we blocked earlier
-                // This will continue the action that had triggered the removal of the screen
-                onPress: () => {
-                  navigation.dispatch(e.data.action);
-                },
-              },
-              {
-                text: "Save",
-                style: "cancel",
-                onPress: () => {
-                  dispatch({
-                    type: "UPDATE_WORKOUT",
-                    payload: {
-                      id: id,
-                      index: index,
-                      data: workoutData,
-                    },
-                  });
-                  navigation.dispatch(e.data.action);
-                },
-              },
-            ],
-            { cancelable: true }
-          );
-        }
-
+        handleSaveData();
         return;
       }),
-    [workoutData, state.workouts[index]]
+    [workoutData]
   );
 
   const HeaderRightComponent = () => {

@@ -1,46 +1,29 @@
 import React, { useContext, useState } from "react";
-import { StyleSheet, Alert, Platform, View, Text } from "react-native";
+import { StyleSheet, Platform, View, Text } from "react-native";
 import {
   List,
   Colors,
   Caption,
   Headline,
   Subheading,
-  useTheme,
 } from "react-native-paper";
-import { UserDataContext } from "../../../context/UserDataContext";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 
 import { TouchableOpacity } from "react-native-gesture-handler";
 dayjs.extend(customParseFormat);
 
-const ListItem = ({ item, id, navigation, index }) => {
+const ListItem = ({ item, id, navigation, index, handleDelete }) => {
   const { date, exercises } = item;
   const dateInFormat = dayjs(date).format("ddd DD MMM");
   const [day, dayNum] = dateInFormat.split(" ");
 
-  const { dispatch } = useContext(UserDataContext);
   const handleLongPress = () => {
-    Alert.alert(
-      "Delete this workout?",
-      `Do you want to delete "${item.name}" ?`,
-      [
-        {
-          text: "Cancel",
-          onPress: () => {
-            return;
-          },
-          style: "cancel",
-        },
-        {
-          text: "Yes",
-          onPress: () => {
-            dispatch({ type: "DELETE_WORKOUT", payload: id });
-          },
-        },
-      ]
-    );
+    handleDelete(id, item.name);
+  };
+
+  const handlePress = () => {
+    navigation.navigate("WorkoutPage", { id: id, index: index });
   };
 
   const handleCaption = () => {
@@ -81,7 +64,7 @@ const ListItem = ({ item, id, navigation, index }) => {
     let description = "";
 
     if (exercises.length > 0) {
-      // loop through exercise names & append.
+      // loop through exercise names & append with comma.
       exercises.forEach(({ exercise_name }, i) => {
         if (i !== exercises.length - 1) {
           description += exercise_name + ", ";
@@ -101,7 +84,7 @@ const ListItem = ({ item, id, navigation, index }) => {
   return (
     <TouchableOpacity
       delayLongPress={250}
-      activeOpacity={0.5}
+      activeOpacity={0.75}
       style={[
         styles.container,
         {
@@ -112,9 +95,7 @@ const ListItem = ({ item, id, navigation, index }) => {
         },
       ]}
       onLongPress={handleLongPress}
-      onPress={() => {
-        navigation.navigate("WorkoutPage", { id: id, index: index });
-      }}
+      onPress={handlePress}
     >
       <View style={[styles.dateTab]}>
         <Subheading style={[styles.subheading]}>{day}</Subheading>

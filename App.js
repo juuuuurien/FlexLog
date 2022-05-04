@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useReducer, useRef } from "react";
-import { AppState } from "react-native";
+import { AppState, Platform, StatusBar, View } from "react-native";
 import { Provider as PaperProvider } from "react-native-paper";
 import { UserDataContextProvider } from "./src/context/UserDataContext";
 
@@ -12,7 +12,6 @@ import { useAsyncStorage } from "./src/hooks/useAsyncStorage";
 import { userDataReducer } from "./src/reducers/UserDataReducer";
 
 import Loading from "./src/components/global/Loading";
-import { StatusBar } from "expo-status-bar";
 
 import { CombinedDarkTheme, CombinedDefaultTheme } from "./src/theme";
 import { enableFreeze } from "react-native-screens";
@@ -157,10 +156,12 @@ export default function App() {
         } else {
           // console.log('no data found, setting initial data to asyncstorage');
           try {
-            updateStorage({ ...initial_state });
-            dispatch({ type: "INITIALIZE_STATE", payload: initial_state });
-          } catch (err) {
-            console.warn(err);
+            const value = JSON.stringify({ ...initial_state });
+            await AsyncStorage.setItem("userData", value).then(() =>
+              dispatch({ type: "INITIALIZE_STATE", payload: initial_state })
+            );
+          } catch (e) {
+            console.warn(e);
           }
         }
       } catch {
@@ -201,7 +202,6 @@ export default function App() {
           {loading && <Loading />}
           {state !== null && <WorkoutListNavigator />}
         </NavigationContainer>
-        <StatusBar style="light" />
       </PaperProvider>
     </UserDataContextProvider>
   );

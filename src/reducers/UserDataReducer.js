@@ -40,39 +40,12 @@ export const userDataReducer = (state, action) => {
         workouts: [...newWorkouts],
       };
     }
-    case "UPDATE_WORKOUT_STATUS": {
-      if (Object.keys(action.payload).includes("started"))
-        return {
-          ...state,
-          workouts: {
-            ...state.workouts,
-            [action.payload.id]: {
-              ...state.workouts[action.payload.id],
-              started: action.payload.started,
-            },
-          },
-        };
-
-      if (Object.keys(action.payload).includes("finished"))
-        return {
-          ...state,
-          workouts: {
-            ...state.workouts,
-            [action.payload.id]: {
-              ...state.workouts[action.payload.id],
-              finished: action.payload.finished,
-            },
-          },
-        };
-
-      return { ...state };
-    }
     case "DELETE_WORKOUT": {
       const id = action.payload;
       const newWorkouts = [...state.workouts].filter((item) => id !== item.id);
       return {
         ...state,
-        workouts: newWorkouts,
+        workouts: [...newWorkouts],
       };
     }
     case "CREATE_EXERCISE": {

@@ -4,8 +4,16 @@ import React, {
   useCallback,
   useRef,
   useEffect,
+  useMemo,
 } from "react";
-import { View, Text, StyleSheet, Dimensions, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  FlatList,
+  Alert,
+} from "react-native";
 import { StatusBar } from "react-native";
 import { FAB, Portal, withTheme, useTheme, Colors } from "react-native-paper";
 import ListItem from "./components/ListItem";
@@ -21,6 +29,7 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 import { ScrollView } from "react-native-gesture-handler";
+import { useIsFocused } from "@react-navigation/native";
 
 const initial_state = {
   workouts: {},
@@ -31,7 +40,6 @@ const WorkoutList = ({ navigation }) => {
   const { state, dispatch } = useContext(UserDataContext);
   const [showModal, setShowModal] = useState(false);
 
-  const [flatListData, setFlatlistData] = useState(null);
   // const ListComponent = () => {
   //   return (
   //     <FlatList
@@ -58,6 +66,23 @@ const WorkoutList = ({ navigation }) => {
   // for ( const id in state.workouts ) {
   //   console.log(dayjs(state.workouts[id].date).format('MMMM YYYY'))
   // }
+  const handleDelete = (id, name) => {
+    Alert.alert("Delete this workout?", `Do you want to delete "${name}" ?`, [
+      {
+        text: "Cancel",
+        onPress: () => {
+          return;
+        },
+        style: "cancel",
+      },
+      {
+        text: "Yes",
+        onPress: () => {
+          dispatch({ type: "DELETE_WORKOUT", payload: id });
+        },
+      },
+    ]);
+  };
 
   const getFlatlistData = () => {
     const formatToMMMMYYYY = Object.keys(state.workouts).map((id) =>
@@ -248,33 +273,23 @@ const WorkoutList = ({ navigation }) => {
   };
 
   // useEffect(() => {
-  //   console.log("THIS IS STATE NOW...", state.workouts);
-  //   setFlatlistData(Object.keys(state.workouts));
-  // }, [state]);
+  //   const unsubscribe = navigation.addListener("focus", () => {
+  //     setFlatlistData(state.workouts);
+  //   });
+
+  //   return unsubscribe;
+  // }, [navigation]);
+
+  // useEffect(() => {
+  //   setFlatlistData(state.workouts);
+  // }, [state.workouts]);
 
   // console.log(state.workouts);
-  console.log(
-    "*===========================================================================*"
-  );
-  console.log(
-    "*=                                                                       =*"
-  );
-  console.log(
-    "*=                                                                       =*"
-  );
-  console.log("                      ", state.workouts);
-  console.log(
-    "*=                                                                       =*"
-  );
-  console.log(
-    "*=                                                                       =*"
-  );
-  console.log(
-    "*===========================================================================*"
-  );
-  return (
-    <View style={styles.container}>
-      {/* <Animated.FlatList
+
+  return useMemo(() => {
+    return (
+      <View style={styles.container}>
+        {/* <Animated.FlatList
         ListEmptyComponent={EmptyListScreen}
         contentContainerStyle={{
           minHeight:
@@ -300,36 +315,30 @@ const WorkoutList = ({ navigation }) => {
         }}
       /> */}
 
-      <FlatList
-        refreshing
-        contentContainerStyle={{
-          minHeight:
-            Dimensions.get("window").height +
-            HEADER_HEIGHT_MAX -
-            HEADER_HEIGHT_MIN +
-            STATUS_BAR_HEIGHT,
-          paddingTop: HEADER_HEIGHT_MAX,
-        }}
-        disableScrollViewPanResponder={true}
-        bounces={false}
-        style={[styles.flatList]}
-        data={state.workouts}
-        extraData={state.workouts}
-        keyExtractor={({ id }) => {
-          return id;
-        }}
-        renderItem={({ item, index }) => {
-          return (
-            <ListItem
-              id={item.id}
-              index={index}
-              item={item}
-              navigation={navigation}
-            />
-          );
-        }}
-      />
-      {/* <Animated.ScrollView
+        <FlatList
+          style={styles.flatList}
+          contentContainerStyle={{
+            flexGrow: 1,
+          }}
+          bounces={false}
+          data={state.workouts}
+          extraData={state.workouts}
+          keyExtractor={({ id }) => {
+            return id;
+          }}
+          renderItem={({ item, index }) => {
+            return (
+              <ListItem
+                handleDelete={handleDelete}
+                id={item.id}
+                index={index}
+                item={item}
+                navigation={navigation}
+              />
+            );
+          }}
+        />
+        {/* <Animated.ScrollView
         contentContainerStyle={{
           minHeight:
             Dimensions.get("window").height +
@@ -352,24 +361,25 @@ const WorkoutList = ({ navigation }) => {
           );
         })}
       </Animated.ScrollView> */}
-      <Portal>
-        <CreateWorkoutModal
-          show={() => {
+        <Portal>
+          <CreateWorkoutModal
+            show={() => {
+              setShowModal(true);
+            }}
+            hide={() => setShowModal(false)}
+            visible={showModal}
+          />
+        </Portal>
+        <FAB
+          style={[styles.fab, { backgroundColor: colors.primary }]}
+          icon={"plus"}
+          onPress={() => {
             setShowModal(true);
           }}
-          hide={() => setShowModal(false)}
-          visible={showModal}
         />
-      </Portal>
-      <FAB
-        style={[styles.fab, { backgroundColor: colors.primary }]}
-        icon={"plus"}
-        onPress={() => {
-          setShowModal(true);
-        }}
-      />
-    </View>
-  );
+      </View>
+    );
+  });
 };
 
 const styles = StyleSheet.create({
@@ -381,7 +391,7 @@ const styles = StyleSheet.create({
   sectionContainer: {
     marginVertical: 6,
   },
-  flatList: { width: "100%", paddingHorizontal: 6 },
+  flatList: { flex: 1, width: "100%", paddingHorizontal: 6 },
   dateHeader: {
     paddingHorizontal: 14,
     paddingBottom: 4,
