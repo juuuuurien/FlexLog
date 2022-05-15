@@ -23,7 +23,11 @@ const ListItem = ({ item, id, navigation, index, handleDelete }) => {
   };
 
   const handlePress = () => {
-    navigation.navigate("WorkoutPage", { id: id, index: index });
+    navigation.navigate("WorkoutPage", {
+      id: id,
+      workoutIndex: index,
+      workoutData: item,
+    });
   };
 
   const handleCaption = () => {

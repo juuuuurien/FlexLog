@@ -1,20 +1,20 @@
 import React from "react";
-import { createStackNavigator } from "@react-navigation/stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import WorkoutList from "./WorkoutList";
 import WorkoutPage from "../WorkoutPage/WorkoutPage";
 import { useTheme } from "react-native-paper";
 import NewWorkoutList from "./NewWorkoutList";
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 const WorkoutListNavigator = () => {
-  const { colors } = useTheme();
   return (
     <Stack.Navigator
-      detachInactiveScreens={false}
       screenOptions={{
         headerStyle: {
-          backgroundColor: colors.background,
+          backgroundColor: "#192B32",
+          height: 100,
+          elevation: 6,
         },
         headerShown: true,
         headerRightContainerStyle: {

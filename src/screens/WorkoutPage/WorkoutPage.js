@@ -20,55 +20,51 @@ import { WorkoutDataContextProvider } from "../../context/WorkoutDataContext";
 import ExerciseComponent from "./components/ExerciseComponent";
 import AddExerciseButton from "./components/Buttons/AddExerciseButton";
 import StartWorkoutButton from "./components/Buttons/StartWorkoutButton";
-import { Portal, Button } from "react-native-paper";
-import { useAsyncStorage } from "../../../src/hooks/useAsyncStorage";
-import { empty_exercise } from "../../static/empty_exercise";
+import { Button } from "react-native-paper";
+
 import { create_uid } from "../../util/create_uid";
 import Stopwatch from "./components/Stopwatch";
 import dayjs from "dayjs";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  createExercise,
+  deleteExercise,
+} from "../../../redux/slices/workoutsSlice";
 
 const WorkoutPage = ({ navigation, route }) => {
-  const { state, dispatch } = useContext(UserDataContext);
-  const { id, index } = route.params;
+  const dispatch = useDispatch();
+  const { id, workoutIndex } = route.params;
+  const { workouts, loading } = useSelector((state) => state.workouts);
+
+  const workoutData = workouts[workoutIndex];
 
   // upon navigation, create a context that wraps all children
   // with this workout's data, fetched via state.
 
   // upon leaving this screen, save data back to state store.
 
-  const [workoutData, setWorkoutData] = useState(state.workouts[index]);
+  // const [workoutData, setWorkoutData] = useState(workouts[index]);
 
-  const handleSaveData = () => {
-    dispatch({
-      type: "UPDATE_WORKOUT",
-      payload: {
-        id: id,
-        index: index,
-        data: workoutData,
-      },
-    });
-  };
+  // const handleSaveData = () => {
+  //   dispatch({
+  //     type: "UPDATE_WORKOUT",
+  //     payload: {
+  //       id: id,
+  //       index: index,
+  //       data: workoutData,
+  //     },
+  //   });
+  // };
 
-  useEffect(
-    () =>
-      navigation.addListener("beforeRemove", (e) => {
-        handleSaveData();
-        return;
-      }),
-    [workoutData]
-  );
+  // useEffect(() => console.log(workoutData), [workoutData]);
 
   const HeaderRightComponent = () => {
     return (
       <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
         <StartWorkoutButton
-          id={id}
+          workoutIndex={workoutIndex}
           workoutData={workoutData}
-          setWorkoutData={setWorkoutData}
         />
-        {workoutData !== state.workouts[index] && (
-          <Button onPress={handleSaveData}>Save</Button>
-        )}
       </View>
     );
   };
@@ -79,52 +75,30 @@ const WorkoutPage = ({ navigation, route }) => {
       title: workoutData.name,
       headerRight: () => <HeaderRightComponent />,
     });
-  }, [workoutData, state.workouts[index]]);
+  }, [workoutData, workouts[workoutIndex]]);
 
   const styles = StyleSheet.create({
     container: {
       flexGrow: 1,
-      paddingHorizontal: 6,
     },
   });
 
   const handleAddExercise = useCallback(() => {
-    setWorkoutData((data) => {
-      return {
-        ...data,
-        exercises: [
-          ...data.exercises,
-          {
-            exercise_name: "",
-            sets: [{ weight: "", reps: "", id: create_uid() }],
-            id: create_uid(),
-          },
-        ],
-      };
-    });
+    dispatch(createExercise({ workoutIndex: workoutIndex }));
   }, [workoutData]);
 
   const handleDeleteExercise = useCallback(
-    (exercise_id) => {
-      const newExercises = workoutData.exercises.filter((e, i) => {
-        return e.id !== exercise_id;
-      });
-
-      setWorkoutData((data) => {
-        return { ...data, exercises: [...newExercises] };
-      });
-    },
-    [workoutData.exercises]
+    (exerciseId) =>
+      dispatch(deleteExercise({ workoutIndex: workoutIndex, id: exerciseId })),
+    [workoutData]
   );
 
   const handleResetTimer = () => {
-    setWorkoutData({ ...workoutData, startTime: dayjs().format() });
+    // setWorkoutData({ ...workoutData, startTime: dayjs().format() });
   };
 
   return (
-    <WorkoutDataContextProvider
-      value={{ workoutData, setWorkoutData, id, handleSaveData }}
-    >
+    <WorkoutDataContextProvider value={{ workoutData, workoutIndex, id }}>
       {workoutData.started && (
         <Stopwatch
           startTime={workoutData.startTime}

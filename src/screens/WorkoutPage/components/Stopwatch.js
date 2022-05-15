@@ -10,6 +10,7 @@ const Stopwatch = ({
   finished,
   handleResetTimer,
 }) => {
+  console.log(startTime);
   const toDoubleDigits = (num) => {
     return num >= 10 ? num : "0" + num;
   };
@@ -26,6 +27,7 @@ const Stopwatch = ({
     )}:${toDoubleDigits(seconds)}`;
   };
 
+  // if finished, set time to the finish time from state.
   const [time, setTime] = useState(
     !finished ? getTimeString(startTime) : finishTime
   );
@@ -99,6 +101,7 @@ const Stopwatch = ({
         layout={Layout}
         entering={FadeInUp}
         style={{
+          marginTop: 10,
           flexDirection: "row",
           justifyContent: "center",
           alignItems: "center",

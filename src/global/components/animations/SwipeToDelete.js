@@ -1,17 +1,7 @@
-import React, { useState, useContext, useEffect, useCallback } from "react";
-import { View, StyleSheet, Dimensions } from "react-native";
-import {
-  Button,
-  DataTable,
-  TextInput,
-  IconButton,
-  TouchableRipple,
-  Portal,
-  useTheme,
-} from "react-native-paper";
-
+import React from "react";
+import { StyleSheet, Dimensions } from "react-native";
 import { PanGestureHandler } from "react-native-gesture-handler";
-
+import { IconButton, useTheme } from "react-native-paper";
 import Animated, {
   useSharedValue,
   withTiming,
@@ -19,13 +9,7 @@ import Animated, {
   useAnimatedGestureHandler,
   runOnJS,
   Layout,
-  FadeInDown,
-  SlideOutLeft,
-  FadeOut,
-  combineTransition,
   FadeIn,
-  StretchInY,
-  SequencedTransition,
 } from "react-native-reanimated";
 
 const SwipeToDelete = ({ style, children, deleteFn, id }) => {

@@ -7,7 +7,6 @@ import Animated, {
   FadeOutDown,
 } from "react-native-reanimated";
 import { WorkoutDataContext } from "../../../context/WorkoutDataContext";
-import { UserDataContext } from "../../../context/UserDataContext";
 import ExerciseTable from "./ExerciseTable/ExerciseTable";
 import ExerciseSettingsDots from "./Buttons/ExerciseSettingsDots";
 import AddSetButton from "./Buttons/AddSetButton";
@@ -16,6 +15,13 @@ import ExerciseNotesModal from "./Modals/ExerciseNotesModal";
 import SetsByRepsComponent from "./SetsByRepsComponent";
 import { create_uid } from "../../../util/create_uid";
 import { capitalize } from "../../../util/capitalize";
+import { useDispatch } from "react-redux";
+import {
+  createSet,
+  createSetFromTemplate,
+  deleteSet,
+  updateExercise,
+} from "../../../../redux/slices/workoutsSlice";
 
 const ExerciseComponent = ({
   exerciseData,
@@ -23,11 +29,12 @@ const ExerciseComponent = ({
   handleDeleteExercise,
 }) => {
   const { colors } = useTheme();
-  const { workoutData, setWorkoutData, id } = useContext(WorkoutDataContext);
-  const { state, dispatch } = useContext(UserDataContext);
+  const { workoutData, workoutIndex, id } = useContext(WorkoutDataContext);
   const [name, setName] = useState(exerciseData.exercise_name);
   const [templateModalVisible, setTemplateModalVisible] = useState(false);
   const [notesModalVisible, setNotesModalVisible] = useState(false);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     setName(exerciseData.exercise_name);
@@ -39,17 +46,15 @@ const ExerciseComponent = ({
   };
 
   const handleBlur = () => {
-    if (
-      workoutData.exercises[exerciseIndex].exercise_name !== name &&
-      name.length > 0
-    ) {
-      const _name = capitalize(name);
-
-      let newExerciseArray = workoutData.exercises;
-      newExerciseArray[exerciseIndex].exercise_name = _name;
-      setName(_name);
-      setWorkoutData({ ...workoutData, exercises: newExerciseArray });
-    }
+    const _name = capitalize(name);
+    setName(_name);
+    dispatch(
+      updateExercise({
+        exerciseIndex: exerciseIndex,
+        workoutIndex: workoutIndex,
+        data: { exercise_name: _name },
+      })
+    );
   };
 
   const handleAddFromTemplate = useCallback(
@@ -59,39 +64,33 @@ const ExerciseComponent = ({
         const set = { weight: weight, reps: reps, id: create_uid() };
         newSetArray.push(set);
       }
-      const exercises = [...workoutData.exercises];
-      exercises[exerciseIndex].sets = newSetArray;
 
-      setWorkoutData((data) => {
-        return { ...data, exercises: exercises };
-      });
+      dispatch(
+        createSetFromTemplate({
+          workoutIndex: workoutIndex,
+          exerciseIndex: exerciseIndex,
+          newSets: newSetArray,
+        })
+      );
     },
     [workoutData.exercises]
   );
 
   const handleAddSet = useCallback(() => {
-    const exercises = [...workoutData.exercises];
-    exercises[exerciseIndex].sets = [
-      ...exerciseData.sets,
-      { weight: "", reps: "", id: create_uid() },
-    ];
-
-    setWorkoutData((data) => {
-      return { ...data, exercises: exercises };
-    });
+    dispatch(
+      createSet({ workoutIndex: workoutIndex, exerciseIndex: exerciseIndex })
+    );
   }, [workoutData.exercises]);
 
   const handleDeleteSet = useCallback(
     (set_id) => {
-      const newSets = exerciseData.sets.filter((e, i) => {
-        return e.id !== set_id;
-      });
-      const newExercises = [...workoutData.exercises];
-      newExercises[exerciseIndex].sets = newSets;
-
-      setWorkoutData((data) => {
-        return { ...data, exercises: [...newExercises] };
-      });
+      dispatch(
+        deleteSet({
+          setId: set_id,
+          workoutIndex: workoutIndex,
+          exerciseIndex: exerciseIndex,
+        })
+      );
     },
     [workoutData.exercises]
   );
@@ -108,14 +107,13 @@ const ExerciseComponent = ({
       height: 48,
       backgroundColor: "transparent",
       paddingHorizontal: 0,
-      fontSize: 20,
-      lineHeight: 3,
+      fontSize: 24,
     },
     exercise: {
       marginTop: 18,
       paddingVertical: 10,
       borderRadius: 10,
-      backgroundColor: colors.surface,
+      backgroundColor: colors.surfaceLight,
     },
   });
   return (
@@ -148,6 +146,7 @@ const ExerciseComponent = ({
             style={{ margin: 0 }}
             exercise_id={exerciseData.id}
             exerciseIndex={exerciseIndex}
+            workoutIndex={workoutIndex}
             handleDeleteExercise={handleDeleteExercise}
             handleAddFromTemplate={handleAddFromTemplate}
             templateModalVisible={templateModalVisible}
@@ -162,7 +161,6 @@ const ExerciseComponent = ({
         </View>
       </View>
       <ExerciseTable>
-        <ExerciseTable.Header labels={["set", "weight", "reps"]} />
         {exerciseData &&
           exerciseData.sets.map((set, i) => {
             // the reason layout animations aren't working is because
@@ -174,6 +172,7 @@ const ExerciseComponent = ({
                 set_id={set.id}
                 setIndex={i}
                 exerciseIndex={exerciseIndex}
+                workoutIndex={workoutIndex}
                 set_count={i + 1}
                 setData={set}
                 handleDeleteSet={handleDeleteSet}

@@ -4,36 +4,21 @@ import React, { useContext, useState, useCallback } from "react";
 import { WorkoutDataContext } from "../../../../context/WorkoutDataContext";
 import { UserDataContext } from "../../../../context/UserDataContext";
 import { create_uid } from "../../../../util/create_uid";
+import { useDispatch, useSelector } from "react-redux";
+import { createSetFromTemplate } from "../../../../../redux/slices/workoutsSlice";
 
 const ExerciseSettingsDots = ({
   exercise_id,
-  exerciseIndex,
   handleDeleteExercise,
   handleAddFromTemplate,
-  templateModalVisible,
   setTemplateModalVisible,
 }) => {
-  const { workoutData, setWorkoutData, id } = useContext(WorkoutDataContext);
-  const { state, dispatch } = useContext(UserDataContext);
   const { colors } = useTheme();
 
   const [menuVisible, setMenuVisible] = useState(false);
   const [subMenuVisible, setSubMenuVisible] = useState(false);
 
-  // const handleAddFromTemplate = (sets, reps, weight) => {
-  //   let newSetArray = [];
-  //   for (let i = 0; i < sets; i++) {
-  //     const set = { weight: weight, reps: reps, id: create_uid() };
-  //     newSetArray.push(set);
-  //   }
-
-  // console.log(workoutData.exercises)
-  //   const newExercises = [...workoutData.exercises];
-  //   // newExercises[exerciseIndex].sets = newSetArray;
-  //   // setWorkoutData({ ...workoutData, exercises: newExercises });
-  // };
-
-
+  const workoutData = useSelector((state) => state.workouts.workouts);
 
   return (
     <Menu

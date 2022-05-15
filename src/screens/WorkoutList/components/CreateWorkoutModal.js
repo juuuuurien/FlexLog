@@ -13,11 +13,13 @@ import {
 import dayjs from "dayjs";
 import { create_uid } from "../../../util/create_uid";
 import { capitalize } from "../../../util/capitalize";
-import { UserDataContext } from "../../../context/UserDataContext";
+import { useDispatch } from "react-redux";
+import { createWorkout } from "../../../../redux/slices/workoutsSlice";
 
 const CreateWorkoutModal = ({ show, hide, visible }) => {
   const { colors } = useTheme();
-  const { dispatch } = useContext(UserDataContext);
+  const dispatch = useDispatch();
+
   const [inputData, setInputData] = useState("");
   const [descriptionData, setDescriptionData] = useState("");
   const [colorSelected, setColorSelected] = useState("auto");
@@ -88,11 +90,10 @@ const CreateWorkoutModal = ({ show, hide, visible }) => {
 
   const handleCreate = () => {
     if (inputData.trim().length > 0) {
-      dispatch({
-        type: "CREATE_WORKOUT",
-        payload: {
+      dispatch(
+        createWorkout({
           id: create_uid(),
-          date: dayjs(),
+          date: dayjs().format(),
           name: capitalize(inputData.trim()),
           exercises: [],
           started: false,
@@ -101,8 +102,8 @@ const CreateWorkoutModal = ({ show, hide, visible }) => {
           finished: false,
           cardColor: colorSelected,
           description: descriptionData.trim(),
-        },
-      });
+        })
+      );
       handleClose();
     } else {
       setIsError(true);

@@ -1,20 +1,22 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Alert } from "react-native";
 import { Button, Colors } from "react-native-paper";
-import { WorkoutDataContext } from "../../../../context/WorkoutDataContext";
-import { UserDataContext } from "../../../../context/UserDataContext";
+
 import dayjs from "dayjs";
+import {
+  finishWorkout,
+  startWorkout,
+  updateWorkout,
+} from "../../../../../redux/slices/workoutsSlice";
+import { useDispatch } from "react-redux";
 
-const StartWorkoutButton = ({ id, workoutData, setWorkoutData }) => {
+const StartWorkoutButton = ({ workoutIndex, workoutData }) => {
   // this will update WorkoutDataState and append it with an empty exercise
-
-  const { dispatch } = useContext(UserDataContext);
-
+  const dispatch = useDispatch();
   const [started, setStarted] = useState(false);
   const [finished, setFinished] = useState(false);
 
   useEffect(() => {
-    console.log("started is", workoutData.started);
     // initialize button state depending on store
     if (workoutData.started) setStarted(true);
     if (workoutData.started && workoutData.finished) setFinished(true);
@@ -36,11 +38,12 @@ const StartWorkoutButton = ({ id, workoutData, setWorkoutData }) => {
 
   const handlePress = () => {
     if (!started) {
-      setWorkoutData({
-        ...workoutData,
-        started: true,
-        startTime: dayjs().format(),
-      });
+      dispatch(
+        updateWorkout({
+          workoutIndex: workoutIndex,
+          data: { started: true, startTime: dayjs().format() },
+        })
+      );
       return;
     }
 
@@ -72,14 +75,18 @@ const StartWorkoutButton = ({ id, workoutData, setWorkoutData }) => {
         {
           text: "Finish this workout.",
           onPress: () => {
-            setWorkoutData({
-              ...workoutData,
-              finished: true,
-              finishTime: getTimeString(
-                workoutData.startTime,
-                dayjs().format()
-              ),
-            });
+            dispatch(
+              updateWorkout({
+                workoutIndex: workoutIndex,
+                data: {
+                  finished: true,
+                  finishTime: getTimeString(
+                    workoutData.startTime,
+                    dayjs().format()
+                  ),
+                },
+              })
+            );
           },
         },
       ]);
@@ -106,7 +113,12 @@ const StartWorkoutButton = ({ id, workoutData, setWorkoutData }) => {
             onPress: () => {
               setStarted(false);
               setFinished(false);
-              setWorkoutData({ ...workoutData, started: false });
+              dispatch(
+                updateWorkout({
+                  workoutIndex: workoutIndex,
+                  data: { started: false, finished: false },
+                })
+              );
             },
           },
         ]

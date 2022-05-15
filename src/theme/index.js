@@ -22,9 +22,9 @@ export const CombinedDarkTheme = {
   colors: {
     ...PaperDarkTheme.colors,
     ...NavigationDarkTheme.colors,
-    surface: "#16242A",
-    surfaceLight: "#1C3038",
-    background: "#0E1619",
+    surface: "#1D343D",
+    surfaceLight: "#1B2C32",
+    background: "#122025",
     cardColor: "#1F2024",
     card: "#1F2024",
     subText: "#89A9B8",

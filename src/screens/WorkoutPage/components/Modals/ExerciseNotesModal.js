@@ -1,6 +1,13 @@
 import { View, Text, StyleSheet } from "react-native";
 import React, { useState, useEffect, useContext } from "react";
-import { Portal, Modal, Card, TextInput, Button } from "react-native-paper";
+import {
+  Portal,
+  Modal,
+  Card,
+  TextInput,
+  Button,
+  IconButton,
+} from "react-native-paper";
 import { WorkoutDataContext } from "../../../../context/WorkoutDataContext";
 
 const ExerciseTemplateModal = ({
@@ -39,7 +46,15 @@ const ExerciseTemplateModal = ({
         <Card style={styles.contentContainer}>
           <Card.Title
             title={`${exerciseName} Notes:`}
-            style={{ marginBottom: 16 }}
+            right={(props) => (
+              <IconButton
+                {...props}
+                icon="close"
+                onPress={() => {
+                  setNotesModalVisible(false);
+                }}
+              />
+            )}
           />
           <Card.Content>
             <View
@@ -59,7 +74,9 @@ const ExerciseTemplateModal = ({
               />
             </View>
           </Card.Content>
-          <Card.Actions style={{ marginTop: 15, justifyContent: "flex-end" }}>
+          <Card.Actions
+            style={{ justifyContent: "flex-end", alignItems: "center" }}
+          >
             <Button
               mode="contained"
               style={styles.button}
@@ -78,14 +95,16 @@ const ExerciseTemplateModal = ({
 };
 
 const styles = StyleSheet.create({
-  button: { marginHorizontal: 5 },
+  button: { marginHorizontal: 8 },
   contentContainer: {
-    padding: 10,
+    paddingHorizontal: 10,
+    paddingBottom: 10,
     width: "100%",
+    borderRadius: 20,
   },
   modalContainer: {
     justifyContent: "flex-start",
-    margin: 25,
+    margin: 18,
     alignItems: "center",
   },
 });

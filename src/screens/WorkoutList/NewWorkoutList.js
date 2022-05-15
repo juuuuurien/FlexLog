@@ -1,80 +1,79 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  Alert,
-  StatusBar,
-  Dimensions,
-} from "react-native";
+import { StyleSheet, Text, View, Alert } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import {
   useFocusEffect,
   useIsFocused,
   useNavigation,
 } from "@react-navigation/native";
-import { FlatList } from "react-native-gesture-handler";
+import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
 import { UserDataContext } from "../../context/UserDataContext";
 import { FAB, Portal, withTheme, useTheme, Colors } from "react-native-paper";
 
 import ListItem from "./components/ListItem";
 import CreateWorkoutModal from "./components/CreateWorkoutModal";
-import Animated, {
-  interpolate,
-  useAnimatedScrollHandler,
-  useAnimatedStyle,
-  useSharedValue,
-  Extrapolate,
-} from "react-native-reanimated";
+import { useDispatch, useSelector } from "react-redux";
+import Loading from "../../global/components/Loading";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  deleteWorkout,
+  fetchWorkouts,
+} from "../../../redux/slices/workoutsSlice";
+import { STATUS_BAR_HEIGHT } from "../../global/constants";
+import { store } from "../../../redux";
 
-const HEADER_HEIGHT_MAX = 140;
-const HEADER_HEIGHT_MIN = 80;
-const STATUS_BAR_HEIGHT = StatusBar.currentHeight;
+const EmptyListScreen = () => {
+  const { colors } = useTheme();
 
-const HeaderComponent = ({
-  title,
-  style,
-  animatedHeaderStyle,
-  animatedTitleStyle,
-}) => {
   const styles = StyleSheet.create({
     container: {
-      position: "absolute",
-      height: HEADER_HEIGHT_MAX,
-      width: "100%",
       flex: 1,
-      flexDirection: "row",
-      padding: 10,
+      width: "100%",
+      justifyContent: "center",
       alignItems: "center",
-      backgroundColor: "hotpink",
-    },
-    title: {
-      color: "#FFF",
-      fontWeight: "bold",
     },
   });
 
   return (
-    <Animated.View style={[styles.container, animatedHeaderStyle]}>
-      <Animated.Text style={[styles.title, animatedTitleStyle]}>
-        Header Here
-      </Animated.Text>
-    </Animated.View>
+    <View style={styles.container}>
+      <Text style={{ color: colors.text }}>
+        {"You have not logged any workouts."}
+      </Text>
+      <Text style={{ color: colors.text }}>{`Press the '+' to add one.`}</Text>
+    </View>
   );
 };
 
 const NewWorkoutList = () => {
   const { colors } = useTheme();
-  const { state, dispatch } = useContext(UserDataContext);
   const [showModal, setShowModal] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
-
   const navigation = useNavigation();
-  const isFocused = useIsFocused();
+  const focused = useIsFocused();
+  const dispatch = useDispatch();
+  const { workouts, loading } = useSelector((state) => state.workouts);
+
+  // fetch data here on useEffect...
 
   useEffect(() => {
-    // On focus from navigation, update refresh state to refresh FlatList
-    setRefreshing(!refreshing);
-  }, [isFocused]);
+    // on screen mount, load items into state.
+    console.log("fetching workouts from db....");
+    if (focused) dispatch(fetchWorkouts());
+  }, []);
+
+  useEffect(() => {
+    navigation.addListener("blur", async () => {
+      console.log("leaving screen, updating...");
+
+      const workoutsSnapshot = store.getState().workouts.workouts;
+      try {
+        await AsyncStorage.setItem(
+          "workouts",
+          JSON.stringify(workoutsSnapshot)
+        );
+      } catch (err) {
+        console.warn(err);
+      }
+    });
+  }, [navigation]);
 
   // handlers
   const handleDeleteItem = (id, name) => {
@@ -89,103 +88,32 @@ const NewWorkoutList = () => {
       {
         text: "Yes",
         onPress: () => {
-          dispatch({ type: "DELETE_WORKOUT", payload: id });
+          dispatch(deleteWorkout(id));
         },
       },
     ]);
   };
 
-  // ==ANIMATIONS========================================================================================
-  const scrollY = useSharedValue(0);
-
-  const scrollHandler = useAnimatedScrollHandler((event) => {
-    scrollY.value = event.contentOffset.y;
-  });
-
-  const animatedHeaderStyle = useAnimatedStyle(() => {
-    const animatedHeight = interpolate(
-      scrollY.value,
-      [0, HEADER_HEIGHT_MAX - HEADER_HEIGHT_MIN],
-      [HEADER_HEIGHT_MAX, HEADER_HEIGHT_MIN],
-      {
-        extrapolateRight: Extrapolate.CLAMP,
-      }
-    );
-
-    return { height: animatedHeight };
-  });
-
-  const animatedTitleStyle = useAnimatedStyle(() => {
-    const animatedTitleScale = interpolate(
-      scrollY.value,
-      [0, HEADER_HEIGHT_MAX - HEADER_HEIGHT_MIN],
-      [1.75, 1],
-      {
-        extrapolateRight: Extrapolate.CLAMP,
-      }
-    );
-
-    const animatedTranslateX = interpolate(
-      scrollY.value,
-      [0, HEADER_HEIGHT_MAX - HEADER_HEIGHT_MIN],
-      [20, 0],
-      {
-        extrapolateRight: Extrapolate.CLAMP,
-      }
-    );
-
-    const animatedTranslateY = interpolate(
-      scrollY.value,
-      [0, HEADER_HEIGHT_MAX - HEADER_HEIGHT_MIN],
-      [18, 0],
-      {
-        extrapolateRight: Extrapolate.CLAMP,
-      }
-    );
-
-    return {
-      transform: [
-        { scale: animatedTitleScale },
-        { translateX: animatedTranslateX },
-        { translateY: animatedTranslateY },
-      ],
-    };
-  });
+  if (loading) return <Loading />;
 
   return (
     <View style={styles.container}>
-      <Animated.FlatList
-        style={styles.flatListContainer}
-        contentContainerStyle={[
-          styles.flatListContent,
-          {
-            minHeight:
-              Dimensions.get("window").height +
-              HEADER_HEIGHT_MAX -
-              HEADER_HEIGHT_MIN,
-          },
-        ]}
-        refreshing
-        scrollHandler={scrollHandler}
-        data={state.workouts}
-        extraData={state.workouts}
-        renderItem={({ item, index }) => {
-          //   item, id, navigation, index, handleDelete
-          return (
-            <ListItem
-              item={item}
-              id={item.id}
-              navigation={navigation}
-              index={index}
-              handleDelete={handleDeleteItem}
-              keyExtractor={(item) => item.id}
-            />
-          );
-        }}
-      />
-      <HeaderComponent
-        animatedHeaderStyle={animatedHeaderStyle}
-        animatedTitleStyle={animatedTitleStyle}
+      <FlatList
+        style={styles.container}
+        contentContainerStyle={styles.flatListContent}
+        ListEmptyComponent={EmptyListScreen}
+        data={workouts}
+        extraData={workouts}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item, index }) => (
+          <ListItem
+            item={item}
+            id={item.id}
+            navigation={navigation}
+            index={index}
+            handleDelete={handleDeleteItem}
+          />
+        )}
       />
       <CreateWorkoutModal
         show={() => {
@@ -211,16 +139,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
+    paddingTop: STATUS_BAR_HEIGHT,
   },
   flatListContainer: {
-    flexGrow: 1,
     backgroundColor: "navy",
   },
   flatListContent: {
+    flex: 1,
     width: "100%",
-    backgroundColor: "pink",
     paddingHorizontal: 6,
-    paddingTop: HEADER_HEIGHT_MAX + 10,
   },
   FABButton: {
     position: "absolute",

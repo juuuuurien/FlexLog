@@ -6,15 +6,7 @@ import { UserDataContext } from "../../../../context/UserDataContext";
 import { WorkoutDataContext } from "../../../../context/WorkoutDataContext";
 import Animated, { Layout } from "react-native-reanimated";
 
-const AddSetButton = ({
-  workoutData,
-  exerciseIndex,
-  exerciseData,
-  handleAddSet,
-}) => {
-  const { state, dispatch } = useContext(UserDataContext);
-  const { id, workkoutData, setWorkoutData } = useContext(WorkoutDataContext);
-
+const AddSetButton = ({ handleAddSet }) => {
   return (
     <Animated.View layout={Layout}>
       <Button style={styles.button} onPress={handleAddSet}>
