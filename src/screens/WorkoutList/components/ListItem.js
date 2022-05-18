@@ -1,5 +1,11 @@
 import React, { useContext, useState } from "react";
-import { StyleSheet, Platform, View, Text } from "react-native";
+import {
+  StyleSheet,
+  Platform,
+  View,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 import {
   List,
   Colors,
@@ -10,7 +16,6 @@ import {
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 
-import { TouchableOpacity } from "react-native-gesture-handler";
 dayjs.extend(customParseFormat);
 
 const ListItem = ({ item, id, navigation, index, handleDelete }) => {

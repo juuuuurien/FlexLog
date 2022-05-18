@@ -29,6 +29,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   createExercise,
   deleteExercise,
+  updateWorkout,
 } from "../../../redux/slices/workoutsSlice";
 
 const WorkoutPage = ({ navigation, route }) => {
@@ -58,22 +59,18 @@ const WorkoutPage = ({ navigation, route }) => {
 
   // useEffect(() => console.log(workoutData), [workoutData]);
 
-  const HeaderRightComponent = () => {
-    return (
-      <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
-        <StartWorkoutButton
-          workoutIndex={workoutIndex}
-          workoutData={workoutData}
-        />
-      </View>
-    );
-  };
-
   useLayoutEffect(() => {
     if (workoutData === null) return;
     navigation.setOptions({
       title: workoutData.name,
-      headerRight: () => <HeaderRightComponent />,
+      headerRight: () => {
+        return (
+          <StartWorkoutButton
+            workoutIndex={workoutIndex}
+            workoutData={workoutData}
+          />
+        );
+      },
     });
   }, [workoutData, workouts[workoutIndex]]);
 
@@ -94,7 +91,12 @@ const WorkoutPage = ({ navigation, route }) => {
   );
 
   const handleResetTimer = () => {
-    // setWorkoutData({ ...workoutData, startTime: dayjs().format() });
+    dispatch(
+      updateWorkout({
+        workoutIndex: workoutIndex,
+        data: { startTime: dayjs().format() },
+      })
+    );
   };
 
   return (
