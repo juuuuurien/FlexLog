@@ -1,13 +1,8 @@
 import { StyleSheet, Text, View, Alert } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
-import {
-  useFocusEffect,
-  useIsFocused,
-  useNavigation,
-} from "@react-navigation/native";
-import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
-import { UserDataContext } from "../../context/UserDataContext";
-import { FAB, Portal, withTheme, useTheme, Colors } from "react-native-paper";
+import React, { useEffect, useState } from "react";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { FlatList } from "react-native-gesture-handler";
+import { FAB, useTheme } from "react-native-paper";
 
 import ListItem from "./components/ListItem";
 import CreateWorkoutModal from "./components/CreateWorkoutModal";

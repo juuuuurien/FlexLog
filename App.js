@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, useRef } from "react";
+import React, { useEffect } from "react";
 import {
   AppState,
   Platform,
@@ -7,23 +7,16 @@ import {
   useColorScheme,
 } from "react-native";
 import { Provider as PaperProvider } from "react-native-paper";
-import { UserDataContextProvider } from "./src/context/UserDataContext";
 
 import { NavigationContainer } from "@react-navigation/native";
 import WorkoutListNavigator from "./src/screens/WorkoutList/WorkoutListNavigator";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useAsyncStorage } from "./src/hooks/useAsyncStorage";
 
-import { userDataReducer } from "./src/reducers/UserDataReducer";
-
-import Loading from "./src/global/components/Loading";
-
-import { CombinedDarkTheme, CombinedDefaultTheme } from "./src/theme";
+import { CombinedDarkTheme } from "./src/theme";
 
 import { store } from "./redux";
 import { Provider as StoreProvider, useDispatch } from "react-redux";
-import { INITIALIZE_WORKOUTS } from "./redux/slices/workoutsSlice";
 
 // let userData = {
 //   workouts: {

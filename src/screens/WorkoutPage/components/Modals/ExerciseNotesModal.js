@@ -46,9 +46,8 @@ const ExerciseTemplateModal = ({
         <Card style={styles.contentContainer}>
           <Card.Title
             title={`${exerciseName} Notes:`}
-            right={(props) => (
+            right={() => (
               <IconButton
-                {...props}
                 icon="close"
                 onPress={() => {
                   setNotesModalVisible(false);

@@ -33,7 +33,6 @@ const Stopwatch = ({
   );
 
   const intervalRef = useRef(null);
-  const timeRef = useRef(time);
 
   //  if the workout has started, save a time snapshot when button is clicked
   //  on mount, if the workout is started, continue the timer
