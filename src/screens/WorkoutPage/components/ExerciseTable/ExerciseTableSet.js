@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useContext,
-  useEffect,
-  useMemo,
-  useCallback,
-} from "react";
+import React, { useState, useContext, useEffect, useMemo } from "react";
 import { StyleSheet, Text, TextInput } from "react-native";
 import { DataTable, IconButton, useTheme, withTheme } from "react-native-paper";
 import Animated, {
@@ -30,7 +24,9 @@ const ExerciseTableSet = ({
 }) => {
   const { colors } = useTheme();
   const dispatch = useDispatch();
-  const { weightUnits } = useSelector((state) => state.settings);
+  const { weightUnits, darkTheme } = useSelector(
+    (state) => state.settings.settings
+  );
   const { workoutData } = useContext(WorkoutDataContext);
   const [weight, setWeight] = useState(setData.weight);
   const [reps, setReps] = useState(setData.reps);
@@ -143,11 +139,13 @@ const ExerciseTableSet = ({
                 styles.cell,
                 {
                   flex: 0,
-                  width: 40,
-                  height: 40,
+                  width: 36,
+                  height: 36,
                   alignSelf: "center",
-                  borderRadius: 8,
+                  borderRadius: 100,
                   justifyContent: "center",
+                  backgroundColor:
+                    darkTheme === true ? "transparent" : colors.primary,
                 },
               ]}
             >

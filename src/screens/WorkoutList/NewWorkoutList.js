@@ -16,8 +16,6 @@ import {
 import { store } from "../../../redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { STATUS_BAR_HEIGHT } from "../../global/constants";
-
 const EmptyListScreen = () => {
   const { colors } = useTheme();
 
