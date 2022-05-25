@@ -12,7 +12,7 @@ import { fetchWorkouts } from "./redux/slices/workoutsSlice";
 import { fetchSettings } from "./redux/slices/settingsSlice";
 
 export default function MainApp() {
-  const { darkTheme } = useSelector((state) => state.settings.settings);
+  const { darkTheme } = useSelector((state) => state.settings.data);
   const dispatch = useDispatch();
 
   const getTheme = () => {

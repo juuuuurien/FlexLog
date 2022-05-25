@@ -7,28 +7,47 @@ import { updateMaxes } from "../../../../redux/slices/settingsSlice";
 
 const MaxInput = ({ weight, weightUnits, style, type }) => {
   const dispatch = useDispatch();
+  const [error, setError] = useState(false);
+  const [cache, setCache] = useState();
   const [val, setVal] = useState();
 
   const { colors } = useTheme();
+
+  const handleChange = (text) => setVal(text);
+
+  const handleFocus = () => {
+    setCache(weight);
+    setVal("");
+  };
+
+  const handleEndEditing = () => {
+    if (val === "") {
+      setVal(`${cache} ${weightUnits}`); // if no change, set back to original value
+    } else {
+      setVal(`${val} ${weightUnits}`); //  append state with units
+    }
+    dispatch(updateMaxes({ [type]: val })); // merge value into state
+  };
+
+  const handleError = () => {
+    if (cache === "" && val === "") return true;
+
+    return false;
+  };
 
   useEffect(() => {
     setVal(`${weight} ${weightUnits}`);
   }, [weightUnits]);
 
-  const handleChange = (text) => setVal(text);
-
-  const handleFocus = () => setVal(weight.toString());
-
-  const handleEndEditing = () => {
-    setVal(`${val} ${weightUnits}`); //  append state with units
-
-    dispatch(updateMaxes({ [type]: val })); // merge value into state
-  };
+  useEffect(() => {
+    handleError();
+  }, [val]);
 
   return (
     <TextInput
       style={[style, styles.input, { backgroundColor: colors.inputBackground }]}
       dense
+      error={handleError()}
       dismissable
       keyboardType="numeric"
       onChangeText={handleChange}

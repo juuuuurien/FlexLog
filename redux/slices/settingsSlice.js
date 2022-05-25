@@ -3,7 +3,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   loading: true,
-  settings: {
+  data: {
     username: "",
     maxes: { squat: 0, bench: 0, deadlift: 0 },
     weightUnits: "lb",
@@ -26,14 +26,14 @@ const settingsSlice = createSlice({
   initialState,
   reducers: {
     updateMaxes: (state, action) => {
-      state.settings.maxes = { ...state.settings.maxes, ...action.payload };
+      state.data.maxes = { ...state.data.maxes, ...action.payload };
     },
     updateWeightUnits: (state, action) => {
-      state.settings.weightUnits = action.payload;
+      state.data.weightUnits = action.payload;
     },
     setDarkTheme: (state, action) => {
       const _darkTheme = action.payload;
-      state.settings.darkTheme = _darkTheme;
+      state.data.darkTheme = _darkTheme;
     },
   },
   extraReducers: (builder) => {
@@ -42,8 +42,7 @@ const settingsSlice = createSlice({
         state.loading = true;
       })
       .addCase(fetchSettings.fulfilled, (state, action) => {
-        console.log("WAAAHAHAHASHAHAHAH", action.payload);
-        state.settings = action.payload;
+        state.data = action.payload;
         state.loading = false;
       });
   },

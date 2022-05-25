@@ -15,16 +15,9 @@ import Loading from "../../global/components/Loading";
 const Settings = () => {
   const focused = useIsFocused();
   const dispatch = useDispatch();
-  const { settings, loading } = useSelector((state) => state.settings);
+  const { data, loading } = useSelector((state) => state.settings);
 
-  const { darkTheme, weightUnits, maxes } = settings;
-
-  const state = useSelector((state) => state);
-
-  console.log(
-    settings,
-    "asfdslakfja;sdflkjasd;flkjasdfl;kasdjfl;asdkfjasd;fklj"
-  );
+  const { darkTheme, weightUnits, maxes } = data;
 
   // useEffect(() => {
   //   navigation.addListener("blur", async () => {
