@@ -1,5 +1,11 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+} from "react-native";
 import {
   Modal,
   Card,
@@ -42,7 +48,7 @@ const CreateWorkoutModal = ({ show, hide, visible }) => {
         >
           <Text
             style={{
-              color: color === colorSelected ? "white" : colors.subText,
+              color: color === colorSelected ? colors.text : colors.subText,
             }}
           >
             {"auto"}
@@ -125,8 +131,9 @@ const CreateWorkoutModal = ({ show, hide, visible }) => {
     },
     contentContainer: {
       width: "100%",
-      height: 360,
-      padding: 12,
+      flex: 1,
+      maxHeight: 360,
+      padding: 6,
       borderRadius: 14,
     },
     labelColorContainer: {
@@ -161,54 +168,58 @@ const CreateWorkoutModal = ({ show, hide, visible }) => {
       onDismiss={handleClose}
       contentContainerStyle={styles.modalContainer}
     >
-      <Card style={styles.contentContainer}>
-        <Card.Title titleStyle={{ fontSize: 24 }} title={"Log a new workout"} />
-        <Card.Content style={styles.container}>
-          <TextInput
-            underlineColor="#89A9B8"
-            error={isError}
-            autoFocus
-            placeholder={"Title"}
-            style={styles.input}
-            value={inputData}
-            onChangeText={handleChange}
-            onBlur={handleBlur}
+      <KeyboardAvoidingView style={styles.contentContainer}>
+        <Card style={styles.contentContainer}>
+          <Card.Title
+            titleStyle={{ fontSize: 24 }}
+            title={"Log a new workout"}
           />
-          {isError && (
-            <HelperText style={{ color: colors.error }}>
-              {"*Please enter a workout name"}
-            </HelperText>
-          )}
-          <TextInput
-            dense
-            multiline
-            underlineColor="transparent"
-            activeUnderlineColor="transparent"
-            placeholder={"Tap to add description"}
-            style={styles.description}
-            maxLength={50}
-            value={descriptionData}
-            onChangeText={handleDescriptionChange}
-          />
-          <View style={styles.labelColorContainer}>
-            <Text style={{ color: colors.text }}>{"Label color: "}</Text>
+          <Card.Content style={styles.container}>
+            <TextInput
+              error={isError}
+              autoFocus
+              placeholder={"Title"}
+              style={styles.input}
+              value={inputData}
+              onChangeText={handleChange}
+              onBlur={handleBlur}
+            />
+            {isError && (
+              <HelperText style={{ color: colors.error }}>
+                {"*Please enter a workout name"}
+              </HelperText>
+            )}
+            <TextInput
+              dense
+              multiline
+              underlineColor="transparent"
+              activeUnderlineColor="transparent"
+              placeholder={"Tap to add description"}
+              style={styles.description}
+              maxLength={50}
+              value={descriptionData}
+              onChangeText={handleDescriptionChange}
+            />
             <View style={styles.labelColorContainer}>
-              <RadioButton color={"#1E3742"} />
-              <RadioButton color={"#C33939"} />
-              <RadioButton color={"#1D84BD"} />
-              <RadioButton color={"#3DBF5A"} />
-              <RadioButton color={"#4B228E"} />
-              <RadioButton color={"auto"} />
+              <Text style={{ color: colors.text }}>{"Label color: "}</Text>
+              <View style={styles.labelColorContainer}>
+                <RadioButton color={colors.cardGray} />
+                <RadioButton color={colors.cardRed} />
+                <RadioButton color={colors.cardBlue} />
+                <RadioButton color={colors.cardGreen} />
+                <RadioButton color={colors.cardPurple} />
+                <RadioButton color={"auto"} />
+              </View>
             </View>
-          </View>
-        </Card.Content>
-        <Card.Actions style={{ marginTop: 15, justifyContent: "flex-end" }}>
-          <Button onPress={handleClose}>{"Cancel"}</Button>
-          <Button mode="contained" onPress={() => handleCreate()}>
-            {"Create"}
-          </Button>
-        </Card.Actions>
-      </Card>
+          </Card.Content>
+          <Card.Actions style={{ marginTop: 15, justifyContent: "flex-end" }}>
+            <Button onPress={handleClose}>{"Cancel"}</Button>
+            <Button mode="contained" onPress={() => handleCreate()}>
+              {"Create"}
+            </Button>
+          </Card.Actions>
+        </Card>
+      </KeyboardAvoidingView>
     </Modal>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AppState,
   Platform,
@@ -6,17 +6,13 @@ import {
   View,
   useColorScheme,
 } from "react-native";
-import { Provider as PaperProvider } from "react-native-paper";
-
-import { NavigationContainer } from "@react-navigation/native";
-import WorkoutListNavigator from "./src/screens/WorkoutList/WorkoutListNavigator";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-import { CombinedDarkTheme } from "./src/theme";
-
 import { store } from "./redux";
-import { Provider as StoreProvider, useDispatch } from "react-redux";
+
+import { Provider as StoreProvider, useSelector } from "react-redux";
+
+import MainApp from "./MainApp";
 
 // let userData = {
 //   workouts: {
@@ -40,16 +36,20 @@ import { Provider as StoreProvider, useDispatch } from "react-redux";
 // };
 
 const initUserData = async () => {
-  const userData = await AsyncStorage.getItem("userData");
+  const userData = await AsyncStorage.getItem("userSettings");
+  console.log(
+    userData,
+    "=============================================================="
+  );
   if (userData === null) {
-    console.log("WARNING ================ > userData is null!");
+    console.log("WARNING ================ > userSettings is null!");
     await AsyncStorage.setItem(
-      "userData",
+      "userSettings",
       JSON.stringify({
         username: "",
-        maxes: { squat: 0, bench: 0, deadlift: 0 },
-        weightUnits: "lb",
-        theme: "dark",
+        maxes: { squat: "0", bench: "0", deadlift: "0" },
+        weightUnits: "lbs",
+        darkTheme: false,
       })
     );
   }
@@ -59,6 +59,8 @@ const initUserData = async () => {
 
 const initWorkouts = async () => {
   const workoutData = await AsyncStorage.getItem("workouts");
+  if (workoutData !== null) console.log("workouts are NOT null");
+  console.log(workoutData);
   if (workoutData === null) {
     console.log("WARNING ================ > workouts is null!");
     await AsyncStorage.setItem("workouts", JSON.stringify([]));
@@ -68,6 +70,8 @@ const initWorkouts = async () => {
 };
 
 export default function App() {
+  // initialize providers, then render app with withProviders(App)
+
   // AsyncStorage.clear();
   useEffect(() => {
     //  initialize data if missing
@@ -77,11 +81,7 @@ export default function App() {
 
   return (
     <StoreProvider store={store}>
-      <PaperProvider theme={CombinedDarkTheme}>
-        <NavigationContainer theme={CombinedDarkTheme}>
-          <WorkoutListNavigator />
-        </NavigationContainer>
-      </PaperProvider>
+      <MainApp />
     </StoreProvider>
   );
 }

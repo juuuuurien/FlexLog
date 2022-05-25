@@ -16,29 +16,29 @@ export const fetchWorkouts = createAsyncThunk("fetchWorkouts", async () => {
   return workouts;
 });
 
-export const createWorkouts = createAsyncThunk(
-  "createWorkout",
-  async (newWorkout) => {
-    let updatedWorkouts;
+// export const createWorkouts = createAsyncThunk(
+//   "createWorkout",
+//   async (newWorkout) => {
+//     let updatedWorkouts;
 
-    try {
-      console.log("attempting to create");
-      const workoutsJSON = await AsyncStorage.getItem("workouts");
-      const workouts = JSON.parse(workoutsJSON);
-      updatedWorkouts = [newWorkout, ...workouts];
-      console.log("updated workouts is", updatedWorkouts);
-      await AsyncStorage.setItem("workouts", JSON.stringify(updatedWorkouts));
+//     try {
+//       console.log("attempting to create");
+//       const workoutsJSON = await AsyncStorage.getItem("workouts");
+//       const workouts = JSON.parse(workoutsJSON);
+//       updatedWorkouts = [newWorkout, ...workouts];
+//       console.log("updated workouts is", updatedWorkouts);
+//       await AsyncStorage.setItem("workouts", JSON.stringify(updatedWorkouts));
 
-      const currentUser = await AsyncStorage.getItem("workouts");
+//       const currentUser = await AsyncStorage.getItem("workouts");
 
-      console.log(currentUser);
-    } catch (e) {
-      console.warn(e);
-    }
+//       console.log(currentUser);
+//     } catch (e) {
+//       console.warn(e);
+//     }
 
-    return updatedWorkouts;
-  }
-);
+//     return updatedWorkouts;
+//   }
+// );
 
 const workoutsSlice = createSlice({
   name: "workouts",

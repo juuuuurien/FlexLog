@@ -3,15 +3,17 @@ import {
   StyleSheet,
   Platform,
   View,
-  Text,
   TouchableOpacity,
+  TouchableHighlight,
 } from "react-native";
 import {
   List,
   Colors,
   Caption,
-  Headline,
+  Text,
   Subheading,
+  useTheme,
+  TouchableRipple,
 } from "react-native-paper";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
@@ -19,6 +21,8 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 dayjs.extend(customParseFormat);
 
 const ListItem = ({ item, id, navigation, index, handleDelete }) => {
+  const { colors, dark } = useTheme();
+
   const { date, exercises } = item;
   const dateInFormat = dayjs(date).format("ddd DD MMM");
   const [day, dayNum] = dateInFormat.split(" ");
@@ -48,7 +52,7 @@ const ListItem = ({ item, id, navigation, index, handleDelete }) => {
   };
 
   const handleCardColor = () => {
-    if (exercises[0] === undefined) return "#1E3742";
+    if (exercises[0] === undefined) return colors.cardGray;
     const { exercise_name } = exercises[0];
 
     //  check if exercises includes certain keywords
@@ -58,15 +62,15 @@ const ListItem = ({ item, id, navigation, index, handleDelete }) => {
     const otherKeywords = ["run", "plank", "ab", "abs"];
 
     if (pushKeywords.some((e) => exercise_name.toLowerCase().includes(e)))
-      return "#C33939";
+      return colors.cardRed;
     if (pullKeywords.some((e) => exercise_name.toLowerCase().includes(e)))
-      return "#1D84BD";
+      return colors.cardBlue;
     if (legsKeywords.some((e) => exercise_name.toLowerCase().includes(e)))
-      return "#3DBF5A";
+      return colors.cardGreen;
     if (otherKeywords.some((e) => exercise_name.toLowerCase().includes(e)))
-      return "#4B228E";
+      return colors.cardPurple;
 
-    return "#1E3742";
+    return colors.cardGray;
   };
 
   const handleDescription = () => {
@@ -91,9 +95,12 @@ const ListItem = ({ item, id, navigation, index, handleDelete }) => {
   };
 
   return (
-    <TouchableOpacity
+    <TouchableRipple
+      borderless={true}
       delayLongPress={250}
-      activeOpacity={0.75}
+      onLongPress={handleLongPress}
+      onPress={handlePress}
+      color={"rgb(0,0,0, 0.5)"}
       style={[
         styles.container,
         {
@@ -103,25 +110,33 @@ const ListItem = ({ item, id, navigation, index, handleDelete }) => {
               : item.cardColor,
         },
       ]}
-      onLongPress={handleLongPress}
-      onPress={handlePress}
     >
-      <View style={[styles.dateTab]}>
-        <Subheading style={[styles.subheading]}>{day}</Subheading>
-        <Headline style={[styles.dateMonth]}>{dayNum}</Headline>
+      <View style={{ flexDirection: "row", height: 100, flex: 1 }}>
+        <View style={[styles.dateTab]}>
+          <Text
+            style={[styles.dateDay, { color: dark ? colors.text : "#FFF" }]}
+          >
+            {day}
+          </Text>
+          <Text
+            style={[styles.dateMonth, { color: dark ? colors.text : "#FFF" }]}
+          >
+            {dayNum}
+          </Text>
+        </View>
+        <List.Item
+          style={[styles.rightContainer, { backgroundColor: colors.surface }]}
+          titleStyle={styles.titleStyle}
+          title={item.name}
+          description={handleDescription()}
+          right={() => (
+            <Caption style={[styles.caption, { color: handleStatusColor() }]}>
+              {handleCaption()}
+            </Caption>
+          )}
+        />
       </View>
-      <List.Item
-        style={styles.listItem}
-        titleStyle={styles.titleStyle}
-        title={item.name}
-        description={handleDescription()}
-        right={() => (
-          <Caption style={[styles.caption, { color: handleStatusColor() }]}>
-            {handleCaption()}
-          </Caption>
-        )}
-      />
-    </TouchableOpacity>
+    </TouchableRipple>
   );
 };
 
@@ -133,22 +148,27 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#162227",
-    borderRadius: 12,
+    borderRadius: 14,
+    elevation: 4,
   },
-  listItem: {
+  rightContainer: {
     flex: 1,
     height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
     elevation: 1,
-    backgroundColor: "#16242A",
-    borderRadius: 12,
+    borderRadius: 14,
   },
   caption: {
     padding: 10,
   },
-  titleStyle: { fontWeight: "bold", fontSize: 20 },
-  subheading: { margin: 0, fontSize: 14 },
-  dateMonth: { fontSize: 28, fontWeight: "bold" },
+  titleStyle: { fontWeight: "bold", fontSize: 22 },
+  dateDay: { margin: 0, fontSize: 16, fontWeight: "bold" },
+  dateMonth: {
+    lineHeight: 42,
+    fontSize: 32,
+    fontWeight: "bold",
+  },
   dateTab: {
     justifyContent: "center",
     alignItems: "center",

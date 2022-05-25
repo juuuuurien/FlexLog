@@ -5,6 +5,7 @@ import React, {
   useRef,
   useEffect,
   useMemo,
+  useLayoutEffect
 } from "react";
 import {
   View,
@@ -66,6 +67,9 @@ const WorkoutList = ({ navigation }) => {
   // for ( const id in state.workouts ) {
   //   console.log(dayjs(state.workouts[id].date).format('MMMM YYYY'))
   // }
+
+  // init workout list header
+
   const handleDelete = (id, name) => {
     Alert.alert("Delete this workout?", `Do you want to delete "${name}" ?`, [
       {

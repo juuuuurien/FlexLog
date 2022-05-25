@@ -6,14 +6,14 @@ import React, {
   useCallback,
 } from "react";
 import { StyleSheet, Text, TextInput } from "react-native";
-import { DataTable, IconButton, useTheme } from "react-native-paper";
+import { DataTable, IconButton, useTheme, withTheme } from "react-native-paper";
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateSet } from "../../../../../redux/slices/workoutsSlice";
 
 import { WorkoutDataContext } from "../../../../context/WorkoutDataContext";
@@ -30,6 +30,7 @@ const ExerciseTableSet = ({
 }) => {
   const { colors } = useTheme();
   const dispatch = useDispatch();
+  const { weightUnits } = useSelector((state) => state.settings);
   const { workoutData } = useContext(WorkoutDataContext);
   const [weight, setWeight] = useState(setData.weight);
   const [reps, setReps] = useState(setData.reps);
@@ -83,7 +84,7 @@ const ExerciseTableSet = ({
     const interpolatedColor = interpolateColor(
       animatedColorValue.value,
       [0, 1],
-      [colors.surfaceLight, "#244E40"]
+      [colors.surfaceLight, colors.setFinished]
     );
 
     return { backgroundColor: interpolatedColor };
@@ -93,7 +94,7 @@ const ExerciseTableSet = ({
     const interpolatedColor = interpolateColor(
       animatedColorValue.value,
       [0, 1],
-      [colors.surface, "#244E40"]
+      [colors.inputBackground, colors.setFinished]
     );
 
     return {
@@ -105,14 +106,6 @@ const ExerciseTableSet = ({
   });
 
   const styles = StyleSheet.create({
-    trashCanContainer: {
-      flex: 1,
-      width: "100%",
-      flexDirection: "row",
-      position: "absolute",
-      backgroundColor: colors.error,
-      justifyContent: "flex-end",
-    },
     cell: {
       flex: 1,
       flexDirection: "row",
@@ -124,10 +117,6 @@ const ExerciseTableSet = ({
       flex: 1,
       marginBottom: 4,
       borderBottomWidth: 0,
-    },
-    offsetTitle: {
-      marginLeft: 10,
-      justifyContent: "space-around",
     },
     textInput: {
       flex: 0,
@@ -172,7 +161,7 @@ const ExerciseTableSet = ({
                 <TextInput
                   dense
                   disabled={workoutData.finished}
-                  placeholder={"lbs"}
+                  placeholder={weightUnits}
                   placeholderTextColor={"gray"}
                   underlineColor="transparent"
                   keyboardType="numeric"
@@ -234,4 +223,4 @@ const ExerciseTableSet = ({
   }, [weight, reps, workoutData]);
 };
 
-export default ExerciseTableSet;
+export default withTheme(ExerciseTableSet);

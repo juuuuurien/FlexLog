@@ -1,20 +1,22 @@
-import { StyleSheet, Text, View, Alert } from "react-native";
-import React, { useEffect, useState } from "react";
+import { StyleSheet, Text, View, Alert, FlatList } from "react-native";
+import React, { useEffect, useState, useLayoutEffect } from "react";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
-import { FlatList } from "react-native-gesture-handler";
-import { FAB, useTheme } from "react-native-paper";
+import { FAB, IconButton, useTheme } from "react-native-paper";
 
+import Loading from "../../global/components/Loading";
 import ListItem from "./components/ListItem";
 import CreateWorkoutModal from "./components/CreateWorkoutModal";
+import HeaderRightContent from "./components/HeaderRightContent";
+
 import { useDispatch, useSelector } from "react-redux";
-import Loading from "../../global/components/Loading";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   deleteWorkout,
   fetchWorkouts,
 } from "../../../redux/slices/workoutsSlice";
-import { STATUS_BAR_HEIGHT } from "../../global/constants";
 import { store } from "../../../redux";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import { STATUS_BAR_HEIGHT } from "../../global/constants";
 
 const EmptyListScreen = () => {
   const { colors } = useTheme();
@@ -38,22 +40,32 @@ const EmptyListScreen = () => {
   );
 };
 
-const NewWorkoutList = () => {
+const NewWorkoutList = ({ navigation }) => {
   const { colors } = useTheme();
   const [showModal, setShowModal] = useState(false);
-  const navigation = useNavigation();
+
   const focused = useIsFocused();
   const dispatch = useDispatch();
   const { workouts, loading } = useSelector((state) => state.workouts);
 
-  // fetch data here on useEffect...
+  // init screen header
+  useLayoutEffect(() => {
+    if (workouts === null) return;
+    navigation.setOptions({
+      headerRight: () => {
+        return <HeaderRightContent />;
+      },
+    });
+  }, [navigation]);
 
+  // fetch data here on useEffect...
   useEffect(() => {
     // on screen mount, load items into state.
     console.log("fetching workouts from db....");
     if (focused) dispatch(fetchWorkouts());
   }, []);
 
+  // listen to outgoing navigation and save on leaving
   useEffect(() => {
     navigation.addListener("blur", async () => {
       console.log("leaving screen, updating...");
@@ -94,7 +106,6 @@ const NewWorkoutList = () => {
   return (
     <View style={styles.container}>
       <FlatList
-        style={styles.container}
         contentContainerStyle={styles.flatListContent}
         ListEmptyComponent={EmptyListScreen}
         data={workouts}
@@ -110,19 +121,19 @@ const NewWorkoutList = () => {
           />
         )}
       />
-      <CreateWorkoutModal
-        show={() => {
-          setShowModal(true);
-        }}
-        hide={() => setShowModal(false)}
-        visible={showModal}
-      />
       <FAB
         style={[styles.FABButton, { backgroundColor: colors.primary }]}
         icon={"plus"}
         onPress={() => {
           setShowModal(true);
         }}
+      />
+      <CreateWorkoutModal
+        show={() => {
+          setShowModal(true);
+        }}
+        hide={() => setShowModal(false)}
+        visible={showModal}
       />
     </View>
   );
@@ -134,13 +145,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    paddingTop: STATUS_BAR_HEIGHT,
+    paddingTop: 12,
   },
-  flatListContainer: {
-    backgroundColor: "navy",
-  },
+
   flatListContent: {
-    flex: 1,
+    flexGrow: 1,
     width: "100%",
     paddingHorizontal: 6,
   },
