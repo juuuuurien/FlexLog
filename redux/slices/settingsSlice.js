@@ -4,6 +4,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 const initialState = {
   loading: true,
   data: {
+    firstStart: true,
     username: "",
     maxes: { squat: 0, bench: 0, deadlift: 0 },
     weightUnits: "lb",
@@ -35,6 +36,9 @@ const settingsSlice = createSlice({
       const _darkTheme = action.payload;
       state.data.darkTheme = _darkTheme;
     },
+    setFirstStart: (state, action) => {
+      state.data.firstStart = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -48,6 +52,6 @@ const settingsSlice = createSlice({
   },
 });
 
-export const { updateMaxes, updateWeightUnits, setDarkTheme } =
+export const { updateMaxes, updateWeightUnits, setDarkTheme, setFirstStart } =
   settingsSlice.actions;
 export default settingsSlice.reducer;

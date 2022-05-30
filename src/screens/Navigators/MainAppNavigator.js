@@ -1,28 +1,37 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import WorkoutPage from "../WorkoutPage/WorkoutPage";
-import NewWorkoutList from "./NewWorkoutList";
+import NewWorkoutList from "../WorkoutList/NewWorkoutList";
 import Settings from "../Settings/Settings";
+import WelcomeScreen from "../WelcomeScreen/WelcomeScreen";
 
 import { useTheme } from "react-native-paper";
 import { store } from "../../../redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useSelector } from "react-redux";
 
 const Stack = createStackNavigator();
 
-const WorkoutListNavigator = () => {
+const MainAppNavigator = () => {
   const { colors } = useTheme();
+
+  const settings = useSelector((state) => state.settings);
+
+  const firstStart = settings?.data.firstStart;
+  console.log(firstStart, "+++++++++++++++++++++++++++++");
+
   return (
     <Stack.Navigator
+      initialRouteName={firstStart ? "WelcomeScreen" : "NewWorkoutList"}
       screenListeners={({ navigation }) => ({
         beforeRemove: async (e) => {
           e.preventDefault();
           const { settings, workouts } = store.getState();
-          console.log(settings);
+          console.log(settings, workouts);
           try {
             await AsyncStorage.setItem(
               "userSettings",
-              JSON.stringify(settings.settings)
+              JSON.stringify(settings.data)
             );
             await AsyncStorage.setItem(
               "workouts",
@@ -34,11 +43,6 @@ const WorkoutListNavigator = () => {
             navigation.dispatch(e.data.action);
           }
         },
-        state: (e) => {
-          // Save whenever state is changed
-
-          const { settings, workouts } = store.getState();
-        },
       })}
       screenOptions={{
         headerStyle: {
@@ -48,9 +52,14 @@ const WorkoutListNavigator = () => {
       }}
     >
       <Stack.Screen
+        name="WelcomeScreen"
+        component={WelcomeScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
         name="NewWorkoutList"
         component={NewWorkoutList}
-        options={{ title: "Your Workouts" }}
+        options={{ title: "Your Workouts", headerLeft: null }}
       />
       <Stack.Screen
         name="WorkoutPage"
@@ -66,4 +75,4 @@ const WorkoutListNavigator = () => {
   );
 };
 
-export default WorkoutListNavigator;
+export default MainAppNavigator;

@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
   headline: {
     backgroundColor: "transparent",
     paddingHorizontal: 0,
-    fontSize: 18,
+    fontSize: 16,
   },
 });
 

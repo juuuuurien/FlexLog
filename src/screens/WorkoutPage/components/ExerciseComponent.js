@@ -1,6 +1,12 @@
 import React, { useState, useContext, useEffect, useCallback } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { TextInput, useTheme, IconButton } from "react-native-paper";
+import { Pressable, StyleSheet, View } from "react-native";
+import {
+  TextInput,
+  useTheme,
+  IconButton,
+  DataTable,
+  Text,
+} from "react-native-paper";
 import Animated, {
   Layout,
   FadeInUp,
@@ -107,7 +113,7 @@ const ExerciseComponent = ({
       height: 48,
       backgroundColor: "transparent",
       paddingHorizontal: 0,
-      fontSize: 24,
+      fontSize: 20,
     },
     exercise: {
       marginTop: 18,
@@ -126,7 +132,7 @@ const ExerciseComponent = ({
       <View style={styles.exerciseHeaderContainer}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <TextInput
-            placeholder="'Name'"
+            placeholder="'Exercise'"
             style={styles.exerciseNameInput}
             value={name}
             underlineColor="transparent"
@@ -161,24 +167,31 @@ const ExerciseComponent = ({
         </View>
       </View>
       <ExerciseTable>
-        {exerciseData &&
-          exerciseData.sets.map((set, i) => {
-            // the reason layout animations aren't working is because
-            // each element doesn't have a unique key.
-            // Need to have each set have a unique key when creating it.
-            return (
-              <ExerciseTable.Set
-                key={set.id}
-                set_id={set.id}
-                setIndex={i}
-                exerciseIndex={exerciseIndex}
-                workoutIndex={workoutIndex}
-                set_count={i + 1}
-                setData={set}
-                handleDeleteSet={handleDeleteSet}
-              />
-            );
-          })}
+        <DataTable.Row>
+          <DataTable.Cell
+            style={{
+              marginHorizontal: 4,
+              alignSelf: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text>Sets</Text>
+          </DataTable.Cell>
+        </DataTable.Row>
+        {exerciseData?.sets.map((set, i) => {
+          return (
+            <ExerciseTable.Set
+              key={set.id}
+              set_id={set.id}
+              setIndex={i}
+              exerciseIndex={exerciseIndex}
+              workoutIndex={workoutIndex}
+              set_count={i + 1}
+              setData={set}
+              handleDeleteSet={handleDeleteSet}
+            />
+          );
+        })}
         <AddSetButton
           workoutData={workoutData}
           exerciseIndex={exerciseIndex}

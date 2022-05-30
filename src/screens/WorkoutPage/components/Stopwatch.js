@@ -1,4 +1,5 @@
-import { StyleSheet, Text, TouchableOpacity, Alert } from "react-native";
+import { StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { Text, withTheme } from "react-native-paper";
 import React, { useState, useEffect, useRef, useContext } from "react";
 import dayjs from "dayjs";
 import Animated, { FadeInUp, Layout } from "react-native-reanimated";
@@ -107,14 +108,10 @@ const Stopwatch = ({
           minHeight: 36,
         }}
       >
-        <Text style={styles.time}>{time}</Text>
+        <Text>{time}</Text>
       </Animated.View>
     </TouchableOpacity>
   );
 };
 
-export default Stopwatch;
-
-const styles = StyleSheet.create({
-  time: { color: "#FFF" },
-});
+export default withTheme(Stopwatch);

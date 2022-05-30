@@ -13,6 +13,7 @@ import { store } from "./redux";
 import { Provider as StoreProvider, useSelector } from "react-redux";
 
 import MainApp from "./MainApp";
+import Loading from "./src/global/components/Loading";
 
 // let userData = {
 //   workouts: {
@@ -37,15 +38,13 @@ import MainApp from "./MainApp";
 
 const initUserData = async () => {
   const userData = await AsyncStorage.getItem("userSettings");
-  console.log(
-    userData,
-    "=============================================================="
-  );
+  console.log("getting userData from AsyncStorage => ... ", userData);
   if (userData === null) {
     console.log("WARNING ================ > userSettings is null!");
     await AsyncStorage.setItem(
       "userSettings",
       JSON.stringify({
+        firstStart: true,
         username: "",
         maxes: { squat: "0", bench: "0", deadlift: "0" },
         weightUnits: "lbs",
@@ -53,8 +52,6 @@ const initUserData = async () => {
       })
     );
   }
-
-  return;
 };
 
 const initWorkouts = async () => {
@@ -65,19 +62,30 @@ const initWorkouts = async () => {
     console.log("WARNING ================ > workouts is null!");
     await AsyncStorage.setItem("workouts", JSON.stringify([]));
   }
-
-  return;
 };
 
 export default function App() {
   // initialize providers, then render app with withProviders(App)
+  const [loading, setLoading] = useState(true);
+
+  const initApp = async () => {
+    try {
+      await initUserData();
+      await initWorkouts();
+    } catch (e) {
+      console.warn(e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // AsyncStorage.clear();
   useEffect(() => {
     //  initialize data if missing
-    initUserData();
-    initWorkouts();
+    initApp();
   });
+
+  if (loading) return <Loading />;
 
   return (
     <StoreProvider store={store}>

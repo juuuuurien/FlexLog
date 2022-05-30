@@ -25,7 +25,7 @@ const ExerciseTableSet = ({
   const { colors } = useTheme();
   const dispatch = useDispatch();
   const { weightUnits, darkTheme } = useSelector(
-    (state) => state.settings.settings
+    (state) => state.settings.data
   );
   const { workoutData } = useContext(WorkoutDataContext);
   const [weight, setWeight] = useState(setData.weight);

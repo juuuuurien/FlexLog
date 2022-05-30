@@ -1,35 +1,53 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { Provider as PaperProvider } from "react-native-paper";
 
 import { NavigationContainer } from "@react-navigation/native";
-import WorkoutListNavigator from "./src/screens/WorkoutList/WorkoutListNavigator";
+import MainAppNavigator from "./src/screens/Navigators/MainAppNavigator";
 
 import { CombinedDarkTheme, CombinedDefaultTheme } from "./src/theme";
+
+import Loading from "./src/global/components/Loading";
 
 import { useDispatch, useSelector } from "react-redux";
 import { fetchWorkouts } from "./redux/slices/workoutsSlice";
 import { fetchSettings } from "./redux/slices/settingsSlice";
 
 export default function MainApp() {
-  const { darkTheme } = useSelector((state) => state.settings.data);
+  const [loading, setLoading] = useState(true);
+  const settings = useSelector((state) => state.settings);
   const dispatch = useDispatch();
 
   const getTheme = () => {
-    if (darkTheme === true) return CombinedDarkTheme;
+    if (settings.data?.darkTheme === true) return CombinedDarkTheme;
     return CombinedDefaultTheme;
   };
 
+  const initMainApp = async () => {
+    try {
+      await dispatch(fetchWorkouts()).unwrap();
+      await dispatch(fetchSettings()).unwrap();
+    } catch (e) {
+      console.warn(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    dispatch(fetchWorkouts());
-    dispatch(fetchSettings());
+    initMainApp();
   }, []);
+
+  // initialize state before rendering
+  if (loading) return <Loading />;
 
   return (
     <PaperProvider theme={getTheme()}>
       <NavigationContainer theme={getTheme()}>
-        <WorkoutListNavigator />
-        <StatusBar style={darkTheme === true ? "light" : "dark"} />
+        <MainAppNavigator />
+        <StatusBar
+          style={settings.data?.darkTheme === true ? "light" : "dark"}
+        />
       </NavigationContainer>
     </PaperProvider>
   );
